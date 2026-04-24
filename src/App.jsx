@@ -624,9 +624,22 @@ function About({go,bp}){
           <div style={{display:"grid",gridTemplateColumns:bp?.mobile||bp?.tablet?"1fr":"1fr 1.65fr",gap:bp?.mobile?"2.5rem":"7rem",alignItems:"start"}}>
             <div>
               <div style={{background:T.n3,border:`1px solid ${T.rl}`,borderRadius:20,padding:"2.5rem",textAlign:"center",marginBottom:"1.5rem"}}>
-                <div style={{width:80,height:80,borderRadius:"50%",background:`linear-gradient(135deg,${T.vi},${T.bl})`,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Cormorant Garamond',serif",fontSize:"2rem",fontWeight:500,color:"#fff",margin:"0 auto 1rem"}}>LB</div>
+                {/* ── Drop your headshot at src/assets/lynda.jpg ── */}
+                <div style={{position:"relative",width:160,height:160,margin:"0 auto 1.4rem"}}>
+                  <div style={{position:"absolute",inset:-3,borderRadius:"50%",background:`linear-gradient(135deg,${T.gd},${T.vi})`,zIndex:0}}/>
+                  <div style={{position:"relative",width:"100%",height:"100%",borderRadius:"50%",overflow:"hidden",border:`3px solid ${T.n3}`,zIndex:1,background:`linear-gradient(135deg,${T.vi},${T.bl})`}}>
+                    <img
+                      src="/src/assets/lynda.png"
+                      alt="Lynda Badmus"
+                      onError={e=>{e.currentTarget.style.display="none";e.currentTarget.nextSibling.style.display="flex";}}
+                      style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:"center top",display:"block"}}
+                    />
+                    <div style={{display:"none",width:"100%",height:"100%",alignItems:"center",justifyContent:"center",fontFamily:"'Cormorant Garamond',serif",fontSize:"2.5rem",fontWeight:500,color:"#fff"}}>LB</div>
+                  </div>
+                </div>
                 <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.3rem",fontWeight:400,marginBottom:".3rem"}}>Lynda Badmus</p>
-                <p style={{fontSize:".75rem",color:T.ash}}>Founder & Principal Tutor</p>
+                <p style={{fontSize:".75rem",color:T.gd,letterSpacing:".08em",textTransform:"uppercase",marginBottom:".2rem"}}>Founder & Principal Tutor</p>
+                <p style={{fontSize:".68rem",color:T.ash}}>MSc Mathematics Education, Cambridge</p>
               </div>
               {[["Post-grad","MSc Mathematics Education — University of Cambridge"],["Degree","BEng Chemical Engineering"],["Experience","12+ years teaching & leadership"],["Curricula","IB · A-Level · GCSE · US Curriculum"],["Schools","Prestigious UK & US institutions"]].map(([k,v])=>(
                 <div key={k} style={{display:"flex",justifyContent:"space-between",padding:".72rem 0",borderBottom:`1px solid ${T.r2}`}}>
