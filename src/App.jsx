@@ -18,10 +18,11 @@
  */
 import { useState, useEffect, useRef, useCallback } from "react";
 import {
-  Home, BookOpen, Calendar, TrendingUp, Award, Users, FileText,
+  Home as HomeIcon, BookOpen, Calendar, TrendingUp, Award, Users, FileText,
   CreditCard, CheckCircle, Eye, EyeOff, ArrowUp, Download, Menu,
   X, Clock, Settings, GraduationCap, Video, LogOut, Lock, Mail,
-  ClipboardList, BarChart2, Zap, MessageSquare
+  ClipboardList, BarChart2, Zap, MessageSquare,
+  DraftingCompass, FlaskConical, Microscope
 } from "lucide-react";
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid,
@@ -30,37 +31,41 @@ import {
 
 /* ─── TOKENS ─────────────────────────────────────────────────────── */
 const T={
-  n:"#0A1628",n2:"#0F2040",n3:"#162952",n4:"#1E3564",
-  cr:"#F0EBE1",c2:"#C8C0B4",ash:"#7080A0",ash2:"#3E5060",
-  gd:"#C9A86C",g2:"#E4CA90",gda:"rgba(201,168,108,.14)",gdaa:"rgba(201,168,108,.06)",
-  gr:"#2EAD76",gra:"rgba(46,173,118,.13)",
-  bl:"#2E7DD1",bla:"rgba(46,125,209,.12)",
-  am:"#D48A2E",ama:"rgba(212,138,46,.12)",
-  rd:"#C84E4E",rda:"rgba(200,78,78,.1)",
-  vi:"#6E5BB8",via:"rgba(110,91,184,.12)",
-  te:"#2DA89A",tea:"rgba(45,168,154,.12)",
-  rl:"rgba(201,168,108,.14)",r2:"rgba(255,255,255,.08)",r3:"rgba(255,255,255,.04)",
-  s2:"0 8px 40px rgba(0,0,0,.5)",s3:"0 20px 64px rgba(0,0,0,.65)",
+  n:"#050B1A",n2:"#090F22",n3:"#0F1B36",n4:"#162444",
+  cr:"#F5F0E8",c2:"#D8D0C4",ash:"#8090B8",ash2:"#4A5E82",
+  gd:"#F5C842",g2:"#FFE07A",gda:"rgba(245,200,66,.18)",gdaa:"rgba(245,200,66,.09)",
+  gr:"#00D491",gra:"rgba(0,212,145,.18)",
+  bl:"#5AABFF",bla:"rgba(90,171,255,.18)",
+  am:"#FF9340",ama:"rgba(255,147,64,.18)",
+  rd:"#FF4E72",rda:"rgba(255,78,114,.18)",
+  vi:"#A07AFF",via:"rgba(160,122,255,.18)",
+  te:"#00C9AE",tea:"rgba(0,201,174,.18)",
+  rl:"rgba(245,200,66,.14)",r2:"rgba(255,255,255,.09)",r3:"rgba(255,255,255,.04)",
+  s2:"0 8px 48px rgba(0,0,0,.65)",s3:"0 24px 72px rgba(0,0,0,.8)",
 };
 
 /* ─── GLOBAL CSS ──────────────────────────────────────────────────── */
 const CSS=`
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500;600&family=JetBrains+Mono:wght@400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
 body{font-family:'Jost',system-ui,sans-serif;background:${T.n};color:${T.cr};-webkit-font-smoothing:antialiased;line-height:1.6;overflow-x:hidden;}
-h1,h2,h3,h4{font-family:'Cormorant Garamond',Georgia,serif;line-height:1.14;}
+h1,h2,h3,h4{font-family:'Cormorant Garamond',Georgia,serif;line-height:1.1;font-weight:500;}
 button,input,select,textarea{font-family:inherit;}
 a{text-decoration:none;color:inherit;}
-::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-thumb{background:rgba(201,168,108,.25);border-radius:3px;}
-@keyframes rise{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-thumb{background:rgba(245,200,66,.3);border-radius:4px;}
+@keyframes rise{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
 @keyframes fIn{from{opacity:0;}to{opacity:1;}}
-.rise{animation:rise .38s cubic-bezier(0,.6,.4,1) both;}
-.r1{animation-delay:.07s;}.r2{animation-delay:.14s;}.r3{animation-delay:.21s;}
-.fIn{animation:fIn .25s ease both;}
+@keyframes drift{0%{transform:translateY(0) rotate(0deg);}50%{transform:translateY(-22px) rotate(3deg);}100%{transform:translateY(0) rotate(0deg);}}
+@keyframes glowPulse{0%,100%{opacity:.55;}50%{opacity:1;}}
+.rise{animation:rise .42s cubic-bezier(0,.6,.4,1) both;}
+.r1{animation-delay:.09s;}.r2{animation-delay:.18s;}.r3{animation-delay:.27s;}.r4{animation-delay:.36s;}
+.fIn{animation:fIn .28s ease both;}
+.drift{animation:drift 8s ease-in-out infinite;}
+.glow-pulse{animation:glowPulse 3s ease-in-out infinite;}
 .drawer{position:fixed;top:0;left:0;bottom:0;width:270px;background:${T.n2};border-right:1px solid ${T.rl};z-index:401;transform:translateX(-100%);transition:transform .28s ease;overflow-y:auto;}
 .drawer.open{transform:translateX(0);}
-.overlay{position:fixed;inset:0;background:rgba(5,12,24,.8);z-index:400;display:none;backdrop-filter:blur(4px);}
+.overlay{position:fixed;inset:0;background:rgba(3,8,20,.85);z-index:400;display:none;backdrop-filter:blur(5px);}
 .overlay.open{display:block;}
 `;
 
@@ -97,6 +102,12 @@ const COURSES=[
   {id:"hs-chem",g:"us",sub:"chem",icon:"⚗",col:T.bl,pale:T.bla,rate:{gbp:38,usd:50},hours:{full:30,half:15,q:7},lessons:12,title:"High School Chemistry",curr:"US Grades 9–12",desc:"Atomic structure, bonding, stoichiometry, thermochemistry as a coherent whole.",assess:["Diagnostic (L1)","Unit Check (L4)","Mid (L8)","Mock (L12)"],outcomes:["HS Chem coverage","Honors/AP readiness"],eq:{l:"Molar Mass",d:"n=mass/M (mol)"}},
 ];
 const CAT={ib:{l:"IB Diploma",c:T.vi,bg:T.via},al:{l:"A-Level",c:T.rd,bg:T.rda},gcse:{l:"GCSE",c:T.gr,bg:T.gra},pre:{l:"Pre-GCSE",c:T.te,bg:T.tea},preib:{l:"Pre-IB",c:T.am,bg:T.ama},ap:{l:"AP",c:T.am,bg:T.ama},hon:{l:"Honors",c:T.am,bg:T.ama},ms:{l:"Middle School",c:T.te,bg:T.tea},us:{l:"US Curriculum",c:T.bl,bg:T.bla}};
+function SubIcon({sub,col,size=20}){
+  const s={color:col,opacity:.8,flexShrink:0};
+  if(sub==="chem") return <FlaskConical size={size} style={s} strokeWidth={1.5}/>;
+  if(sub==="sci") return <Microscope size={size} style={s} strokeWidth={1.5}/>;
+  return <DraftingCompass size={size} style={s} strokeWidth={1.5}/>;
+}
 
 /* ─── MOCK USERS ──────────────────────────────────────────────────── */
 const USERS=[
@@ -193,16 +204,33 @@ function useBreakpoint(){
 /* ─── LOGO ────────────────────────────────────────────────────────── */
 function Logo({size=32,text=true}){
   return(
-    <div style={{display:"flex",alignItems:"center",gap:".7rem",flexShrink:0}}>
-      <svg width={size} height={size} viewBox="0 0 40 40" fill="none">
-        <rect width="40" height="40" rx="9" fill={T.gd}/>
-        <path d="M8 28L20 10L32 28" stroke={T.n} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-        <path d="M12 22L28 22" stroke={T.n} strokeWidth="2.5" strokeLinecap="round"/>
-        <circle cx="20" cy="32.5" r="2.5" fill={T.n}/>
+    <div style={{display:"flex",alignItems:"center",gap:".75rem",flexShrink:0}}>
+      <svg width={size} height={size} viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="logo-bg" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#A07AFF"/>
+            <stop offset=".55" stopColor="#5AABFF"/>
+            <stop offset="1" stopColor="#00C9AE"/>
+          </linearGradient>
+          <linearGradient id="logo-ring" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+            <stop stopColor="rgba(160,122,255,.6)"/>
+            <stop offset="1" stopColor="rgba(0,201,174,.4)"/>
+          </linearGradient>
+        </defs>
+        {/* Outer glow ring */}
+        <rect width="40" height="40" rx="12" stroke="url(#logo-ring)" strokeWidth="1.5" fill="none"/>
+        {/* Main background */}
+        <rect x="2" y="2" width="36" height="36" rx="10" fill="url(#logo-bg)"/>
+        {/* Subtle inner shadow overlay */}
+        <rect x="2" y="2" width="36" height="36" rx="10" fill="rgba(5,11,26,.18)"/>
+        {/* Diamond accent */}
+        <polygon points="20,7 33,20 20,33 7,20" stroke="rgba(255,255,255,.18)" strokeWidth="1" fill="none"/>
+        {/* LB monogram */}
+        <text x="20" y="26" textAnchor="middle" fontFamily="Georgia,serif" fontSize="14" fontWeight="700" fill="white" letterSpacing=".5">LB</text>
       </svg>
       {text&&<div>
-        <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:size>28?"1.05rem":".88rem",fontWeight:600,color:T.cr,lineHeight:1.1}}>Lynda Badmus</p>
-        <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:size>28?".68rem":".58rem",color:T.gd,letterSpacing:".14em",textTransform:"uppercase",lineHeight:1}}>Education</p>
+        <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:size>28?"1.08rem":".9rem",fontWeight:600,color:T.cr,lineHeight:1.1,letterSpacing:"-.01em"}}>Lynda Badmus</p>
+        <p style={{fontFamily:"'Jost',sans-serif",fontSize:size>28?".6rem":".52rem",color:T.ash,letterSpacing:".2em",textTransform:"uppercase",lineHeight:1,marginTop:".12rem",fontWeight:500}}>Tuition</p>
       </div>}
     </div>
   );
@@ -212,9 +240,9 @@ function Logo({size=32,text=true}){
 function Btn({ch,v="gold",sz="md",onClick,dis,sx={},type="button"}){
   const[h,sH]=useState(false);
   const S={xl:{p:".9rem 2.2rem",fs:".92rem"},lg:{p:".78rem 1.8rem",fs:".87rem"},md:{p:".58rem 1.2rem",fs:".82rem"},sm:{p:".38rem .9rem",fs:".76rem"},xs:{p:".22rem .6rem",fs:".7rem"}};
-  const V={gold:{bg:h?"#9A7848":T.gd,c:T.n,b:"none"},navy:{bg:h?T.n3:T.n2,c:T.cr,b:`1px solid ${T.rl}`},outline:{bg:"transparent",c:h?T.g2:T.gd,b:`1px solid ${T.gd}`},ghost:{bg:h?"rgba(255,255,255,.06)":"transparent",c:h?T.cr:T.ash,b:`1px solid ${T.r2}`},success:{bg:h?"#228A5A":T.gr,c:"#fff",b:"none"},danger:{bg:h?"#A03A3A":T.rd,c:"#fff",b:"none"}};
+  const V={gold:{bg:h?"linear-gradient(135deg,#F5C842,#FF9340)":"linear-gradient(135deg,#FFD060,#F5C842)",c:T.n,b:"none",sh:`0 10px 28px rgba(245,200,66,.35)`},navy:{bg:h?T.n3:T.n2,c:T.cr,b:`1px solid ${T.rl}`},outline:{bg:"transparent",c:h?T.g2:T.gd,b:`1px solid ${T.gd}`},ghost:{bg:h?"rgba(255,255,255,.06)":"transparent",c:h?T.cr:T.ash,b:`1px solid ${T.r2}`},success:{bg:h?"#228A5A":T.gr,c:"#fff",b:"none"},danger:{bg:h?"#A03A3A":T.rd,c:"#fff",b:"none"}};
   const v2=V[v]||V.gold;const sz2=S[sz]||S.md;
-  return<button type={type} disabled={dis} onClick={onClick} onMouseEnter={()=>sH(true)} onMouseLeave={()=>sH(false)} style={{fontFamily:"inherit",fontWeight:500,borderRadius:8,cursor:dis?"not-allowed":"pointer",transition:"all .18s",display:"inline-flex",alignItems:"center",gap:".4rem",whiteSpace:"nowrap",opacity:dis?.5:1,padding:sz2.p,fontSize:sz2.fs,background:v2.bg,color:v2.c,border:v2.b,...sx}}>{ch}</button>;
+  return<button type={type} disabled={dis} onClick={onClick} onMouseEnter={()=>sH(true)} onMouseLeave={()=>sH(false)} style={{fontFamily:"inherit",fontWeight:500,borderRadius:8,cursor:dis?"not-allowed":"pointer",transition:"all .18s",display:"inline-flex",alignItems:"center",gap:".4rem",whiteSpace:"nowrap",opacity:dis?.5:1,padding:sz2.p,fontSize:sz2.fs,background:v2.bg,color:v2.c,border:v2.b,boxShadow:v2.sh||"none",...sx}}>{ch}</button>;
 }
 
 function Modal({title,ch,onClose,wide=false}){
@@ -317,7 +345,7 @@ function TopNav({pg,go,cur,setCur,user,logout,bp,drawerOpen,setDrawerOpen}){
   const solid=sc||inApp;
   const navItems=[["home","Home"],["about","About"],["courses","Courses"],["pricing","Pricing"],["faqs","FAQs"],["contact","Contact"]];
   return(
-    <header style={{position:"fixed",top:0,left:0,right:0,zIndex:200,background:solid?"rgba(10,22,40,.97)":"transparent",backdropFilter:solid?"blur(20px)":"none",borderBottom:solid?`1px solid ${T.rl}`:"1px solid transparent",transition:"all .3s"}}>
+    <header style={{position:"fixed",top:0,left:0,right:0,zIndex:200,background:solid?"rgba(5,11,26,.97)":"transparent",backdropFilter:solid?"blur(20px)":"none",borderBottom:solid?`1px solid ${T.rl}`:`1px solid rgba(245,200,66,.08)`,transition:"all .3s"}}>
       <div style={{maxWidth:1360,margin:"0 auto",display:"flex",alignItems:"center",height:66,padding:"0 1.5rem",gap:"1rem"}}>
         <button onClick={()=>go("home")} style={{background:"none",border:"none",cursor:"pointer",padding:0}}><Logo size={bp.mobile?28:32}/></button>
         {bp.desktop&&(
@@ -382,10 +410,10 @@ function SideDrawer({pg,go,cur,setCur,user,logout,open,onClose}){
 
 /* ─── APP SIDEBAR ─────────────────────────────────────────────────── */
 function Sidebar({pg,go,user,bp,open,onClose}){
-  const sLinks=[["dashboard",<Home size={15}/>,"Dashboard"],["my-courses",<BookOpen size={15}/>,"My Courses"],["booking",<Calendar size={15}/>,"Book Lessons"],["assessments",<ClipboardList size={15}/>,"Assessments"],["progress",<TrendingUp size={15}/>,"Progress"],["account",<Settings size={15}/>,"Account"]];
-  const pLinks=[["parent",<Home size={15}/>,"Overview"],["par-assess",<Award size={15}/>,"Assessments"],["par-sessions",<Calendar size={15}/>,"Sessions"],["par-billing",<CreditCard size={15}/>,"Billing"]];
-  const tLinks=[["tutor-dash",<Home size={15}/>,"Dashboard"],["tutor-schedule",<Calendar size={15}/>,"Schedule"],["tutor-hours",<Clock size={15}/>,"Hours Log"],["tutor-invoices",<CreditCard size={15}/>,"Invoices"]];
-  const aLinks=[["admin",<Home size={15}/>,"Overview"],["admin-tutors",<Users size={15}/>,"Tutors"],["admin-students",<GraduationCap size={15}/>,"Students"],["admin-courses",<BookOpen size={15}/>,"Courses"],["admin-bookings",<Calendar size={15}/>,"Bookings"],["admin-payouts",<CreditCard size={15}/>,"Payouts"]];
+  const sLinks=[["dashboard",<HomeIcon size={15}/>,"Dashboard"],["my-courses",<BookOpen size={15}/>,"My Courses"],["booking",<Calendar size={15}/>,"Book Lessons"],["assessments",<ClipboardList size={15}/>,"Assessments"],["progress",<TrendingUp size={15}/>,"Progress"],["account",<Settings size={15}/>,"Account"]];
+  const pLinks=[["parent",<HomeIcon size={15}/>,"Overview"],["par-assess",<Award size={15}/>,"Assessments"],["par-sessions",<Calendar size={15}/>,"Sessions"],["par-billing",<CreditCard size={15}/>,"Billing"]];
+  const tLinks=[["tutor-dash",<HomeIcon size={15}/>,"Dashboard"],["tutor-schedule",<Calendar size={15}/>,"Schedule"],["tutor-hours",<Clock size={15}/>,"Hours Log"],["tutor-invoices",<CreditCard size={15}/>,"Invoices"]];
+  const aLinks=[["admin",<HomeIcon size={15}/>,"Overview"],["admin-tutors",<Users size={15}/>,"Tutors"],["admin-students",<GraduationCap size={15}/>,"Students"],["admin-courses",<BookOpen size={15}/>,"Courses"],["admin-bookings",<Calendar size={15}/>,"Bookings"],["admin-payouts",<CreditCard size={15}/>,"Payouts"]];
   const links=user?.role==="admin"?aLinks:user?.role==="tutor"?tLinks:user?.role==="parent"?pLinks:sLinks;
   const rc={student:T.bl,parent:T.te,tutor:T.am,admin:T.gd}[user?.role]||T.gd;
   const rl={student:"Student Portal",parent:"Parent Portal",tutor:"Tutor Portal",admin:"Platform Admin"}[user?.role]||"Portal";
@@ -452,64 +480,88 @@ function Footer({go,bp}){
 ═══════════════════════════════════════════════════════════════════ */
 
 function Home({go,cur,bp}){
-  const p=bp?.mobile?"1.5rem":"2rem";
+  const p=bp?.mobile?"1.25rem":"2rem";
   return(
     <div>
-      {/* Hero */}
+      {/* ── Hero ─────────────────────────────────────────────────────── */}
       <section style={{minHeight:"100vh",display:"flex",alignItems:"flex-end",paddingBottom:"5rem",position:"relative",overflow:"hidden"}}>
-        <div style={{position:"absolute",inset:0,background:`radial-gradient(ellipse at 65% 28%,rgba(201,168,108,.06) 0%,transparent 55%),linear-gradient(180deg,${T.n} 0%,${T.n2} 100%)`}}/>
-        {!bp?.mobile&&<div style={{position:"absolute",right:"-3%",top:"44%",transform:"translateY(-54%)",fontFamily:"'Cormorant Garamond',serif",fontSize:"min(30vw,370px)",fontWeight:300,lineHeight:1,color:"rgba(201,168,108,.03)",userSelect:"none",pointerEvents:"none"}}>∑⚗</div>}
+        {/* Rich background */}
+        <div style={{position:"absolute",inset:0,background:`linear-gradient(175deg,${T.n} 0%,${T.n2} 100%)`}}/>
+        {/* Colored glow orbs */}
+        <div className="glow-pulse" style={{position:"absolute",top:"8%",left:"62%",width:480,height:480,borderRadius:"50%",background:"radial-gradient(circle,rgba(160,122,255,.18) 0%,transparent 70%)",pointerEvents:"none"}}/>
+        <div className="glow-pulse" style={{position:"absolute",top:"40%",left:"75%",width:300,height:300,borderRadius:"50%",background:"radial-gradient(circle,rgba(90,171,255,.14) 0%,transparent 70%)",pointerEvents:"none",animationDelay:"1.4s"}}/>
+        <div className="glow-pulse" style={{position:"absolute",bottom:"15%",left:"55%",width:350,height:350,borderRadius:"50%",background:"radial-gradient(circle,rgba(0,212,145,.12) 0%,transparent 70%)",pointerEvents:"none",animationDelay:"2.2s"}}/>
+        {/* Decorative symbols */}
+        {!bp?.mobile&&<div className="drift" style={{position:"absolute",right:"4%",top:"42%",transform:"translateY(-50%)",fontFamily:"'Cormorant Garamond',serif",fontSize:"min(28vw,340px)",fontWeight:600,lineHeight:1,background:"linear-gradient(135deg,rgba(245,200,66,.12),rgba(160,122,255,.08))",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",userSelect:"none",pointerEvents:"none"}}>∑</div>}
+        {!bp?.mobile&&<div className="drift" style={{position:"absolute",right:"20%",bottom:"10%",fontFamily:"'Cormorant Garamond',serif",fontSize:"min(12vw,140px)",fontWeight:300,lineHeight:1,background:"linear-gradient(135deg,rgba(0,212,145,.16),rgba(90,171,255,.1))",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",userSelect:"none",pointerEvents:"none",animationDelay:"2s"}}>⚗</div>}
+        {/* Thin top accent line */}
+        <div style={{position:"absolute",top:0,left:0,right:0,height:2,background:"linear-gradient(90deg,transparent,rgba(245,200,66,.6),rgba(160,122,255,.5),rgba(90,171,255,.4),transparent)"}}/>
+
         <div style={{maxWidth:1360,margin:"0 auto",padding:`0 ${p}`,width:"100%",position:"relative"}}>
-          <div className="rise" style={{marginBottom:"1.25rem",display:"flex",alignItems:"center",gap:".85rem"}}>
-            <div style={{height:1,width:32,background:T.gd}}/><p style={{fontSize:bp?.mobile?".58rem":".65rem",fontWeight:500,letterSpacing:".25em",textTransform:"uppercase",color:T.gd}}>Cambridge-Educated · 12+ Years · IB · A-Level · GCSE · AP</p>
-          </div>
-          <h1 className="rise r1" style={{fontFamily:"'Cormorant Garamond',serif",fontSize:`min(${bp?.mobile?"16vw":"9vw"},7.5rem)`,fontWeight:300,lineHeight:.93,letterSpacing:"-.02em",marginBottom:"2rem"}}>
-            Academic<br/>excellence<br/><em style={{fontStyle:"italic",color:T.gd}}>with purpose.</em>
+          {!bp?.mobile&&<div className="rise" style={{marginBottom:"1.4rem",display:"flex",alignItems:"center",gap:".85rem"}}>
+            <div style={{height:1,width:40,background:`linear-gradient(90deg,${T.gd},${T.vi})`}}/>
+            <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".22em",textTransform:"uppercase",background:`linear-gradient(90deg,${T.gd},${T.vi})`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>Specialist Maths & Chemistry Tuition · IB · A-Level · GCSE · AP</p>
+          </div>}
+          <h1 className="rise r1" style={{fontFamily:"'Cormorant Garamond',serif",fontSize:`min(${bp?.mobile?"18vw":"10vw"},8.5rem)`,fontWeight:600,lineHeight:.9,letterSpacing:"-.03em",marginBottom:"2.2rem"}}>
+            Academic<br/>excellence<br/><em style={{fontStyle:"italic",background:`linear-gradient(135deg,${T.gd},${T.am})`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>with purpose.</em>
           </h1>
-          <p className="rise r2" style={{fontSize:bp?.mobile?".88rem":"1rem",color:T.ash,lineHeight:1.78,maxWidth:420,fontWeight:300,marginBottom:"2.25rem"}}>Students enrol in structured courses — lesson by lesson, assessment by assessment — and book live Zoom sessions at their own pace.</p>
-          <div className="rise r3" style={{display:"flex",gap:"1rem",flexWrap:"wrap"}}>
+          <p className="rise r2" style={{fontSize:bp?.mobile?".9rem":"1.05rem",color:T.ash,lineHeight:1.82,maxWidth:440,fontWeight:300,marginBottom:"2.5rem"}}>Students enrol in structured courses — lesson by lesson, assessment by assessment — and book live Zoom sessions at their own pace.</p>
+          <div className="rise r3" style={{display:"flex",gap:"1rem",flexWrap:"wrap",marginBottom:"3rem"}}>
             <Btn ch="Explore Courses" v="gold" sz={bp?.mobile?"md":"lg"} onClick={()=>go("courses")}/>
             <Btn ch="Meet Lynda" v="outline" sz={bp?.mobile?"md":"lg"} onClick={()=>go("about")}/>
           </div>
-          <div className="rise" style={{marginTop:"3rem",display:"grid",gridTemplateColumns:bp?.mobile?"1fr 1fr":"repeat(4,1fr)",gap:1,background:T.rl,borderRadius:10,overflow:"hidden",maxWidth:bp?.mobile?"100%":600}}>
-            {[["MSc","Cambridge Maths"],["12+","Years teaching"],["20","Courses"],["6","IB pathways"]].map(([n,l])=>(
-              <div key={n} style={{background:T.n2,padding:"1.1rem 1.25rem"}}>
-                <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.8rem",fontWeight:300,color:T.gd,lineHeight:1,marginBottom:".18rem"}}>{n}</p>
-                <p style={{fontSize:".62rem",color:T.ash2}}>{l}</p>
+          {/* Stats grid — vivid color-coded */}
+          <div className="rise r4" style={{display:"grid",gridTemplateColumns:bp?.mobile?"1fr 1fr":"repeat(4,1fr)",gap:1,background:"rgba(255,255,255,.06)",borderRadius:14,overflow:"hidden",maxWidth:bp?.mobile?"100%":640}}>
+            {[["MSc","Cambridge Maths",T.vi],["12+","Years teaching",T.gd],["20","Courses",T.gr],["6","IB pathways",T.bl]].map(([n,l,c])=>(
+              <div key={n} style={{background:T.n2,padding:"1.2rem 1.35rem",borderBottom:`2px solid ${c}`,transition:"background .2s"}}>
+                <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.9rem",fontWeight:500,color:c,lineHeight:1,marginBottom:".2rem"}}>{n}</p>
+                <p style={{fontSize:".62rem",color:T.ash2,letterSpacing:".04em"}}>{l}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* IB callout */}
-      <section style={{background:T.n2,borderTop:`1px solid ${T.rl}`,borderBottom:`1px solid ${T.rl}`,padding:`3rem ${p}`}}>
-        <div style={{maxWidth:1360,margin:"0 auto"}}>
-          <p style={{fontSize:".65rem",fontWeight:500,letterSpacing:".25em",textTransform:"uppercase",color:T.gd,marginBottom:"1.1rem"}}>IB Mathematics — 6 separate courses · AA ≠ AI · SL ≠ HL</p>
-          <div style={{display:"grid",gridTemplateColumns:`repeat(${bp?.mobile?2:3},1fr)`,gap:1,background:T.rl,borderRadius:10,overflow:"hidden"}}>
-            {[{id:"ib-aa-sl",l:"Math AA SL",d:"Analysis · SL",c:T.vi},{id:"ib-aa-hl",l:"Math AA HL",d:"Analysis · HL",c:T.vi},{id:"ib-ai-sl",l:"Math AI SL",d:"Applications · SL",c:T.bl},{id:"ib-ai-hl",l:"Math AI HL",d:"Applications · HL",c:T.bl},{id:"ib-chem-sl",l:"Chemistry SL",d:"IB Chem · SL",c:T.gr},{id:"ib-chem-hl",l:"Chemistry HL",d:"IB Chem · HL",c:T.gr}].map(c=>(
-              <button key={c.id} onClick={()=>go("course-"+c.id)} style={{background:T.n2,border:"none",cursor:"pointer",padding:"1.2rem",textAlign:"left",transition:"background .2s",fontFamily:"inherit"}} onMouseEnter={e=>e.currentTarget.style.background=T.n3} onMouseLeave={e=>e.currentTarget.style.background=T.n2}>
-                <Tag l="IB" c={c.c} bg={c.c+"18"} sz="xs"/>
-                <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:bp?.mobile?"1rem":"1.1rem",color:T.cr,margin:".5rem 0 .2rem"}}>{c.l}</p>
+      {/* ── IB Spotlight ──────────────────────────────────────────── */}
+      <section style={{background:T.n2,borderTop:`1px solid ${T.rl}`,borderBottom:`1px solid ${T.rl}`,padding:`${bp?.mobile?"3rem":"4.5rem"} ${p}`,position:"relative",overflow:"hidden"}}>
+        <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 90% 50%,rgba(160,122,255,.08),transparent 55%)"}}/>
+        <div style={{maxWidth:1360,margin:"0 auto",position:"relative"}}>
+          <div style={{display:"flex",alignItems:"center",gap:".85rem",marginBottom:"1.2rem"}}>
+            <div style={{height:1,width:32,background:T.vi}}/>
+            <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".25em",textTransform:"uppercase",color:T.vi}}>IB Mathematics — 6 Separate Courses · AA ≠ AI · SL ≠ HL</p>
+          </div>
+          <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:`min(${bp?.mobile?"8vw":"4vw"},3rem)`,fontWeight:500,marginBottom:`${bp?.mobile?"2rem":"3rem"}`}}>Choose the <em style={{fontStyle:"italic",color:T.vi}}>exact</em> course you study.</h2>
+          <div style={{display:"grid",gridTemplateColumns:`repeat(${bp?.mobile?2:3},1fr)`,gap:"1px",background:"rgba(255,255,255,.05)",borderRadius:14,overflow:"hidden"}}>
+            {[{id:"ib-aa-sl",l:"Math AA SL",d:"Analysis & Approaches · SL",c:T.vi,sub:"math"},{id:"ib-aa-hl",l:"Math AA HL",d:"Analysis & Approaches · HL",c:T.vi,sub:"math"},{id:"ib-ai-sl",l:"Math AI SL",d:"Applications · SL",c:T.bl,sub:"math"},{id:"ib-ai-hl",l:"Math AI HL",d:"Applications · HL",c:T.bl,sub:"math"},{id:"ib-chem-sl",l:"Chemistry SL",d:"IB Chemistry · SL",c:T.gr,sub:"chem"},{id:"ib-chem-hl",l:"Chemistry HL",d:"IB Chemistry · HL",c:T.gr,sub:"chem"}].map(c=>(
+              <button key={c.id} onClick={()=>go("course-"+c.id)} style={{background:T.n2,border:"none",cursor:"pointer",padding:"1.35rem",textAlign:"left",transition:"background .2s",fontFamily:"inherit",borderLeft:`3px solid transparent`}} onMouseEnter={e=>{e.currentTarget.style.background=T.n3;e.currentTarget.style.borderLeftColor=c.c;}} onMouseLeave={e=>{e.currentTarget.style.background=T.n2;e.currentTarget.style.borderLeftColor="transparent";}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
+                  <Tag l="IB" c={c.c} bg={c.c+"20"} sz="xs"/>
+                  <SubIcon sub={c.sub||"math"} col={c.c} size={20}/>
+                </div>
+                <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:bp?.mobile?"1.05rem":"1.15rem",fontWeight:500,color:T.cr,margin:".65rem 0 .25rem"}}>{c.l}</p>
                 <p style={{fontSize:".7rem",color:T.ash}}>{c.d}</p>
               </button>
             ))}
           </div>
-          <p style={{fontSize:".72rem",color:T.ash,marginTop:".85rem"}}>AA = algebraic/proof-based (maths, physics, engineering). AI = statistics & modelling (social science, business). These are completely different syllabuses.</p>
+          <p style={{fontSize:".72rem",color:T.ash,marginTop:"1rem",lineHeight:1.7}}>AA = algebraic/proof-based (maths, physics, engineering). AI = statistics & modelling (social science, business). These are completely different syllabuses — SL and HL are also entirely separate courses.</p>
         </div>
       </section>
 
-      {/* How it works */}
-      <section style={{padding:`${bp?.mobile?"4rem":"7rem"} ${p}`}}>
-        <div style={{maxWidth:1360,margin:"0 auto"}}>
-          <p style={{fontSize:".65rem",fontWeight:500,letterSpacing:".25em",textTransform:"uppercase",color:T.gd,marginBottom:".85rem"}}>How Lynda Badmus Education Works</p>
-          <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:`min(${bp?.mobile?"8vw":"5vw"},3.5rem)`,fontWeight:300,marginBottom:`${bp?.mobile?"2.5rem":"4rem"}`}}>Enrol. Learn. <em style={{fontStyle:"italic",color:T.gd}}>Progress.</em></h2>
+      {/* ── How It Works ─────────────────────────────────────────── */}
+      <section style={{padding:`${bp?.mobile?"4rem":"7rem"} ${p}`,position:"relative",overflow:"hidden"}}>
+        <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 20% 50%,rgba(0,212,145,.05),transparent 50%)"}}/>
+        <div style={{maxWidth:1360,margin:"0 auto",position:"relative"}}>
+          <div style={{display:"flex",alignItems:"center",gap:".85rem",marginBottom:".85rem"}}>
+            <div style={{height:1,width:32,background:T.gr}}/>
+            <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".25em",textTransform:"uppercase",color:T.gr}}>How It Works</p>
+          </div>
+          <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:`min(${bp?.mobile?"9vw":"5vw"},3.5rem)`,fontWeight:500,marginBottom:`${bp?.mobile?"2.5rem":"4rem"}`}}>Enrol. Learn. <em style={{fontStyle:"italic",color:T.gr}}>Progress.</em></h2>
           <div style={{display:"grid",gridTemplateColumns:bp?.mobile?"1fr":bp?.tablet?"1fr 1fr":"repeat(4,1fr)",gap:bp?.mobile?"1.75rem":"0"}}>
-            {[["01","Choose a course","Browse 20 structured programmes — each with a lesson-by-lesson plan before you commit."],["02","Select a package","Full, Half, or Quarter. Receive lesson credits to book live Zoom sessions at your pace."],["03","Book via Zoom","Pick a slot from the schedule. One booking uses one credit. Zoom link appears in your dashboard."],["04","Track progress","Lesson completions, assessment scores, tutor feedback, and credits remaining — all in one place."]].map((s,i)=>(
-              <div key={s[0]} style={{paddingRight:!bp?.mobile&&!bp?.tablet?"2.5rem":"0",paddingLeft:!bp?.mobile&&!bp?.tablet&&i>0?"2.5rem":"0",borderRight:!bp?.mobile&&!bp?.tablet&&i<3?`1px solid ${T.rl}`:"none"}}>
-                <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.7rem",fontWeight:300,color:"rgba(201,168,108,.25)",marginBottom:"1.5rem"}}>{s[0]}</p>
-                <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.1rem",fontWeight:400,color:T.cr,marginBottom:".5rem"}}>{s[1]}</p>
-                <p style={{fontSize:".82rem",color:T.ash,lineHeight:1.72,fontWeight:300}}>{s[2]}</p>
+            {[["01",T.vi,"Choose a course","Browse 20 structured programmes — each with a lesson-by-lesson plan before you commit."],["02",T.gd,"Select a package","Full, Half, or Quarter. Receive lesson credits to book live Zoom sessions at your pace."],["03",T.bl,"Book via Zoom","Pick a slot from the schedule. One booking uses one credit. Zoom link appears instantly."],["04",T.gr,"Track progress","Lesson completions, assessment scores, tutor feedback, and credits remaining — all in one place."]].map((s,i)=>(
+              <div key={s[0]} style={{paddingRight:!bp?.mobile&&!bp?.tablet?"2.5rem":"0",paddingLeft:!bp?.mobile&&!bp?.tablet&&i>0?"2.5rem":"0",borderRight:!bp?.mobile&&!bp?.tablet&&i<3?`1px solid ${T.r2}`:"none"}}>
+                <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"2.5rem",fontWeight:600,color:s[1],marginBottom:"1.25rem",lineHeight:1}}>{s[0]}</p>
+                <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.15rem",fontWeight:500,color:T.cr,marginBottom:".55rem"}}>{s[2]}</p>
+                <p style={{fontSize:".83rem",color:T.ash,lineHeight:1.75,fontWeight:300}}>{s[3]}</p>
               </div>
             ))}
           </div>
@@ -519,19 +571,23 @@ function Home({go,cur,bp}){
         </div>
       </section>
 
-      {/* Why Lynda */}
-      <section style={{background:T.n2,borderTop:`1px solid ${T.rl}`,padding:`${bp?.mobile?"4rem":"7rem"} ${p}`}}>
-        <div style={{maxWidth:1360,margin:"0 auto",display:"grid",gridTemplateColumns:bp?.mobile||bp?.tablet?"1fr":"1fr 1fr",gap:bp?.mobile?"2.5rem":"7rem",alignItems:"center"}}>
+      {/* ── Why Lynda ────────────────────────────────────────────── */}
+      <section style={{background:T.n2,borderTop:`1px solid ${T.rl}`,padding:`${bp?.mobile?"4rem":"7rem"} ${p}`,position:"relative",overflow:"hidden"}}>
+        <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 80% 50%,rgba(245,200,66,.06),transparent 50%)"}}/>
+        <div style={{maxWidth:1360,margin:"0 auto",display:"grid",gridTemplateColumns:bp?.mobile||bp?.tablet?"1fr":"1fr 1fr",gap:bp?.mobile?"2.5rem":"7rem",alignItems:"center",position:"relative"}}>
           <div>
-            <p style={{fontSize:".65rem",fontWeight:500,letterSpacing:".25em",textTransform:"uppercase",color:T.gd,marginBottom:".85rem"}}>Why Lynda Badmus Education</p>
-            <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:`min(${bp?.mobile?"8vw":"5vw"},3.5rem)`,fontWeight:300,lineHeight:1.1,marginBottom:"1.5rem"}}>Most tutors explain.<br/><em style={{fontStyle:"italic",color:T.gd}}>Lynda diagnoses.</em></h2>
-            <p style={{fontSize:".92rem",color:T.ash,lineHeight:1.85,fontWeight:300,marginBottom:"1.75rem"}}>MSc Mathematics Education (Cambridge) + BEng Chemical Engineering + 12+ years across IB, A-Level, GCSE, and American curricula. Every session starts with a diagnostic. Every lesson has a structure.</p>
+            <div style={{display:"flex",alignItems:"center",gap:".85rem",marginBottom:".85rem"}}>
+              <div style={{height:1,width:32,background:T.gd}}/>
+              <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".25em",textTransform:"uppercase",color:T.gd}}>Why Lynda Badmus Education</p>
+            </div>
+            <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:`min(${bp?.mobile?"9vw":"5vw"},3.5rem)`,fontWeight:500,lineHeight:1.08,marginBottom:"1.5rem"}}>Most tutors explain.<br/><em style={{fontStyle:"italic",color:T.gd}}>Lynda diagnoses.</em></h2>
+            <p style={{fontSize:".92rem",color:T.ash,lineHeight:1.88,fontWeight:300,marginBottom:"2rem"}}>MSc Mathematics Education (Cambridge) + BEng Chemical Engineering + 12+ years across IB, A-Level, GCSE, and American curricula. Every session starts with a diagnostic. Every lesson has a structure.</p>
             <Btn ch="Read Lynda's Story →" v="outline" onClick={()=>go("about")}/>
           </div>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:1,background:T.rl,borderRadius:12,overflow:"hidden"}}>
-            {[["MSc Cambridge","Mathematics Education"],["BEng","Chemical Engineering"],["12+ years","UK & US schools"],["IB · A-Level · GCSE · AP","All major curricula"]].map(([n,l])=>(
-              <div key={n} style={{background:T.n2,padding:"1.5rem"}}>
-                <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.3rem",fontWeight:400,color:T.gd,marginBottom:".3rem"}}>{n}</p>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:1,background:"rgba(255,255,255,.05)",borderRadius:14,overflow:"hidden"}}>
+            {[["MSc Cambridge","Mathematics Education",T.vi],["BEng","Chemical Engineering",T.gr],["12+ years","UK & US schools",T.bl],["IB · A-Level · GCSE · AP","All major curricula",T.gd]].map(([n,l,c])=>(
+              <div key={n} style={{background:T.n2,padding:"1.65rem",borderBottom:`3px solid ${c}`}}>
+                <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.35rem",fontWeight:500,color:c,marginBottom:".35rem"}}>{n}</p>
                 <p style={{fontSize:".73rem",color:T.ash}}>{l}</p>
               </div>
             ))}
@@ -539,12 +595,13 @@ function Home({go,cur,bp}){
         </div>
       </section>
 
-      {/* CTA */}
-      <section style={{padding:`${bp?.mobile?"4rem":"7rem"} ${p}`,textAlign:"center",position:"relative",overflow:"hidden"}}>
-        <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 50% 50%,rgba(201,168,108,.05) 0%,transparent 60%)"}}/>
-        <div style={{maxWidth:620,margin:"0 auto",position:"relative"}}>
-          <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:`min(${bp?.mobile?"10vw":"6vw"},4rem)`,fontWeight:300,lineHeight:1.08,marginBottom:"1.5rem"}}>Your strongest year starts with the <em style={{fontStyle:"italic",color:T.gd}}>right course.</em></h2>
-          <p style={{fontSize:".9rem",color:T.ash,lineHeight:1.82,maxWidth:420,margin:"0 auto 2.5rem",fontWeight:300}}>Browse the catalogue, enrol in a structured programme, and book your first Zoom session within 24 hours.</p>
+      {/* ── CTA ──────────────────────────────────────────────────── */}
+      <section style={{padding:`${bp?.mobile?"5rem":"8rem"} ${p}`,textAlign:"center",position:"relative",overflow:"hidden"}}>
+        <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 50% 50%,rgba(160,122,255,.1) 0%,rgba(245,200,66,.06) 40%,transparent 70%)"}}/>
+        <div style={{position:"absolute",top:0,left:0,right:0,height:1,background:"linear-gradient(90deg,transparent,rgba(160,122,255,.4),rgba(245,200,66,.4),transparent)"}}/>
+        <div style={{maxWidth:640,margin:"0 auto",position:"relative"}}>
+          <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:`min(${bp?.mobile?"10vw":"6vw"},4.5rem)`,fontWeight:600,lineHeight:1.05,marginBottom:"1.5rem"}}>Your strongest year starts with the <em style={{fontStyle:"italic",background:`linear-gradient(135deg,${T.gd},${T.vi})`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>right course.</em></h2>
+          <p style={{fontSize:".92rem",color:T.ash,lineHeight:1.85,maxWidth:420,margin:"0 auto 2.5rem",fontWeight:300}}>Browse the catalogue, enrol in a structured programme, and book your first Zoom session within 24 hours.</p>
           <div style={{display:"flex",gap:"1rem",justifyContent:"center",flexWrap:"wrap"}}>
             <Btn ch="Browse All Courses" v="gold" sz={bp?.mobile?"md":"xl"} onClick={()=>go("courses")}/>
             <Btn ch="Sign Up Free" v="outline" sz={bp?.mobile?"md":"xl"} onClick={()=>go("signup")}/>
@@ -567,11 +624,11 @@ function About({go,bp}){
           <div style={{display:"grid",gridTemplateColumns:bp?.mobile||bp?.tablet?"1fr":"1fr 1.65fr",gap:bp?.mobile?"2.5rem":"7rem",alignItems:"start"}}>
             <div>
               <div style={{background:T.n3,border:`1px solid ${T.rl}`,borderRadius:20,padding:"2.5rem",textAlign:"center",marginBottom:"1.5rem"}}>
-                <div style={{width:80,height:80,borderRadius:"50%",background:T.gd,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Cormorant Garamond',serif",fontSize:"2rem",fontWeight:500,color:T.n,margin:"0 auto 1rem"}}>LB</div>
+                <div style={{width:80,height:80,borderRadius:"50%",background:`linear-gradient(135deg,${T.vi},${T.bl})`,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Cormorant Garamond',serif",fontSize:"2rem",fontWeight:500,color:"#fff",margin:"0 auto 1rem"}}>LB</div>
                 <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.3rem",fontWeight:400,marginBottom:".3rem"}}>Lynda Badmus</p>
                 <p style={{fontSize:".75rem",color:T.ash}}>Founder & Principal Tutor</p>
               </div>
-              {[["Degree","BEng Chemical Engineering"],["Post-grad","MSc Mathematics Education — Cambridge"],["Experience","12+ years teaching & leadership"],["Curricula","IB · A-Level · GCSE · US Curriculum"],["Schools","Prestigious UK & US institutions"]].map(([k,v])=>(
+              {[["Post-grad","MSc Mathematics Education — University of Cambridge"],["Degree","BEng Chemical Engineering"],["Experience","12+ years teaching & leadership"],["Curricula","IB · A-Level · GCSE · US Curriculum"],["Schools","Prestigious UK & US institutions"]].map(([k,v])=>(
                 <div key={k} style={{display:"flex",justifyContent:"space-between",padding:".72rem 0",borderBottom:`1px solid ${T.r2}`}}>
                   <span style={{fontSize:".68rem",color:T.ash2,letterSpacing:".08em",textTransform:"uppercase"}}>{k}</span>
                   <span style={{fontSize:".82rem",color:T.ash,textAlign:"right",maxWidth:"57%"}}>{v}</span>
@@ -596,10 +653,40 @@ function About({go,bp}){
 }
 
 function CoursesPage({go,cur,bp}){
-  const[cat,sCat]=useState("all");
   const[sub,sSub]=useState("all");
-  const filtered=COURSES.filter(c=>(cat==="all"||c.g===cat)&&(sub==="all"||c.sub===sub));
   const p=bp?.mobile?"1.5rem":"2rem";
+  const groups=[
+    {key:"intl",label:"IB & International",accent:T.vi,gs:["ib","preib"],note:"AA ≠ AI · SL ≠ HL — choose your exact programme."},
+    {key:"uk",label:"UK Curriculum",accent:T.rd,gs:["al","gcse","pre"],note:"A-Level · GCSE · Pre-GCSE — all major UK exam boards."},
+    {key:"us",label:"US Curriculum",accent:T.bl,gs:["ap","hon","us","ms"],note:"AP · Honors · High School · Middle School."},
+  ];
+  function CourseCard({c}){
+    const m=CAT[c.g]||CAT.ib;
+    const qP=cur==="GBP"?`£${Math.round(c.hours.q*c.rate.gbp*.96)}`:`$${Math.round(c.hours.q*c.rate.usd*.96)}`;
+    return(
+      <div onClick={()=>go("course-"+c.id)} style={{background:T.n,cursor:"pointer",transition:"background .2s",border:`1px solid rgba(255,255,255,.07)`,borderRadius:10,overflow:"hidden",borderBottom:`3px solid ${c.col}`}} onMouseEnter={e=>e.currentTarget.style.background=T.n2} onMouseLeave={e=>e.currentTarget.style.background=T.n}>
+        <div style={{borderBottom:`1px solid ${T.rl}`,padding:"1.5rem 1.75rem 1.1rem",display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
+          <div>
+            <div style={{display:"flex",gap:".4rem",marginBottom:".75rem",flexWrap:"wrap"}}>
+              <Tag l={m.l} c={m.c} bg={m.bg}/>
+              {c.lvl&&<Tag l={c.lvl.toUpperCase()} c={T.ash} bg={T.r2} sz="xs"/>}
+              {c.path&&<Tag l={"AA/AI: "+c.path.toUpperCase()} c={T.ash} bg={T.r2} sz="xs"/>}
+            </div>
+            <h3 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.2rem",fontWeight:500,marginBottom:".2rem"}}>{c.title}</h3>
+            <p style={{fontSize:".72rem",color:T.ash}}>{c.curr}</p>
+          </div>
+          <SubIcon sub={c.sub} col={c.col} size={22}/>
+        </div>
+        <div style={{padding:"1.1rem 1.75rem"}}>
+          <p style={{fontSize:".81rem",color:T.ash,lineHeight:1.65,marginBottom:"1rem",fontWeight:300}}>{c.desc.slice(0,115)}…</p>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",flexWrap:"wrap",gap:".75rem"}}>
+            <div><p style={{fontSize:".62rem",color:T.ash2,letterSpacing:".06em"}}>FROM (quarter)</p><p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.35rem",fontWeight:500,color:T.gd,lineHeight:1}}>{qP}</p></div>
+            <div style={{textAlign:"right"}}><p style={{fontSize:".68rem",color:T.c2}}>{c.hours.full}h full</p><p style={{fontSize:".68rem",color:T.ash}}>{c.lessons} lessons</p></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
   return(
     <div style={{paddingTop:66}}>
       <section style={{background:T.n2,padding:`4.5rem ${p} 2.5rem`,borderBottom:`1px solid ${T.rl}`}}>
@@ -611,52 +698,33 @@ function CoursesPage({go,cur,bp}){
           </div>
         </div>
       </section>
-      <div style={{background:T.n2,borderBottom:`1px solid ${T.rl}`,position:"sticky",top:66,zIndex:50,padding:".5rem 0",overflowX:"auto"}}>
-        <div style={{maxWidth:1360,margin:"0 auto",padding:`0 ${p}`,display:"flex",gap:".75rem",alignItems:"center",minWidth:bp?.mobile?"max-content":"auto",flexWrap:bp?.desktop?"wrap":"nowrap"}}>
-          <div style={{display:"flex",gap:1,background:T.rl,borderRadius:8,overflow:"hidden",flexShrink:0}}>
-            {[["all","All"],["ib","IB"],["al","A-Level"],["gcse","GCSE"],["pre","Pre-GCSE"],["ap","AP"],["hon","Honors"],["preib","Pre-IB"],["ms","MS"],["us","HS"]].map(([k,l])=>(
-              <button key={k} onClick={()=>sCat(k)} style={{background:cat===k?T.gd:T.n3,color:cat===k?T.n:T.ash,border:"none",padding:".35rem .85rem",fontSize:".7rem",fontWeight:cat===k?600:400,cursor:"pointer",fontFamily:"inherit",transition:"all .18s",whiteSpace:"nowrap"}}>{l}</button>
-            ))}
-          </div>
-          <div style={{display:"flex",gap:".4rem",flexShrink:0}}>
-            {[["all","All"],["math","Maths"],["chem","Chem"],["sci","Sci"]].map(([k,l])=>(
-              <button key={k} onClick={()=>sSub(k)} style={{background:sub===k?T.n4:"transparent",color:sub===k?T.gd:T.ash,border:`1px solid ${sub===k?T.gd:T.rl}`,borderRadius:20,padding:".22rem .75rem",fontSize:".7rem",cursor:"pointer",fontFamily:"inherit",transition:"all .18s",whiteSpace:"nowrap"}}>{l}</button>
-            ))}
-          </div>
+      <div style={{background:T.n2,borderBottom:`1px solid ${T.rl}`,position:"sticky",top:66,zIndex:50,padding:".5rem 0"}}>
+        <div style={{maxWidth:1360,margin:"0 auto",padding:`0 ${p}`,display:"flex",gap:".5rem",alignItems:"center"}}>
+          <span style={{fontSize:".65rem",color:T.ash,letterSpacing:".1em",textTransform:"uppercase",marginRight:".25rem"}}>Filter:</span>
+          {[["all","All subjects"],["math","Maths only"],["chem","Chemistry only"],["sci","Science only"]].map(([k,l])=>(
+            <button key={k} onClick={()=>sSub(k)} style={{background:sub===k?T.gd:"transparent",color:sub===k?T.n:T.ash,border:`1px solid ${sub===k?T.gd:T.rl}`,borderRadius:20,padding:".25rem .85rem",fontSize:".7rem",cursor:"pointer",fontFamily:"inherit",transition:"all .18s",whiteSpace:"nowrap",fontWeight:sub===k?600:400}}>{l}</button>
+          ))}
         </div>
       </div>
-      <section style={{padding:`2.5rem ${p} 5rem`}}>
+      <section style={{padding:`3rem ${p} 5rem`}}>
         <div style={{maxWidth:1360,margin:"0 auto"}}>
-          <p style={{fontSize:".72rem",color:T.ash,marginBottom:"1.5rem"}}>{filtered.length} course{filtered.length!==1?"s":""}</p>
-          <div style={{display:"grid",gridTemplateColumns:bp?.mobile?"1fr":bp?.tablet?"1fr 1fr":"repeat(auto-fill,minmax(320px,1fr))",gap:1,background:T.rl}}>
-            {filtered.map(c=>{
-              const m=CAT[c.g]||CAT.ib;
-              const qP=cur==="GBP"?`£${Math.round(c.hours.q*c.rate.gbp*.96)}`:`$${Math.round(c.hours.q*c.rate.usd*.96)}`;
-              return(
-                <div key={c.id} onClick={()=>go("course-"+c.id)} style={{background:T.n,cursor:"pointer",transition:"background .2s"}} onMouseEnter={e=>e.currentTarget.style.background=T.n2} onMouseLeave={e=>e.currentTarget.style.background=T.n}>
-                  <div style={{borderBottom:`1px solid ${T.rl}`,padding:"1.5rem 1.75rem 1.1rem",display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
-                    <div>
-                      <div style={{display:"flex",gap:".4rem",marginBottom:".75rem",flexWrap:"wrap"}}>
-                        <Tag l={m.l} c={m.c} bg={m.bg}/>
-                        {c.lvl&&<Tag l={c.lvl.toUpperCase()} c={T.ash} bg={T.r2} sz="xs"/>}
-                        {c.path&&<Tag l={"AA/AI: "+c.path.toUpperCase()} c={T.ash} bg={T.r2} sz="xs"/>}
-                      </div>
-                      <h3 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.2rem",fontWeight:400,marginBottom:".2rem"}}>{c.title}</h3>
-                      <p style={{fontSize:".72rem",color:T.ash}}>{c.curr}</p>
-                    </div>
-                    <span style={{fontSize:"1.6rem",color:c.col,opacity:.35,fontFamily:"'Cormorant Garamond',serif",flexShrink:0,marginLeft:".75rem"}}>{c.icon}</span>
-                  </div>
-                  <div style={{padding:"1.1rem 1.75rem"}}>
-                    <p style={{fontSize:".81rem",color:T.ash,lineHeight:1.65,marginBottom:"1rem",fontWeight:300}}>{c.desc.slice(0,115)}…</p>
-                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",flexWrap:"wrap",gap:".75rem"}}>
-                      <div><p style={{fontSize:".62rem",color:T.ash2,letterSpacing:".06em"}}>FROM (quarter)</p><p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.35rem",fontWeight:300,color:T.gd,lineHeight:1}}>{qP}</p></div>
-                      <div style={{textAlign:"right"}}><p style={{fontSize:".68rem",color:T.c2}}>{c.hours.full}h full</p><p style={{fontSize:".68rem",color:T.ash}}>{c.lessons} lessons</p></div>
-                    </div>
-                  </div>
+          {groups.map(grp=>{
+            const courses=COURSES.filter(c=>grp.gs.includes(c.g)&&(sub==="all"||c.sub===sub));
+            if(!courses.length) return null;
+            return(
+              <div key={grp.key} style={{marginBottom:"4rem"}}>
+                <div style={{display:"flex",alignItems:"center",gap:"1rem",marginBottom:".6rem"}}>
+                  <div style={{height:2,width:28,background:grp.accent,borderRadius:2}}/>
+                  <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:bp?.mobile?"1.6rem":"2rem",fontWeight:500,color:T.cr}}>{grp.label}</h2>
+                  <div style={{height:"1px",flex:1,background:`linear-gradient(90deg,${grp.accent}30,transparent)`}}/>
                 </div>
-              );
-            })}
-          </div>
+                <p style={{fontSize:".72rem",color:T.ash,marginBottom:"1.5rem",marginLeft:"2.75rem"}}>{grp.note} · {courses.length} course{courses.length!==1?"s":""}</p>
+                <div style={{display:"grid",gridTemplateColumns:bp?.mobile?"1fr":bp?.tablet?"1fr 1fr":"repeat(auto-fill,minmax(300px,1fr))",gap:"1rem"}}>
+                  {courses.map(c=><CourseCard key={c.id} c={c}/>)}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </section>
       <Footer go={go} bp={bp}/>
@@ -756,7 +824,7 @@ function PricingPage({go,cur,bp}){
       <section style={{background:T.n2,padding:`4.5rem ${p} 3rem`,borderBottom:`1px solid ${T.rl}`}}>
         <div style={{maxWidth:1360,margin:"0 auto"}}>
           <p style={{fontSize:".65rem",color:T.gd,letterSpacing:".25em",textTransform:"uppercase",marginBottom:".75rem"}}>Pricing</p>
-          <h1 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:`min(${bp?.mobile?"10vw":"6vw"},4rem)`,fontWeight:300}}>Packages in <em style={{fontStyle:"italic",color:T.gd}}>GBP & USD.</em></h1>
+          <h1 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:`min(${bp?.mobile?"10vw":"6vw"},4rem)`,fontWeight:300}}>Course <em style={{fontStyle:"italic",color:T.gd}}>Packages.</em></h1>
           <p style={{fontSize:".88rem",color:T.ash,maxWidth:480,lineHeight:1.75,fontWeight:300,marginTop:".85rem"}}>Full, Half, or Quarter packages. Credits book live Zoom sessions at your own pace. All IB at £50/$70/hr.</p>
         </div>
       </section>
