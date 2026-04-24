@@ -26,7 +26,7 @@ import {
   DraftingCompass, FlaskConical, Microscope
 } from "lucide-react";
 import {
-  AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid,
+  AreaChart, Area, BarChart, Bar, Line, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, Cell
 } from "recharts";
 
@@ -1895,9 +1895,15 @@ export default function App(){
       try{const saved=localStorage.getItem("lbe-v3");if(saved&&!cancelled)setUser(JSON.parse(saved));}catch{}
     })();
     // Keep the app in sync with auth events (sign-in in another tab, token refresh, etc.).
-    const{data:sub}=supabase.auth.onAuthStateChange(async(_evt,session)=>{
-      if(session?.user){const u=await loadUserFromAuth(session.user);setUser(u);}
-      else setUser(null);
+    // NOTE: do NOT await supabase queries inside this callback — the auth client holds
+    // an internal lock while the callback runs, and calling supabase.from(...) inside it
+    // deadlocks (https://github.com/supabase/auth-js/issues/762). Defer with setTimeout.
+    const{data:sub}=supabase.auth.onAuthStateChange((_evt,session)=>{
+      if(!session?.user){setUser(null);return;}
+      setTimeout(async()=>{
+        if(cancelled)return;
+        try{const u=await loadUserFromAuth(session.user);if(!cancelled)setUser(u);}catch(e){console.warn("[auth] load failed",e);}
+      },0);
     });
     return()=>{cancelled=true;sub?.subscription?.unsubscribe?.();};
   },[]);
