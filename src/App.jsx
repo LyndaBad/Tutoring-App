@@ -17,6 +17,7 @@
  *   tutor@demo.com  / demo   |   admin@lbe.com   / admin
  */
 import { useState, useEffect, useRef, useCallback } from "react";
+import { supabase } from "./lib/supabase";
 import {
   Home as HomeIcon, BookOpen, Calendar, TrendingUp, Award, Users, FileText,
   CreditCard, CheckCircle, Eye, EyeOff, ArrowUp, Download, Menu,
@@ -962,12 +963,57 @@ function Contact({go,bp}){
 }
 
 /* ─── AUTH ────────────────────────────────────────────────────────── */
+// Merge a real Supabase profile with the mock data shape the portals expect.
+// Until we migrate the downstream screens off USERS[], we graft the nested
+// enrollments/sessions from a role-matched mock user onto the real profile.
+// When a tutor/student actually has DB-backed data, this fallback is harmless —
+// you'll just overwrite it once real queries land.
+function hydrateUserFromProfile(profile){
+  const mock=USERS.find(u=>u.role===profile.role)||{};
+  return{
+    id:profile.id,
+    email:profile.email,
+    name:profile.name||mock.name||profile.email,
+    role:profile.role,
+    av:profile.avatar||mock.av||(profile.name||profile.email).split(" ").map(w=>w[0]).join("").toUpperCase().slice(0,2),
+    payRate:profile.pay_rate??mock.payRate,
+    childId:profile.child_id??mock.childId,
+    childName:mock.childName,
+    enrollments:mock.enrollments||[],
+    sessions:mock.sessions||[],
+    invoices:mock.invoices||[],
+  };
+}
+
+async function loadUserFromAuth(authUser){
+  const{data:profile,error}=await supabase.from("profiles").select("*").eq("id",authUser.id).single();
+  if(error||!profile){
+    // Profile row missing — fall back to the auth user so the app can still render.
+    console.warn("[auth] profile row missing for",authUser.id,error);
+    return{id:authUser.id,email:authUser.email,name:authUser.email,role:"student",av:"?",enrollments:[]};
+  }
+  return hydrateUserFromProfile(profile);
+}
+
+function roleLanding(role){
+  return role==="admin"?"admin":role==="tutor"?"tutor-dash":role==="parent"?"parent":"dashboard";
+}
+
 function Login({go,setUser,bp}){
-  const[email,sEmail]=useState("");const[pw,sPw]=useState("");const[err,sErr]=useState("");
-  const handle=()=>{
-    const u=USERS.find(u=>u.email===email&&u.pw===pw);
-    if(!u){sErr("Incorrect email or password.");return;}
-    setUser(u);go(u.role==="admin"?"admin":u.role==="tutor"?"tutor-dash":u.role==="parent"?"parent":"dashboard");
+  const[email,sEmail]=useState("");const[pw,sPw]=useState("");const[err,sErr]=useState("");const[busy,sBusy]=useState(false);
+  const handle=async()=>{
+    sErr("");sBusy(true);
+    try{
+      const{data,error}=await supabase.auth.signInWithPassword({email,password:pw});
+      if(error)throw error;
+      const u=await loadUserFromAuth(data.user);
+      setUser(u);go(roleLanding(u.role));
+    }catch(e){
+      // Fallback: demo accounts still work when Supabase isn't configured or the user hasn't been created yet.
+      const demo=USERS.find(u=>u.email===email&&u.pw===pw);
+      if(demo){setUser(demo);go(roleLanding(demo.role));}
+      else sErr(e?.message||"Incorrect email or password.");
+    }finally{sBusy(false);}
   };
   return(
     <div style={{paddingTop:70,minHeight:"90vh",display:"flex",alignItems:"center",justifyContent:"center",padding:"2rem"}}>
@@ -978,7 +1024,7 @@ function Login({go,setUser,bp}){
         <Inp label="Email" val={email} onChange={e=>sEmail(e.target.value)} type="email" ph="your@email.com"/>
         <Inp label="Password" val={pw} onChange={e=>sPw(e.target.value)} type="password" ph="••••••••"/>
         {err&&<p style={{fontSize:".78rem",color:T.rd,marginBottom:"1rem"}}>{err}</p>}
-        <Btn ch="Sign In" v="gold" sz="lg" sx={{width:"100%",justifyContent:"center"}} onClick={handle}/>
+        <Btn ch={busy?"Signing in…":"Sign In"} v="gold" sz="lg" sx={{width:"100%",justifyContent:"center"}} onClick={handle} dis={busy}/>
         <p style={{fontSize:".78rem",color:T.ash,textAlign:"center",marginTop:"1.25rem"}}>No account? <button onClick={()=>go("signup")} style={{background:"none",border:"none",color:T.gd,cursor:"pointer",fontFamily:"inherit",fontSize:".78rem"}}>Sign up free</button></p>
       </div>
     </div>
@@ -987,10 +1033,27 @@ function Login({go,setUser,bp}){
 
 function Signup({go,setUser}){
   const[f,sF]=useState({name:"",email:"",pw:"",role:"student"});
-  const handle=()=>{
+  const[err,sErr]=useState("");const[busy,sBusy]=useState(false);
+  const handle=async()=>{
     if(!f.name||!f.email||!f.pw)return;
-    const nu={id:uid(),email:f.email,pw:f.pw,name:f.name,role:f.role,av:f.name.split(" ").map(w=>w[0]).join("").toUpperCase().slice(0,2),enrollments:[]};
-    setUser(nu);go(f.role==="tutor"?"tutor-dash":f.role==="parent"?"parent":"courses");
+    sErr("");sBusy(true);
+    try{
+      const{data,error}=await supabase.auth.signUp({
+        email:f.email,password:f.pw,
+        options:{data:{name:f.name,role:f.role}},
+      });
+      if(error)throw error;
+      // If email confirmations are on, data.session will be null and the user must verify before we can load a profile.
+      if(data.session&&data.user){
+        const u=await loadUserFromAuth(data.user);
+        setUser(u);go(roleLanding(u.role));
+      }else{
+        sErr("Check your email to confirm your account, then sign in.");
+        setTimeout(()=>go("login"),1200);
+      }
+    }catch(e){
+      sErr(e?.message||"Could not create account.");
+    }finally{sBusy(false);}
   };
   return(
     <div style={{paddingTop:70,minHeight:"90vh",display:"flex",alignItems:"center",justifyContent:"center",padding:"2rem"}}>
@@ -1001,7 +1064,8 @@ function Signup({go,setUser}){
         <Inp label="Email" val={f.email} onChange={e=>sF({...f,email:e.target.value})} type="email" ph="your@email.com"/>
         <Inp label="Password" val={f.pw} onChange={e=>sF({...f,pw:e.target.value})} type="password" ph="Choose a password"/>
         <Inp label="I am a" as="select" val={f.role} onChange={e=>sF({...f,role:e.target.value})} opts={[{v:"student",l:"Student / Parent (student access)"},{v:"parent",l:"Parent (parent portal access)"},{v:"tutor",l:"Tutor (apply to join)"}]}/>
-        <Btn ch="Create Account" v="gold" sz="lg" sx={{width:"100%",justifyContent:"center"}} onClick={handle}/>
+        {err&&<p style={{fontSize:".78rem",color:T.rd,marginBottom:"1rem"}}>{err}</p>}
+        <Btn ch={busy?"Creating…":"Create Account"} v="gold" sz="lg" sx={{width:"100%",justifyContent:"center"}} onClick={handle} dis={busy}/>
         <p style={{fontSize:".78rem",color:T.ash,textAlign:"center",marginTop:"1.25rem"}}>Already have an account? <button onClick={()=>go("login")} style={{background:"none",border:"none",color:T.gd,cursor:"pointer",fontFamily:"inherit",fontSize:".78rem"}}>Sign in</button></p>
       </div>
     </div>
@@ -1816,14 +1880,33 @@ export default function App(){
   const bp=useBreakpoint();
 
   useEffect(()=>{
-    try{const saved=localStorage.getItem("lbe-v3");if(saved){setUser(JSON.parse(saved));}}catch{}
+    let cancelled=false;
+    // Rehydrate: prefer a live Supabase session; fall back to the cached demo user.
+    (async()=>{
+      try{
+        const{data}=await supabase.auth.getSession();
+        if(cancelled)return;
+        if(data?.session?.user){
+          const u=await loadUserFromAuth(data.session.user);
+          if(!cancelled)setUser(u);
+          return;
+        }
+      }catch{}
+      try{const saved=localStorage.getItem("lbe-v3");if(saved&&!cancelled)setUser(JSON.parse(saved));}catch{}
+    })();
+    // Keep the app in sync with auth events (sign-in in another tab, token refresh, etc.).
+    const{data:sub}=supabase.auth.onAuthStateChange(async(_evt,session)=>{
+      if(session?.user){const u=await loadUserFromAuth(session.user);setUser(u);}
+      else setUser(null);
+    });
+    return()=>{cancelled=true;sub?.subscription?.unsubscribe?.();};
   },[]);
   useEffect(()=>{
     try{if(user)localStorage.setItem("lbe-v3",JSON.stringify(user));else localStorage.removeItem("lbe-v3");}catch{}
   },[user]);
 
   const go=useCallback(p=>{setPg(p);setSideOpen(false);requestAnimationFrame(()=>window.scrollTo({top:0,behavior:"smooth"}));},[]);
-  const logout=useCallback(()=>{setUser(null);go("home");},[go]);
+  const logout=useCallback(async()=>{try{await supabase.auth.signOut();}catch{}setUser(null);go("home");},[go]);
 
   const studentPgs=["dashboard","my-courses","booking","assessments","progress","account"];
   const parentPgs=["parent","par-assess","par-sessions","par-billing"];
