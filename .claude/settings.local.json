@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Claude_Preview__preview_start",
+      "Bash(npm run:*)",
+      "Bash(sips -s format jpeg /Users/lyndz/Downloads/IMG_0944.HEIC --out /tmp/check_photo.jpg)",
+      "Bash(npx base44 *)"
+    ]
+  }
+}
