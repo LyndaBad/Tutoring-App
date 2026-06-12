@@ -108,68 +108,40 @@ function SubIcon({sub,col,size=20}){
   return <DraftingCompass size={size} style={s} strokeWidth={1.5}/>;
 }
 
-/* ─── MOCK USERS ──────────────────────────────────────────────────── */
-const USERS=[
-  {id:"u1",email:"student@demo.com",pw:"demo",name:"Alex Chen",role:"student",av:"AC",
-   enrollments:[{id:"e1",courseId:"ib-aa-hl",pkg:"full",credits:50,used:9,enrolledAt:"2025-09-01",
-     completedLessons:[1,2,3,4,5,6,7,8,9],
-     bookings:[
-       {id:"b1",date:"2025-11-22",time:"15:30",ln:10,status:"scheduled",zoom:"https://zoom.us/j/123456789?pwd=abc",meetingId:"123 456 789",tutor:"Lynda Badmus"},
-       {id:"b2",date:"2025-11-26",time:"16:30",ln:11,status:"scheduled",zoom:"https://zoom.us/j/987654321?pwd=xyz",meetingId:"987 654 321",tutor:"Dr. Sarah Mills"},
-       {id:"b3",date:"2025-11-15",time:"15:30",ln:9,status:"completed",zoom:"",meetingId:"",tutor:"Lynda Badmus"},
-     ],
-     assessments:[
-       {id:"a1",title:"Diagnostic Assessment",type:"baseline",score:62,max:100,date:"2025-09-03",done:true,notes:"Strong on algebra. Complex numbers need work.",strengths:["Clear working","Algebra solid"],work:["Complex numbers","Proof writing"]},
-       {id:"a2",title:"Unit 1–2 Topic Check",type:"topic_check",score:37,max:50,date:"2025-10-08",done:true,notes:"Good improvement. Binomial theorem solid.",strengths:["Binomial technique","GDC use"],work:["Arithmetic series proofs","Sigma notation"]},
-       {id:"a3",title:"Mid-Course Assessment",type:"mid_course",score:null,max:100,done:false},
-       {id:"a4",title:"End-of-Course Mock",type:"final",score:null,max:100,done:false},
-     ]
-   }]
-  },
-  {id:"u2",email:"parent@demo.com",pw:"demo",name:"Wei Chen",role:"parent",av:"WC",childId:"u1",childName:"Alex Chen"},
-  {id:"u3",email:"tutor@demo.com",pw:"demo",name:"Dr. Sarah Mills",role:"tutor",av:"SM",payRate:25,
-   sessions:[
-     {id:"s1",student:"Alex Chen",course:"IB Math AA HL",date:"2025-11-22",time:"15:30",dur:60,status:"upcoming",zoom:"https://zoom.us/j/123456789?pwd=abc",meetingId:"123 456 789",amount:25,payStatus:null},
-     {id:"s2",student:"Jamie Lee",course:"IB Math AI SL",date:"2025-11-23",time:"16:30",dur:60,status:"upcoming",zoom:"https://zoom.us/j/555444333?pwd=def",meetingId:"555 444 333",amount:25,payStatus:null},
-     {id:"s3",student:"Alex Chen",course:"IB Math AA HL",date:"2025-11-15",time:"15:30",dur:60,status:"completed",zoom:"",meetingId:"",amount:25,payStatus:"paid"},
-     {id:"s4",student:"Sophie K.",course:"GCSE Maths",date:"2025-11-13",time:"17:30",dur:60,status:"completed",zoom:"",meetingId:"",amount:25,payStatus:"pending"},
-   ],
-   invoices:[
-     {id:"inv1",period:"Oct 2025",sessions:8,hours:8,rate:25,total:200,status:"paid",submitted:"2025-11-01",paid:"2025-11-07"},
-     {id:"inv2",period:"Nov 2025",sessions:4,hours:4,rate:25,total:100,status:"pending",submitted:"2025-11-18"},
-   ]
-  },
-  {id:"u4",email:"admin@lbe.com",pw:"admin",name:"Lynda Badmus",role:"admin",av:"LB"},
-];
 
-const ADM={
-  tutors:[
-    {id:"t1",name:"Dr. Sarah Mills",email:"tutor@demo.com",status:"active",subjects:["Mathematics"],sessions:58,payRate:25,pending:100},
-    {id:"t2",name:"James Okafor",email:"james@lbe.com",status:"active",subjects:["Chemistry"],sessions:32,payRate:22,pending:154},
-    {id:"t3",name:"Priya Nair",email:"priya@lbe.com",status:"pending",subjects:["Math","Chem"],sessions:0,payRate:20,pending:0},
-  ],
-  students:[
-    {id:"s1",name:"Alex Chen",course:"IB Math AA HL",credits:41,done:9,joined:"2025-09-01"},
-    {id:"s2",name:"Jamie Lee",course:"IB Math AI SL",credits:13,done:2,joined:"2025-10-05"},
-    {id:"s3",name:"Sophie K.",course:"GCSE Maths",credits:18,done:9,joined:"2025-09-15"},
-    {id:"s4",name:"Noah Harris",course:"AP Chemistry",credits:30,done:5,joined:"2025-10-20"},
-  ],
-  bookings:[
-    {id:"bk1",student:"Alex Chen",tutor:"Dr. Sarah Mills",course:"IB Math AA HL",date:"2025-11-22",time:"15:30",zoom:"https://zoom.us/j/123456789?pwd=abc",meetingId:"123 456 789",status:"scheduled"},
-    {id:"bk2",student:"Jamie Lee",tutor:"Dr. Sarah Mills",course:"IB Math AI SL",date:"2025-11-23",time:"16:30",zoom:"https://zoom.us/j/987654321?pwd=xyz",meetingId:"987 654 321",status:"scheduled"},
-    {id:"bk3",student:"Sophie K.",tutor:"Dr. Sarah Mills",course:"GCSE Maths",date:"2025-11-24",time:"17:30",zoom:"",meetingId:"",status:"scheduled"},
-    {id:"bk4",student:"Alex Chen",tutor:"Lynda Badmus",course:"IB Math AA HL",date:"2025-11-15",time:"15:30",zoom:"",meetingId:"",status:"completed"},
-  ],
-  payouts:[
-    {id:"p1",tutor:"Dr. Sarah Mills",period:"Oct 2025",hours:8,rate:25,total:200,status:"paid",paidAt:"2025-11-07",ref:"BACS-OCT25-SM"},
-    {id:"p2",tutor:"James Okafor",period:"Oct 2025",hours:7,rate:22,total:154,status:"approved"},
-    {id:"p3",tutor:"Dr. Sarah Mills",period:"Nov 2025",hours:4,rate:25,total:100,status:"pending"},
-    {id:"p4",tutor:"James Okafor",period:"Nov 2025",hours:3,rate:22,total:66,status:"pending"},
-  ],
-};
+/* ─── LIVE DATA ───────────────────────────────────────────────────── */
+function useTable(fetcher,deps=[]){
+  const[rows,setRows]=useState(null);
+  useEffect(()=>{let dead=false;(async()=>{try{const r=await fetcher();if(!dead)setRows(r||[]);}catch(e){console.warn("[data]",e);if(!dead)setRows([]);}})();return()=>{dead=true;};},deps); // eslint-disable-line
+  return rows;
+}
+function EmptyNote({text}){return(<div style={{background:T.n2,border:`1px dashed ${T.r2}`,borderRadius:10,padding:"2.25rem",textAlign:"center",fontSize:".85rem",color:T.ash,lineHeight:1.7}}>{text}</div>);}
+const courseTitle=id=>COURSES.find(c=>c.id===id)?.title||id||"—";
+const hhmm=t=>String(t||"").slice(0,5);
+async function fetchStudentData(studentId){
+  const[{data:enrs},{data:bks},{data:asmts}]=await Promise.all([
+    supabase.from("enrollments").select("*").eq("student_id",studentId),
+    supabase.from("bookings").select("*").eq("student_id",studentId),
+    supabase.from("assessments").select("*").eq("student_id",studentId),
+  ]);
+  return(enrs||[]).map(e=>({
+    id:e.id,courseId:e.course_id,pkg:e.package,credits:e.credits_purchased,used:e.credits_used,
+    enrolledAt:(e.enrolled_at||"").slice(0,10),completedLessons:e.completed_lessons||[],
+    bookings:(bks||[]).filter(b=>b.enrollment_id===e.id).map(b=>({id:b.id,date:b.session_date,time:hhmm(b.session_time),ln:b.lesson_number,status:b.status,zoom:b.zoom_url||"",meetingId:b.meeting_id||"",tutor:"Lynda Badmus"})),
+    assessments:(asmts||[]).filter(a=>a.course_id===e.course_id).map(a=>({id:a.id,title:a.title,type:a.type,score:a.score,max:a.max_score,date:a.taken_at,done:a.done,notes:a.notes,strengths:a.strengths||[],work:a.work_on||[]})),
+  }));
+}
+function useTutorSessions(user){
+  return useTable(async()=>{
+    const[{data:ss},{data:profs}]=await Promise.all([
+      supabase.from("sessions").select("*").eq("tutor_id",user.id),
+      supabase.from("profiles").select("id,name"),
+    ]);
+    const nm=id=>profs?.find(pr=>pr.id===id)?.name||"Student";
+    return(ss||[]).map(x=>({id:x.id,student:nm(x.student_id),course:courseTitle(x.course_id),date:x.session_date,time:hhmm(x.session_time),dur:x.duration_min||60,status:x.status,zoom:x.zoom_url||"",meetingId:x.meeting_id||"",amount:Number(x.amount||0),payStatus:x.pay_status}));
+  },[user.id]);
+}
 
-const SCORE_DATA=[{w:"W1",s:62,a:57},{w:"W2",s:65,a:59},{w:"W3",s:63,a:61},{w:"W4",s:74,a:63},{w:"W5",s:77,a:65},{w:"W6",s:79,a:67},{w:"W7",s:83,a:69},{w:"W8",s:87,a:71}];
-const WEEK_DATA=[{d:"Mon",n:7},{d:"Tue",n:9},{d:"Wed",n:4},{d:"Thu",n:11},{d:"Fri",n:6},{d:"Sat",n:8}];
 const UNITS=[{u:"Number & Algebra",p:100,c:T.gr},{u:"Functions",p:85,c:T.bl},{u:"Geometry & Trig",p:62,c:T.am},{u:"Statistics",p:28,c:T.vi},{u:"Calculus",p:0,c:T.ash2}];
 const ATCOL={baseline:T.te,topic_check:T.bl,mid_course:T.am,final:T.vi};
 const ATLBL={baseline:"Baseline",topic_check:"Topic Check",mid_course:"Mid-Course",final:"Final"};
@@ -944,25 +916,17 @@ function Contact({go,bp}){
 }
 
 /* ─── AUTH ────────────────────────────────────────────────────────── */
-// Merge a real Supabase profile with the mock data shape the portals expect.
-// Until we migrate the downstream screens off USERS[], we graft the nested
-// enrollments/sessions from a role-matched mock user onto the real profile.
-// When a tutor/student actually has DB-backed data, this fallback is harmless —
-// you'll just overwrite it once real queries land.
+// Build the app user from the real Supabase profile + role-specific data.
 function hydrateUserFromProfile(profile){
-  const mock=USERS.find(u=>u.role===profile.role)||{};
   return{
     id:profile.id,
     email:profile.email,
-    name:profile.name||mock.name||profile.email,
+    name:profile.name||profile.email,
     role:profile.role,
-    av:profile.avatar||mock.av||(profile.name||profile.email).split(" ").map(w=>w[0]).join("").toUpperCase().slice(0,2),
-    payRate:profile.pay_rate??mock.payRate,
-    childId:profile.child_id??mock.childId,
-    childName:mock.childName,
-    enrollments:mock.enrollments||[],
-    sessions:mock.sessions||[],
-    invoices:mock.invoices||[],
+    av:profile.avatar||(profile.name||profile.email).split(" ").map(w=>w[0]).join("").toUpperCase().slice(0,2),
+    payRate:profile.pay_rate,
+    childId:profile.child_id,
+    enrollments:[],sessions:[],invoices:[],
   };
 }
 
@@ -973,7 +937,16 @@ async function loadUserFromAuth(authUser){
     console.warn("[auth] profile row missing for",authUser.id,error);
     return{id:authUser.id,email:authUser.email,name:authUser.email,role:"student",av:"?",enrollments:[]};
   }
-  return hydrateUserFromProfile(profile);
+  const u=hydrateUserFromProfile(profile);
+  try{
+    if(u.role==="student")u.enrollments=await fetchStudentData(u.id);
+    if(u.role==="parent"&&u.childId){
+      const{data:cp}=await supabase.from("profiles").select("id,name").eq("id",u.childId).single();
+      u.child={id:u.childId,name:cp?.name||"Student",enrollments:await fetchStudentData(u.childId)};
+      u.childName=u.child.name;
+    }
+  }catch(e){console.warn("[auth] role data",e);}
+  return u;
 }
 
 function roleLanding(role){
@@ -1146,16 +1119,20 @@ function StudentDash({user,setUser,go,bp}){
       <div style={{display:"grid",gridTemplateColumns:bp?.mobile?"1fr":bp?.tablet?"1fr":"1.5fr 1fr",gap:"1.25rem",marginBottom:"1.25rem"}}>
         <div style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:12,padding:"1.5rem"}}>
           <p style={{fontSize:".65rem",color:T.ash,letterSpacing:".12em",textTransform:"uppercase",marginBottom:".4rem"}}>Score Trend</p>
-          <p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.1rem",fontWeight:300,marginBottom:"1rem"}}>Up 25 points since baseline — on track</p>
+          {(()=>{
+            const pts=(user.enrollments||[]).flatMap(e=>e.assessments||[]).filter(a=>a.done&&a.score!=null&&a.max).map((a,i)=>({w:"A"+(i+1),s:Math.round(a.score/a.max*100)}));
+            if(pts.length<2)return<p style={{fontSize:".83rem",color:T.ash2,padding:"2.6rem 0",textAlign:"center"}}>Your score trend appears here after your first assessments.</p>;
+            const diff=pts[pts.length-1].s-pts[0].s;
+            return(<>
+          <p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.1rem",fontWeight:300,marginBottom:"1rem"}}>{diff>=0?`Up ${diff} points since baseline`:`Down ${Math.abs(diff)} points since baseline`}</p>
           <ResponsiveContainer width="100%" height={130}>
-            <AreaChart data={SCORE_DATA}>
+            <AreaChart data={pts}>
               <defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={T.gd} stopOpacity={.2}/><stop offset="95%" stopColor={T.gd} stopOpacity={0}/></linearGradient></defs>
-              <CartesianGrid strokeDasharray="3 3" stroke={T.r2}/><XAxis dataKey="w" tick={{fill:T.ash,fontSize:10}} axisLine={false} tickLine={false}/><YAxis tick={{fill:T.ash,fontSize:10}} axisLine={false} tickLine={false} domain={[40,100]}/>
+              <CartesianGrid strokeDasharray="3 3" stroke={T.r2}/><XAxis dataKey="w" tick={{fill:T.ash,fontSize:10}} axisLine={false} tickLine={false}/><YAxis tick={{fill:T.ash,fontSize:10}} axisLine={false} tickLine={false} domain={[0,100]}/>
               <Tooltip contentStyle={{background:T.n3,border:`1px solid ${T.rl}`,borderRadius:8,color:T.cr,fontSize:11}}/>
               <Area type="monotone" dataKey="s" stroke={T.gd} strokeWidth={2.5} fill="url(#sg)" name="Score" dot={{fill:T.gd,r:3}}/>
-              <Line type="monotone" dataKey="a" stroke={T.ash2} strokeWidth={1.5} strokeDasharray="4 3" dot={false} name="Class avg"/>
             </AreaChart>
-          </ResponsiveContainer>
+          </ResponsiveContainer></>);})()}
         </div>
         <div style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:12,padding:"1.5rem"}}>
           <p style={{fontSize:".65rem",color:T.ash,letterSpacing:".12em",textTransform:"uppercase",marginBottom:"1rem"}}>Course Units</p>
@@ -1306,12 +1283,19 @@ function Assessments({user}){
 
 /* ─── PARENT PORTAL ───────────────────────────────────────────────── */
 function ParentPortal({user,go,bp}){
-  const child=USERS.find(u=>u.id===user.childId)||USERS[0];
+  const child=user.child||null;
   const enr=child?.enrollments?.[0];
   const c=enr?COURSES.find(x=>x.id===enr.courseId):null;
   const m=c?CAT[c.g]||CAT.ib:null;
   const upcoming=(child?.enrollments||[]).flatMap(e=>(e.bookings||[]).filter(b=>b.status==="scheduled"&&b.date>=today())).slice(0,3);
   const gc2=bp?.mobile?"1fr":bp?.tablet?"1fr":"1.2fr 1fr";
+  if(!child)return(
+    <div style={{padding:bp?.mobile?"1.25rem":"2rem"}}>
+      <p style={{fontSize:".65rem",color:T.ash,letterSpacing:".12em",textTransform:"uppercase",marginBottom:".3rem"}}>Parent Portal</p>
+      <h1 style={{fontFamily:"'Sora',sans-serif",fontSize:bp?.mobile?"1.8rem":"2rem",fontWeight:300,marginBottom:"1.5rem"}}>Hello, <em style={{fontStyle:"italic",color:T.te}}>{user.name.split(" ")[0]}</em></h1>
+      <EmptyNote text="No student is linked to your account yet. Once your child enrols, their progress, sessions and results will appear here."/>
+    </div>
+  );
   return(
     <div style={{padding:bp?.mobile?"1.25rem":"2rem"}}>
       <div style={{marginBottom:"1.75rem"}}>
@@ -1344,10 +1328,6 @@ function ParentPortal({user,go,bp}){
             const c2=enr2?COURSES.find(x=>x.id===enr2.courseId):null;
             return<ZoomCard key={b.id} link={b.zoom} meetingId={b.meetingId} date={b.date} time={b.time} course={c2?.short||"Session"} tutor={b.tutor} status={b.status} compact/>;
           })}
-          <div style={{marginTop:"1.25rem",background:T.n3,borderRadius:8,padding:".85rem",borderLeft:`3px solid ${T.te}`}}>
-            <p style={{fontSize:".65rem",color:T.ash,letterSpacing:".1em",textTransform:"uppercase",marginBottom:".5rem"}}>Last Session Note (tutor)</p>
-            <p style={{fontSize:".8rem",color:T.c2,lineHeight:1.65}}>Covered Complex Numbers — polar form and De Moivre's theorem. {child?.name?.split(" ")[0]||"Student"} engaged well with the graphical approach. Recommended reviewing Lesson 5 slides before Thursday.</p>
-          </div>
         </div>
         <div style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:12,padding:"1.5rem"}}>
           <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".14em",textTransform:"uppercase",color:T.ash,marginBottom:"1rem"}}>Assessment Results</p>
@@ -1363,21 +1343,20 @@ function ParentPortal({user,go,bp}){
         </div>
       </div>
       {/* Billing */}
-      <div style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:12,padding:"1.5rem"}}>
+      {enr&&c?<div style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:12,padding:"1.5rem"}}>
         <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".14em",textTransform:"uppercase",color:T.ash,marginBottom:"1rem"}}>Billing History</p>
         <div style={{background:T.n3,borderRadius:8,padding:"1.1rem 1.25rem",display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:"1rem"}}>
-          <div><p style={{fontWeight:500,fontSize:".88rem"}}>{c?.title||"Course"} — Full Course</p><p style={{fontSize:".72rem",color:T.ash}}>Enrolled {fmtD(enr?.enrolledAt||today())} · Stripe payment · Reference: LBE-{uid().toUpperCase()}</p></div>
-          <div style={{textAlign:"right"}}><p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.4rem",fontWeight:300,color:T.gd}}>£{(enr?.credits||50)*(c?.rate?.gbp||50)}</p><SBadge s="paid"/></div>
+          <div><p style={{fontWeight:500,fontSize:".88rem"}}>{c.title} — {enr.pkg} course</p><p style={{fontSize:".72rem",color:T.ash}}>Enrolled {fmtD(enr.enrolledAt||today())}</p></div>
+          <div style={{textAlign:"right"}}><p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.4rem",fontWeight:300,color:T.gd}}>£{(enr.credits||0)*(c.rate?.gbp||0)}</p><SBadge s="paid"/></div>
         </div>
-      </div>
+      </div>:<EmptyNote text="Billing history appears once your child is enrolled in a course."/>}
     </div>
   );
 }
 
 /* ─── TUTOR PORTAL ────────────────────────────────────────────────── */
 function TutorDash({user,go,bp}){
-  const t=USERS.find(u=>u.role==="tutor");
-  const sessions=t?.sessions||[];
+  const sessions=useTutorSessions(user)||[];
   const upcoming=sessions.filter(s=>s.status==="upcoming");
   const completed=sessions.filter(s=>s.status==="completed");
   const pendingPay=completed.filter(s=>!s.payStatus||s.payStatus==="pending").reduce((a,s)=>a+s.amount,0);
@@ -1395,6 +1374,7 @@ function TutorDash({user,go,bp}){
       <div style={{display:"grid",gridTemplateColumns:bp?.mobile?"1fr":bp?.tablet?"1fr":"1.3fr 1fr",gap:"1.25rem"}}>
         <div>
           <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".14em",textTransform:"uppercase",color:T.ash,marginBottom:"1rem"}}>Upcoming Sessions (Zoom)</p>
+          {upcoming.length===0&&<p style={{fontSize:".8rem",color:T.ash2,marginBottom:".5rem"}}>No upcoming sessions yet.</p>}
           {upcoming.map(s=>(
             <div key={s.id} style={{marginBottom:".65rem"}}>
               <ZoomCard link={s.zoom} meetingId={s.meetingId} date={s.date} time={s.time} course={s.course} tutor={s.student} status={s.status==="upcoming"?"scheduled":"completed"}/>
@@ -1404,6 +1384,7 @@ function TutorDash({user,go,bp}){
         </div>
         <div>
           <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".14em",textTransform:"uppercase",color:T.ash,marginBottom:"1rem"}}>Recent Sessions</p>
+          {completed.length===0&&<p style={{fontSize:".8rem",color:T.ash2,marginBottom:".5rem"}}>No completed sessions yet.</p>}
           {completed.slice(0,3).map(s=>(
             <div key={s.id} style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:8,padding:"1rem",marginBottom:".55rem",display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:".5rem"}}>
               <div><p style={{fontSize:".83rem",fontWeight:500}}>{s.student}</p><p style={{fontSize:".72rem",color:T.ash}}>{fmtD(s.date)} · {s.course}</p></div>
@@ -1417,13 +1398,14 @@ function TutorDash({user,go,bp}){
   );
 }
 
-function TutorSchedule(){
-  const t=USERS.find(u=>u.role==="tutor");
+function TutorSchedule({user}){
+  const sessions=useTutorSessions(user)||[];
   return(
     <div style={{padding:"2rem"}}>
       <h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1.5rem"}}>My Schedule</h2>
       <div style={{display:"flex",flexDirection:"column",gap:".65rem"}}>
-        {(t?.sessions||[]).sort((a,b)=>b.date.localeCompare(a.date)).map(s=>(
+        {sessions.length===0&&<EmptyNote text="No sessions on your schedule yet."/>}
+        {sessions.slice().sort((a,b)=>String(b.date).localeCompare(String(a.date))).map(s=>(
           <div key={s.id}>
             <ZoomCard link={s.zoom} meetingId={s.meetingId} date={s.date} time={s.time} course={s.course} tutor={s.student} status={s.status==="upcoming"?"scheduled":s.status}/>
           </div>
@@ -1433,9 +1415,8 @@ function TutorSchedule(){
   );
 }
 
-function TutorHours({go}){
-  const t=USERS.find(u=>u.role==="tutor");
-  const sessions=(t?.sessions||[]).filter(s=>s.status==="completed");
+function TutorHours({go,user}){
+  const sessions=(useTutorSessions(user)||[]).filter(s=>s.status==="completed");
   const totalGBP=sessions.reduce((a,s)=>a+s.amount,0);
   const pendingGBP=sessions.filter(s=>!s.payStatus||s.payStatus==="pending").reduce((a,s)=>a+s.amount,0);
   return(
@@ -1461,17 +1442,33 @@ function TutorHours({go}){
   );
 }
 
-function TutorInvoices(){
-  const t=USERS.find(u=>u.role==="tutor");
-  const[invoices,sInv]=useState(t?.invoices||[]);
+function TutorInvoices({user}){
+  const sessions=useTutorSessions(user)||[];
+  const fetched=useTable(async()=>{const{data}=await supabase.from("invoices").select("*").eq("tutor_id",user.id);return(data||[]).map(i=>({id:i.id,period:i.period,sessions:i.session_count,hours:Number(i.hours),rate:Number(i.rate),total:Number(i.total),status:i.status,paid:i.paid_at}));},[user.id]);
+  const[invoices,sInv]=useState(null);
+  useEffect(()=>{if(fetched&&invoices===null)sInv(fetched);},[fetched,invoices]);
+  const list=invoices||[];
   const[showForm,sSF]=useState(false);
+  const unbilled=sessions.filter(x=>x.status==="completed"&&(!x.payStatus||x.payStatus==="pending"));
+  const hours=unbilled.reduce((a,x)=>a+(x.dur||60)/60,0);
+  const rate=Number(user.payRate||0);
+  const totalDue=Math.round(hours*rate*100)/100;
+  const period=new Date().toLocaleString("en-GB",{month:"short",year:"numeric"});
+  const submit=async()=>{
+    try{
+      const{data,error}=await supabase.from("invoices").insert({tutor_id:user.id,period,session_count:unbilled.length,hours,rate,total:totalDue,status:"pending"}).select().single();
+      if(!error&&data)sInv([...list,{id:data.id,period,sessions:unbilled.length,hours,rate,total:totalDue,status:"pending"}]);
+    }catch(e){console.warn(e);}
+    sSF(false);
+  };
   return(
     <div style={{padding:"2rem"}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"1.5rem",flexWrap:"wrap",gap:"1rem"}}>
         <h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300}}>Invoices & Payouts</h2>
         <Btn ch="+ Submit Invoice" v="gold" sz="sm" onClick={()=>sSF(true)}/>
       </div>
-      {invoices.map(inv=>(
+      {invoices&&list.length===0&&<EmptyNote text="No invoices yet. Submit one once you've completed sessions."/>}
+      {list.map(inv=>(
         <div key={inv.id} style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:8,padding:"1.25rem 1.5rem",marginBottom:".65rem",display:"grid",gridTemplateColumns:"1fr auto auto",gap:"2rem",alignItems:"center"}}>
           <div><p style={{fontWeight:500,fontSize:".92rem"}}>{inv.period}</p><p style={{fontSize:".75rem",color:T.ash}}>{inv.sessions} sessions · {inv.hours}h · £{inv.rate}/hr{inv.paid?` · Paid ${fmtD(inv.paid)}`:""}</p></div>
           <p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.6rem",fontWeight:300,color:T.gd}}>£{inv.total}</p>
@@ -1481,13 +1478,12 @@ function TutorInvoices(){
       {showForm&&<Modal title="Submit Invoice" onClose={()=>sSF(false)} ch={
         <div>
           <p style={{fontSize:".85rem",color:T.ash,marginBottom:"1.5rem"}}>Submit your hours for admin review and payment approval.</p>
-          <Inp label="Invoice Period" as="select" val="Dec 2025" onChange={()=>{}} opts={["Dec 2025","Nov 2025","Oct 2025"]}/>
           <div style={{background:T.n3,borderRadius:8,padding:"1.25rem",marginBottom:"1.25rem"}}>
-            <p style={{fontSize:".72rem",color:T.ash,marginBottom:".5rem",letterSpacing:".08em",textTransform:"uppercase"}}>Auto-calculated from sessions</p>
-            <p style={{fontSize:".9rem"}}>3 sessions · 3 hours · £25/hr · <strong style={{color:T.gd}}>Total: £75</strong></p>
+            <p style={{fontSize:".72rem",color:T.ash,marginBottom:".5rem",letterSpacing:".08em",textTransform:"uppercase"}}>Auto-calculated from completed sessions</p>
+            <p style={{fontSize:".9rem"}}>{unbilled.length} sessions · {hours}h · £{rate}/hr · <strong style={{color:T.gd}}>Total: £{totalDue}</strong></p>
           </div>
-          <div style={{background:T.bla,border:`1px solid ${T.bl}40`,borderRadius:8,padding:".85rem",marginBottom:"1rem"}}><p style={{fontSize:".78rem",color:T.bl}}>Invoice will be reviewed by admin. You'll receive a notification when approved and when paid.</p></div>
-          <Btn ch="Submit Invoice" v="gold" sx={{width:"100%",justifyContent:"center"}} onClick={()=>{sInv([...invoices,{id:uid(),period:"Dec 2025",sessions:3,hours:3,rate:25,total:75,status:"pending",submitted:today()}]);sSF(false);}}/>
+          <div style={{background:T.bla,border:`1px solid ${T.bl}40`,borderRadius:8,padding:".85rem",marginBottom:"1rem"}}><p style={{fontSize:".78rem",color:T.bl}}>Invoice will be reviewed by admin. You'll see the status here once approved and paid.</p></div>
+          <Btn ch={unbilled.length?`Submit ${period} Invoice`:"No unbilled sessions"} v="gold" dis={unbilled.length===0} sx={{width:"100%",justifyContent:"center"}} onClick={submit}/>
         </div>
       }/>}
     </div>
@@ -1512,7 +1508,7 @@ function PostSession(){
   return(
     <div style={{padding:"2rem",maxWidth:760}}>
       <p style={{fontSize:".65rem",color:T.ash,letterSpacing:".12em",textTransform:"uppercase",marginBottom:".3rem"}}>Post-Session Form</p>
-      <h1 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.9rem",fontWeight:300,marginBottom:"1.75rem"}}>Alex Chen · IB Math AA HL · Lesson 9</h1>
+      <h1 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.9rem",fontWeight:300,marginBottom:"1.75rem"}}>Log a completed session</h1>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1.5fr",gap:"1.5rem",alignItems:"start"}}>
         <div>
           <div style={{display:"flex",gap:0,marginBottom:"1.5rem",borderRadius:8,overflow:"hidden",border:`1px solid ${T.rl}`}}>
@@ -1563,6 +1559,17 @@ function PostSession(){
 
 /* ─── ADMIN PANEL ─────────────────────────────────────────────────── */
 function AdminDash({go,bp}){
+  const live=useTable(async()=>{
+    const[t,st,b,i]=await Promise.all([
+      supabase.from("profiles").select("id",{count:"exact",head:true}).eq("role","tutor"),
+      supabase.from("profiles").select("id",{count:"exact",head:true}).eq("role","student"),
+      supabase.from("bookings").select("session_date,status,zoom_url"),
+      supabase.from("invoices").select("status"),
+    ]);
+    return[{tutors:t.count||0,students:st.count||0,bookings:b.data||[],invoices:i.data||[]}];
+  });
+  const d=live?.[0];
+  const weekData=["Mon","Tue","Wed","Thu","Fri","Sat"].map(w=>({d:w,n:(d?.bookings||[]).filter(b=>b.status==="scheduled"&&new Date(b.session_date+"T12:00:00").toLocaleString("en-GB",{weekday:"short"})===w).length}));
   return(
     <div style={{padding:bp?.mobile?"1.25rem":"2rem"}}>
       <div style={{marginBottom:"1.75rem"}}>
@@ -1570,7 +1577,7 @@ function AdminDash({go,bp}){
         <h1 style={{fontFamily:"'Sora',sans-serif",fontSize:bp?.mobile?"1.8rem":"2rem",fontWeight:300}}>Lynda <em style={{fontStyle:"italic",color:T.gd}}>Badmus Education</em></h1>
       </div>
       <div style={{display:"grid",gridTemplateColumns:bp?.mobile?"1fr 1fr":"repeat(4,1fr)",gap:1,background:T.rl,borderRadius:10,overflow:"hidden",marginBottom:"1.5rem"}}>
-        {[[ADM.tutors.length,"Tutors",T.vi],[ADM.students.length,"Students",T.bl],[COURSES.length,"Courses",T.gd],[ADM.bookings.filter(b=>b.status==="scheduled").length,"Live bookings",T.gr]].map(([v,l,c])=>(
+        {[[d?d.tutors:"…","Tutors",T.vi],[d?d.students:"…","Students",T.bl],[COURSES.length,"Courses",T.gd],[d?d.bookings.filter(b=>b.status==="scheduled").length:"…","Live bookings",T.gr]].map(([v,l,c])=>(
           <div key={l} style={{background:T.n2,padding:"1.1rem 1.4rem"}}><Stat v={v} l={l} c={c}/></div>
         ))}
       </div>
@@ -1578,13 +1585,13 @@ function AdminDash({go,bp}){
         <div style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:12,padding:"1.5rem"}}>
           <p style={{fontSize:".65rem",color:T.ash,letterSpacing:".12em",textTransform:"uppercase",marginBottom:"1rem"}}>Sessions This Week</p>
           <ResponsiveContainer width="100%" height={140}>
-            <BarChart data={WEEK_DATA}><CartesianGrid strokeDasharray="3 3" stroke={T.r2}/><XAxis dataKey="d" tick={{fill:T.ash,fontSize:11}} axisLine={false} tickLine={false}/><YAxis tick={{fill:T.ash,fontSize:11}} axisLine={false} tickLine={false}/><Tooltip contentStyle={{background:T.n3,border:`1px solid ${T.rl}`,borderRadius:8,color:T.cr,fontSize:12}}/><Bar dataKey="n" fill={T.gd} radius={[4,4,0,0]} name="Sessions"/></BarChart>
+            <BarChart data={weekData}><CartesianGrid strokeDasharray="3 3" stroke={T.r2}/><XAxis dataKey="d" tick={{fill:T.ash,fontSize:11}} axisLine={false} tickLine={false}/><YAxis tick={{fill:T.ash,fontSize:11}} axisLine={false} tickLine={false}/><Tooltip contentStyle={{background:T.n3,border:`1px solid ${T.rl}`,borderRadius:8,color:T.cr,fontSize:12}}/><Bar dataKey="n" fill={T.gd} radius={[4,4,0,0]} name="Sessions"/></BarChart>
           </ResponsiveContainer>
         </div>
         <div>
           <div style={{background:T.ama,border:`1px solid ${T.am}40`,borderRadius:12,padding:"1.4rem",marginBottom:"1rem"}}>
             <p style={{fontSize:".72rem",fontWeight:600,letterSpacing:".14em",textTransform:"uppercase",color:T.am,marginBottom:".75rem"}}>⚠ Pending Actions</p>
-            {[`${ADM.tutors.filter(t=>t.status==="pending").length} tutor awaiting approval`,`${ADM.payouts.filter(p=>p.status==="pending").length} invoices pending review`,`${ADM.bookings.filter(b=>!b.zoom&&b.status==="scheduled").length} Zoom links missing`].map((s,i)=>(
+            {[`${(d?.invoices||[]).filter(x=>x.status==="pending").length} invoices pending review`,`${(d?.bookings||[]).filter(b=>!b.zoom_url&&b.status==="scheduled").length} Zoom links missing`,`${(d?.bookings||[]).filter(b=>b.status==="scheduled").length} sessions scheduled`].map((s,i)=>(
               <p key={i} style={{fontSize:".82rem",color:T.c2,padding:".3rem 0",borderBottom:`1px solid ${T.r3}`}}>· {s}</p>
             ))}
             <div style={{display:"flex",gap:".6rem",marginTop:".9rem",flexWrap:"wrap"}}>
@@ -1595,8 +1602,8 @@ function AdminDash({go,bp}){
           </div>
           <div style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:12,padding:"1.25rem"}}>
             <p style={{fontSize:".65rem",color:T.gr,fontWeight:700,letterSpacing:".1em",textTransform:"uppercase",marginBottom:".65rem"}}>PPT Coverage</p>
-            <PBar p={87} col={T.gr} h={8}/>
-            <p style={{fontSize:".75rem",color:T.ash,marginTop:".5rem"}}>87% of lessons have slides uploaded</p>
+            <PBar p={0} col={T.gr} h={8}/>
+            <p style={{fontSize:".75rem",color:T.ash,marginTop:".5rem"}}>Slides coverage appears once lessons are uploaded</p>
           </div>
         </div>
       </div>
@@ -1613,20 +1620,29 @@ function AdminDash({go,bp}){
 }
 
 function AdminTutors(){
-  const[tutors,setTutors]=useState(ADM.tutors);
+  const tutorsLive=useTable(async()=>{
+    const[{data:profs},{data:invs},{data:ss}]=await Promise.all([
+      supabase.from("profiles").select("id,name,email,pay_rate").eq("role","tutor"),
+      supabase.from("invoices").select("tutor_id,total,status"),
+      supabase.from("sessions").select("tutor_id"),
+    ]);
+    return(profs||[]).map(pr=>({id:pr.id,name:pr.name||pr.email,email:pr.email,status:"active",subjects:[],payRate:pr.pay_rate||0,sessions:(ss||[]).filter(x=>x.tutor_id===pr.id).length,pending:(invs||[]).filter(i=>i.tutor_id===pr.id&&i.status==="pending").reduce((a,i)=>a+Number(i.total),0)}));
+  });
+  const tutors=tutorsLive||[];
   return(
     <div style={{padding:"2rem"}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"1.5rem",flexWrap:"wrap",gap:"1rem"}}>
         <h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300}}>Tutor Manager</h2>
         <div style={{display:"flex",gap:".65rem"}}><Tag l={`${tutors.filter(t=>t.status==="pending").length} pending`} c={T.am} bg={T.ama}/><Tag l={`${tutors.filter(t=>t.status==="active").length} active`} c={T.gr} bg={T.gra}/></div>
       </div>
+      {tutorsLive&&tutors.length===0&&<EmptyNote text="No tutors yet. When a tutor creates an account, they'll appear here for you to manage."/>}
       {tutors.map(t=>(
         <div key={t.id} style={{background:T.n2,border:`1px solid ${t.status==="pending"?T.am:T.rl}`,borderRadius:8,padding:"1.25rem 1.5rem",marginBottom:".65rem"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:"1rem"}}>
-            <div><p style={{fontWeight:500,fontSize:".92rem"}}>{t.name}</p><p style={{fontSize:".75rem",color:T.ash}}>{t.email} · {t.subjects.join(", ")} · £{t.payRate}/hr · {t.sessions} sessions</p>{t.pending>0&&<p style={{fontSize:".72rem",color:T.am,marginTop:".15rem"}}>£{t.pending} pending payout</p>}</div>
+            <div><p style={{fontWeight:500,fontSize:".92rem"}}>{t.name}</p><p style={{fontSize:".75rem",color:T.ash}}>{t.email}{t.subjects.length?" · "+t.subjects.join(", "):""} · £{t.payRate}/hr · {t.sessions} sessions</p>{t.pending>0&&<p style={{fontSize:".72rem",color:T.am,marginTop:".15rem"}}>£{t.pending} pending payout</p>}</div>
             <div style={{display:"flex",gap:".65rem",alignItems:"center",flexWrap:"wrap"}}>
               <SBadge s={t.status}/>
-              {t.status==="pending"&&<Btn ch="Approve" v="success" sz="xs" onClick={()=>setTutors(tutors.map(x=>x.id===t.id?{...x,status:"active"}:x))}/>}
+              {t.status==="pending"&&<Btn ch="Approve" v="success" sz="xs" onClick={()=>{}}/>}
               <Btn ch="Edit Pay Rate" v="navy" sz="xs" onClick={()=>{}}/>
             </div>
           </div>
@@ -1637,10 +1653,19 @@ function AdminTutors(){
 }
 
 function AdminStudents(){
+  const studentsLive=useTable(async()=>{
+    const[{data:profs},{data:enrs}]=await Promise.all([
+      supabase.from("profiles").select("id,name,email,created_at").eq("role","student"),
+      supabase.from("enrollments").select("student_id,course_id,credits_purchased,credits_used,completed_lessons"),
+    ]);
+    return(profs||[]).map(pr=>{const e=(enrs||[]).find(x=>x.student_id===pr.id);return{id:pr.id,name:pr.name||pr.email,course:e?courseTitle(e.course_id):"No course yet",credits:e?(e.credits_purchased-e.credits_used):0,done:e?.completed_lessons?.length||0,joined:(pr.created_at||"").slice(0,10)};});
+  });
+  const students=studentsLive||[];
   return(
     <div style={{padding:"2rem"}}>
       <h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1.5rem"}}>Students</h2>
-      {ADM.students.map(s=>(
+      {studentsLive&&students.length===0&&<EmptyNote text="No students yet. When students sign up, they'll appear here."/>}
+      {students.map(s=>(
         <div key={s.id} style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:8,padding:"1.1rem 1.3rem",marginBottom:".6rem"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:"1rem"}}>
             <div><p style={{fontWeight:500,fontSize:".9rem"}}>{s.name}</p><p style={{fontSize:".72rem",color:T.ash}}>{s.course} · Joined {fmtD(s.joined)}</p></div>
@@ -1655,10 +1680,22 @@ function AdminStudents(){
 }
 
 function AdminBookings(){
-  const[bookings,setBookings]=useState(ADM.bookings);
+  const fetched=useTable(async()=>{
+    const[{data:bks},{data:profs}]=await Promise.all([
+      supabase.from("bookings").select("*"),
+      supabase.from("profiles").select("id,name"),
+    ]);
+    const nm=id=>profs?.find(pr=>pr.id===id)?.name||"—";
+    return(bks||[]).map(b=>({id:b.id,student:nm(b.student_id),tutor:b.tutor_id?nm(b.tutor_id):"Lynda Badmus",course:courseTitle(b.course_id),date:b.session_date,time:hhmm(b.session_time),zoom:b.zoom_url||"",meetingId:b.meeting_id||"",status:b.status}));
+  });
+  const[bookings,setBookings]=useState(null);
+  useEffect(()=>{if(fetched&&bookings===null)setBookings(fetched);},[fetched,bookings]);
   const[zModal,sZModal]=useState(null);
   const[zLink,sZLink]=useState("");const[zId,sZId]=useState("");
-  const saveZoom=()=>{setBookings(bookings.map(b=>b.id===zModal?{...b,zoom:zLink,meetingId:zId}:b));sZModal(null);sZLink("");sZId("");};
+  const saveZoom=async()=>{
+    try{await supabase.from("bookings").update({zoom_url:zLink,meeting_id:zId}).eq("id",zModal);}catch(e){console.warn(e);}
+    setBookings((bookings||[]).map(b=>b.id===zModal?{...b,zoom:zLink,meetingId:zId}:b));sZModal(null);sZLink("");sZId("");
+  };
   return(
     <div style={{padding:"2rem"}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"1.25rem",flexWrap:"wrap",gap:"1rem"}}>
@@ -1667,7 +1704,8 @@ function AdminBookings(){
       <div style={{background:T.bla,border:`1px solid ${T.bl}40`,borderRadius:8,padding:".85rem 1.2rem",marginBottom:"1.5rem",fontSize:".82rem",color:T.c2}}>
         <strong style={{color:T.bl}}>Phase 1 (Active):</strong> Admin adds Zoom links manually below. <strong style={{color:T.am}}>Phase 2 (Coming):</strong> Auto-generated via Zoom Server-to-Server OAuth on booking confirmation.
       </div>
-      {bookings.map(b=>(
+      {bookings&&bookings.length===0&&<EmptyNote text="No bookings yet. When students book Zoom sessions, they'll appear here."/>}
+      {(bookings||[]).map(b=>(
         <div key={b.id} style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:8,padding:"1.1rem 1.3rem",marginBottom:".65rem"}}>
           <div style={{display:"grid",gridTemplateColumns:"1fr auto auto",gap:"1.5rem",alignItems:"center",flexWrap:"wrap"}}>
             <div>
@@ -1744,12 +1782,21 @@ function AdminCourses(){
 }
 
 function AdminPayouts(){
-  const[payouts,setPayouts]=useState(ADM.payouts);
-  const approve=id=>setPayouts(payouts.map(p=>p.id===id?{...p,status:"approved"}:p));
-  const markPaid=id=>setPayouts(payouts.map(p=>p.id===id?{...p,status:"paid",paidAt:today(),ref:"BACS-"+uid().toUpperCase()}:p));
-  const total=payouts.reduce((a,p)=>a+p.total,0);
-  const pending=payouts.filter(p=>p.status==="pending").reduce((a,p)=>a+p.total,0);
-  const approved=payouts.filter(p=>p.status==="approved").reduce((a,p)=>a+p.total,0);
+  const fetched=useTable(async()=>{
+    const[{data:invs},{data:profs}]=await Promise.all([
+      supabase.from("invoices").select("*"),
+      supabase.from("profiles").select("id,name").eq("role","tutor"),
+    ]);
+    return(invs||[]).map(i=>({id:i.id,tutor:profs?.find(pr=>pr.id===i.tutor_id)?.name||"Tutor",period:i.period,hours:Number(i.hours),rate:Number(i.rate),total:Number(i.total),status:i.status,paidAt:i.paid_at,ref:null}));
+  });
+  const[payouts,setPayouts]=useState(null);
+  useEffect(()=>{if(fetched&&payouts===null)setPayouts(fetched);},[fetched,payouts]);
+  const list=payouts||[];
+  const approve=async id=>{try{await supabase.from("invoices").update({status:"approved"}).eq("id",id);}catch(e){console.warn(e);}setPayouts(list.map(p=>p.id===id?{...p,status:"approved"}:p));};
+  const markPaid=async id=>{const now=new Date().toISOString();try{await supabase.from("invoices").update({status:"paid",paid_at:now}).eq("id",id);}catch(e){console.warn(e);}setPayouts(list.map(p=>p.id===id?{...p,status:"paid",paidAt:now}:p));};
+  const total=list.reduce((a,p)=>a+p.total,0);
+  const pending=list.filter(p=>p.status==="pending").reduce((a,p)=>a+p.total,0);
+  const approved=list.filter(p=>p.status==="approved").reduce((a,p)=>a+p.total,0);
   return(
     <div style={{padding:"2rem"}}>
       <h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1.5rem"}}>Tutor Payouts</h2>
@@ -1758,7 +1805,8 @@ function AdminPayouts(){
           <div key={l} style={{background:T.n2,padding:"1.2rem 1.4rem"}}><Stat v={v} l={l} c={c}/></div>
         ))}
       </div>
-      {payouts.map(p=>(
+      {payouts&&list.length===0&&<EmptyNote text="No invoices yet. When tutors submit invoices, they'll appear here for approval and payment."/>}
+      {list.map(p=>(
         <div key={p.id} style={{background:T.n2,border:`1px solid ${p.status==="pending"?T.am:p.status==="approved"?T.bl:T.rl}`,borderRadius:8,padding:"1.25rem 1.5rem",marginBottom:".65rem"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:"1rem"}}>
             <div><p style={{fontWeight:500,fontSize:".92rem"}}>{p.tutor}</p><p style={{fontSize:".75rem",color:T.ash}}>{p.period} · {p.hours}h · £{p.rate}/hr{p.ref?` · Ref: ${p.ref}`:""}</p>{p.paidAt&&<p style={{fontSize:".72rem",color:T.ash2,marginTop:".1rem"}}>Paid: {fmtD(p.paidAt)}</p>}</div>
@@ -1774,15 +1822,6 @@ function AdminPayouts(){
       <div style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:10,padding:"1.5rem",marginTop:"1.5rem"}}>
         <p style={{fontSize:".72rem",fontWeight:600,letterSpacing:".14em",textTransform:"uppercase",color:T.gd,marginBottom:".65rem"}}>Pay Rate Configuration</p>
         <p style={{fontSize:".82rem",color:T.ash,fontWeight:300}}>Admin sets per-tutor pay rates individually. Rate is snapshotted on session completion and used for invoice calculation. Cannot be retroactively changed on submitted invoices.</p>
-        {ADM.tutors.filter(t=>t.status==="active").map(t=>(
-          <div key={t.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:".75rem 0",borderBottom:`1px solid ${T.r2}`}}>
-            <p style={{fontSize:".85rem",fontWeight:500}}>{t.name}</p>
-            <div style={{display:"flex",alignItems:"center",gap:"1rem"}}>
-              <p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.1rem",color:T.gd}}>£{t.payRate}/hr</p>
-              <Btn ch="Edit Rate" v="navy" sz="xs" onClick={()=>{}}/>
-            </div>
-          </div>
-        ))}
       </div>
     </div>
   );
@@ -1926,13 +1965,13 @@ export default function App(){
       case"progress":   return<div style={{padding:"2rem"}}><h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1rem"}}>Progress Tracker</h2><p style={{fontSize:".85rem",color:T.ash,marginBottom:"1.5rem"}}>Score trend and unit progress are displayed on your Dashboard. Full progress view available here in production.</p>{UNITS.map(u=><div key={u.u} style={{marginBottom:"1rem"}}><div style={{display:"flex",justifyContent:"space-between",marginBottom:".4rem"}}><p style={{fontSize:".88rem",color:u.p>0?T.cr:T.ash2}}>{u.u}</p><p style={{fontSize:".82rem",color:u.p===100?T.gr:u.p>0?u.c:T.ash2,fontWeight:600}}>{u.p}%</p></div><PBar p={u.p} col={u.c} h={7}/></div>)}</div>;
       case"account":    return<div style={{padding:"2rem",maxWidth:500}}><h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"2rem"}}>Account</h2>{[["Name",user.name],["Email",user.email],["Role",user.role],["Timezone","Europe/London"],["Currency",cur]].map(([k,v])=><div key={k} style={{display:"flex",justifyContent:"space-between",padding:".8rem 0",borderBottom:`1px solid ${T.r2}`}}><span style={{fontSize:".72rem",color:T.ash2,letterSpacing:".08em",textTransform:"uppercase"}}>{k}</span><span style={{fontSize:".85rem",color:T.ash}}>{v}</span></div>)}</div>;
       case"parent":     return<ParentPortal user={user} go={go} bp={bp}/>;
-      case"par-assess": return<Assessments user={USERS.find(u=>u.id==(user.childId))||USERS[0]}/>;
-      case"par-sessions":return<div style={{padding:"2rem"}}><h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1rem"}}>Session History</h2>{(USERS.find(u=>u.id==user.childId)||USERS[0]).enrollments?.[0]?.bookings?.map(b=><div key={b.id} style={{marginBottom:".65rem"}}><ZoomCard link={b.zoom} meetingId={b.meetingId} date={b.date} time={b.time} course="IB Math AA HL" tutor={b.tutor} status={b.status}/></div>)}</div>;
-      case"par-billing":return<div style={{padding:"2rem"}}><h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1rem"}}>Billing</h2><div style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:8,padding:"1.2rem 1.5rem",display:"flex",justifyContent:"space-between",alignItems:"center"}}><div><p style={{fontWeight:500}}>IB Math AA HL — Full Course</p><p style={{fontSize:".72rem",color:T.ash}}>Sep 2025 · Stripe</p></div><div style={{textAlign:"right"}}><p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.4rem",color:T.gd}}>£2,500</p><SBadge s="paid"/></div></div></div>;
+      case"par-assess": return<Assessments user={user.child||{name:user.name,enrollments:[]}}/>;
+      case"par-sessions":return<div style={{padding:"2rem"}}><h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1rem"}}>Session History</h2>{((user.child?.enrollments||[]).flatMap(e=>e.bookings||[])).length===0&&<EmptyNote text="No sessions yet."/>}{(user.child?.enrollments||[]).flatMap(e=>e.bookings||[]).map(b=><div key={b.id} style={{marginBottom:".65rem"}}><ZoomCard link={b.zoom} meetingId={b.meetingId} date={b.date} time={b.time} course="Session" tutor={b.tutor} status={b.status}/></div>)}</div>;
+      case"par-billing":return<div style={{padding:"2rem"}}><h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1rem"}}>Billing</h2><EmptyNote text="Billing history appears once your child is enrolled in a course."/></div>;
       case"tutor-dash": return<TutorDash user={user} go={go} bp={bp}/>;
-      case"tutor-schedule":return<TutorSchedule/>;
-      case"tutor-hours":return<TutorHours go={go}/>;
-      case"tutor-invoices":return<TutorInvoices/>;
+      case"tutor-schedule":return<TutorSchedule user={user}/>;
+      case"tutor-hours":return<TutorHours go={go} user={user}/>;
+      case"tutor-invoices":return<TutorInvoices user={user}/>;
       case"tutor-post": return<PostSession/>;
       case"admin":      return<AdminDash go={go} bp={bp}/>;
       case"admin-tutors":return<AdminTutors/>;
