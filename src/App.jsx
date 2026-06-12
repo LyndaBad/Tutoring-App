@@ -465,7 +465,7 @@ function Home({go,cur,bp}){
   return(
     <div>
       {/* ── Hero ─────────────────────────────────────────────────────── */}
-      <section style={{minHeight:"100vh",display:"flex",alignItems:"flex-end",paddingBottom:"5rem",position:"relative",overflow:"hidden"}}>
+      <section style={{minHeight:"100vh",display:"flex",alignItems:"flex-end",paddingTop:130,paddingBottom:"5rem",position:"relative",overflow:"hidden"}}>
         {/* Rich background */}
         <div style={{position:"absolute",inset:0,background:`linear-gradient(175deg,${T.n} 0%,${T.n2} 100%)`}}/>
         {/* Colored glow orbs */}
@@ -479,11 +479,7 @@ function Home({go,cur,bp}){
         <div style={{position:"absolute",top:0,left:0,right:0,height:2,background:"linear-gradient(90deg,transparent,rgba(79,61,245,.45),rgba(124,58,237,.4),rgba(46,124,230,.35),transparent)"}}/>
 
         <div style={{maxWidth:1360,margin:"0 auto",padding:`0 ${p}`,width:"100%",position:"relative"}}>
-          {!bp?.mobile&&<div className="rise" style={{marginBottom:"1.4rem",display:"flex",alignItems:"center",gap:".85rem"}}>
-            <div style={{height:1,width:40,background:`linear-gradient(90deg,${T.gd},${T.vi})`}}/>
-            <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".22em",textTransform:"uppercase",background:`linear-gradient(90deg,${T.gd},${T.vi})`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>Specialist Maths & Chemistry Tuition · IB · A-Level · GCSE · AP</p>
-          </div>}
-          <h1 className="rise r1" style={{fontFamily:"'Sora',sans-serif",fontSize:`min(${bp?.mobile?"18vw":"10vw"},8.5rem)`,fontWeight:600,lineHeight:.9,letterSpacing:"-.03em",marginBottom:"2.2rem"}}>
+          <h1 className="rise r1" style={{fontFamily:"'Sora',sans-serif",fontSize:`min(${bp?.mobile?"13vw":"7vw"},5.6rem)`,fontWeight:600,lineHeight:1.04,letterSpacing:"-.03em",marginBottom:"2rem"}}>
             Academic<br/>excellence<br/><em style={{fontStyle:"italic",background:`linear-gradient(135deg,${T.gd},${T.am})`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>with purpose.</em>
           </h1>
           <p className="rise r2" style={{fontSize:bp?.mobile?".9rem":"1.05rem",color:T.ash,lineHeight:1.82,maxWidth:440,fontWeight:300,marginBottom:"2.5rem"}}>Students enrol in structured courses — lesson by lesson, assessment by assessment — and book live Zoom sessions at their own pace.</p>
