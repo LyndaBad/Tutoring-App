@@ -18,6 +18,8 @@
  */
 import { useState, useEffect, useRef, useCallback } from "react";
 import { supabase } from "./lib/supabase";
+import lyndaPhoto from "./assets/lynda.png";
+import logoMark from "./assets/logo.png";
 import {
   Home as HomeIcon, BookOpen, Calendar, TrendingUp, Award, Users, FileText,
   CreditCard, CheckCircle, Eye, EyeOff, ArrowUp, Download, Menu,
@@ -32,29 +34,29 @@ import {
 
 /* ─── TOKENS ─────────────────────────────────────────────────────── */
 const T={
-  n:"#050B1A",n2:"#090F22",n3:"#0F1B36",n4:"#162444",
-  cr:"#F5F0E8",c2:"#D8D0C4",ash:"#8090B8",ash2:"#4A5E82",
-  gd:"#F5C842",g2:"#FFE07A",gda:"rgba(245,200,66,.18)",gdaa:"rgba(245,200,66,.09)",
-  gr:"#00D491",gra:"rgba(0,212,145,.18)",
-  bl:"#5AABFF",bla:"rgba(90,171,255,.18)",
-  am:"#FF9340",ama:"rgba(255,147,64,.18)",
-  rd:"#FF4E72",rda:"rgba(255,78,114,.18)",
-  vi:"#A07AFF",via:"rgba(160,122,255,.18)",
-  te:"#00C9AE",tea:"rgba(0,201,174,.18)",
-  rl:"rgba(245,200,66,.14)",r2:"rgba(255,255,255,.09)",r3:"rgba(255,255,255,.04)",
-  s2:"0 8px 48px rgba(0,0,0,.65)",s3:"0 24px 72px rgba(0,0,0,.8)",
+  n:"#FFFFFF",n2:"#F7F7FC",n3:"#EFEEF9",n4:"#E5E3F4",
+  cr:"#1D1A33",c2:"#3E3A5C",ash:"#6E6A8A",ash2:"#9A96B8",
+  gd:"#4F3DF5",g2:"#3E2EE0",gda:"rgba(79,61,245,.12)",gdaa:"rgba(79,61,245,.06)",
+  gr:"#0E9F6E",gra:"rgba(14,159,110,.13)",
+  bl:"#2E7CE6",bla:"rgba(46,124,230,.13)",
+  am:"#E8821E",ama:"rgba(232,130,30,.14)",
+  rd:"#E8503A",rda:"rgba(232,80,58,.12)",
+  vi:"#7C3AED",via:"rgba(124,58,237,.12)",
+  te:"#0D9AA8",tea:"rgba(13,154,168,.13)",
+  rl:"rgba(29,26,51,.10)",r2:"rgba(29,26,51,.12)",r3:"rgba(29,26,51,.05)",
+  s2:"0 8px 30px rgba(29,26,51,.10)",s3:"0 24px 64px rgba(29,26,51,.18)",
 };
 
 /* ─── GLOBAL CSS ──────────────────────────────────────────────────── */
 const CSS=`
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
-body{font-family:'Jost',system-ui,sans-serif;background:${T.n};color:${T.cr};-webkit-font-smoothing:antialiased;line-height:1.6;overflow-x:hidden;}
-h1,h2,h3,h4{font-family:'Cormorant Garamond',Georgia,serif;line-height:1.1;font-weight:500;}
+body{font-family:'Inter',system-ui,sans-serif;background:${T.n};color:${T.cr};-webkit-font-smoothing:antialiased;line-height:1.6;overflow-x:hidden;}
+h1,h2,h3,h4{font-family:'Sora',system-ui,sans-serif;line-height:1.15;font-weight:600;letter-spacing:-.02em;}
 button,input,select,textarea{font-family:inherit;}
 a{text-decoration:none;color:inherit;}
-::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-thumb{background:rgba(245,200,66,.3);border-radius:4px;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-thumb{background:rgba(79,61,245,.25);border-radius:4px;}
 @keyframes rise{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
 @keyframes fIn{from{opacity:0;}to{opacity:1;}}
 @keyframes drift{0%{transform:translateY(0) rotate(0deg);}50%{transform:translateY(-22px) rotate(3deg);}100%{transform:translateY(0) rotate(0deg);}}
@@ -206,32 +208,10 @@ function useBreakpoint(){
 function Logo({size=32,text=true}){
   return(
     <div style={{display:"flex",alignItems:"center",gap:".75rem",flexShrink:0}}>
-      <svg width={size} height={size} viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="logo-bg" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#A07AFF"/>
-            <stop offset=".55" stopColor="#5AABFF"/>
-            <stop offset="1" stopColor="#00C9AE"/>
-          </linearGradient>
-          <linearGradient id="logo-ring" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
-            <stop stopColor="rgba(160,122,255,.6)"/>
-            <stop offset="1" stopColor="rgba(0,201,174,.4)"/>
-          </linearGradient>
-        </defs>
-        {/* Outer glow ring */}
-        <rect width="40" height="40" rx="12" stroke="url(#logo-ring)" strokeWidth="1.5" fill="none"/>
-        {/* Main background */}
-        <rect x="2" y="2" width="36" height="36" rx="10" fill="url(#logo-bg)"/>
-        {/* Subtle inner shadow overlay */}
-        <rect x="2" y="2" width="36" height="36" rx="10" fill="rgba(5,11,26,.18)"/>
-        {/* Diamond accent */}
-        <polygon points="20,7 33,20 20,33 7,20" stroke="rgba(255,255,255,.18)" strokeWidth="1" fill="none"/>
-        {/* LB monogram */}
-        <text x="20" y="26" textAnchor="middle" fontFamily="Georgia,serif" fontSize="14" fontWeight="700" fill="white" letterSpacing=".5">LB</text>
-      </svg>
+      <img src={logoMark} alt="Lynda Badmus Education" width={size} height={size} style={{display:"block",borderRadius:size*.3,objectFit:"cover",flexShrink:0}}/>
       {text&&<div>
-        <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:size>28?"1.08rem":".9rem",fontWeight:600,color:T.cr,lineHeight:1.1,letterSpacing:"-.01em"}}>Lynda Badmus</p>
-        <p style={{fontFamily:"'Jost',sans-serif",fontSize:size>28?".6rem":".52rem",color:T.ash,letterSpacing:".2em",textTransform:"uppercase",lineHeight:1,marginTop:".12rem",fontWeight:500}}>Tuition</p>
+        <p style={{fontFamily:"'Sora',sans-serif",fontSize:size>28?"1.08rem":".9rem",fontWeight:600,color:T.cr,lineHeight:1.1,letterSpacing:"-.01em"}}>Lynda Badmus</p>
+        <p style={{fontFamily:"'Inter',sans-serif",fontSize:size>28?".6rem":".52rem",color:T.gd,letterSpacing:".2em",textTransform:"uppercase",lineHeight:1,marginTop:".12rem",fontWeight:500}}>Education</p>
       </div>}
     </div>
   );
@@ -241,7 +221,7 @@ function Logo({size=32,text=true}){
 function Btn({ch,v="gold",sz="md",onClick,dis,sx={},type="button"}){
   const[h,sH]=useState(false);
   const S={xl:{p:".9rem 2.2rem",fs:".92rem"},lg:{p:".78rem 1.8rem",fs:".87rem"},md:{p:".58rem 1.2rem",fs:".82rem"},sm:{p:".38rem .9rem",fs:".76rem"},xs:{p:".22rem .6rem",fs:".7rem"}};
-  const V={gold:{bg:h?"linear-gradient(135deg,#F5C842,#FF9340)":"linear-gradient(135deg,#FFD060,#F5C842)",c:T.n,b:"none",sh:`0 10px 28px rgba(245,200,66,.35)`},navy:{bg:h?T.n3:T.n2,c:T.cr,b:`1px solid ${T.rl}`},outline:{bg:"transparent",c:h?T.g2:T.gd,b:`1px solid ${T.gd}`},ghost:{bg:h?"rgba(255,255,255,.06)":"transparent",c:h?T.cr:T.ash,b:`1px solid ${T.r2}`},success:{bg:h?"#228A5A":T.gr,c:"#fff",b:"none"},danger:{bg:h?"#A03A3A":T.rd,c:"#fff",b:"none"}};
+  const V={gold:{bg:h?"#3E2EE0":T.gd,c:"#fff",b:"none",sh:`0 10px 24px rgba(79,61,245,.28)`},navy:{bg:h?T.n3:T.n2,c:T.cr,b:`1px solid ${T.rl}`},outline:{bg:"transparent",c:h?T.g2:T.gd,b:`1px solid ${T.gd}`},ghost:{bg:h?"rgba(29,26,51,.05)":"transparent",c:h?T.cr:T.ash,b:`1px solid ${T.r2}`},success:{bg:h?"#0B855C":T.gr,c:"#fff",b:"none"},danger:{bg:h?"#C53E2C":T.rd,c:"#fff",b:"none"}};
   const v2=V[v]||V.gold;const sz2=S[sz]||S.md;
   return<button type={type} disabled={dis} onClick={onClick} onMouseEnter={()=>sH(true)} onMouseLeave={()=>sH(false)} style={{fontFamily:"inherit",fontWeight:500,borderRadius:8,cursor:dis?"not-allowed":"pointer",transition:"all .18s",display:"inline-flex",alignItems:"center",gap:".4rem",whiteSpace:"nowrap",opacity:dis?.5:1,padding:sz2.p,fontSize:sz2.fs,background:v2.bg,color:v2.c,border:v2.b,boxShadow:v2.sh||"none",...sx}}>{ch}</button>;
 }
@@ -252,7 +232,7 @@ function Modal({title,ch,onClose,wide=false}){
     <div onClick={e=>{if(e.target===e.currentTarget)onClose();}} style={{position:"fixed",inset:0,background:"rgba(5,12,24,.82)",zIndex:3000,display:"flex",alignItems:"center",justifyContent:"center",padding:"1rem",backdropFilter:"blur(8px)"}}>
       <div className="rise" style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:20,width:"100%",maxWidth:wide?880:560,maxHeight:"92vh",overflow:"hidden",display:"flex",flexDirection:"column",boxShadow:T.s3}}>
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"1.2rem 1.75rem",borderBottom:`1px solid ${T.rl}`,flexShrink:0}}>
-          <h3 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.4rem",fontWeight:400}}>{title}</h3>
+          <h3 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.4rem",fontWeight:400}}>{title}</h3>
           <button onClick={onClose} style={{background:"none",border:"none",color:T.ash,fontSize:"1.5rem",cursor:"pointer",lineHeight:1}}>&times;</button>
         </div>
         <div style={{padding:"1.75rem",overflowY:"auto",flex:1}}>{ch}</div>
@@ -330,7 +310,7 @@ function Stat({v,l,c,delta}){
   return(
     <div>
       <div style={{display:"flex",alignItems:"baseline",gap:".45rem"}}>
-        <span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"2.2rem",fontWeight:300,color:c||T.gd,lineHeight:1}}>{v}</span>
+        <span style={{fontFamily:"'Sora',sans-serif",fontSize:"2.2rem",fontWeight:300,color:c||T.gd,lineHeight:1}}>{v}</span>
         {delta&&<span style={{fontSize:".72rem",color:delta>0?T.gr:T.rd}}>{delta>0?"↑":"↓"}{Math.abs(delta)}%</span>}
       </div>
       <p style={{fontSize:".7rem",color:T.ash,marginTop:".18rem"}}>{l}</p>
@@ -346,7 +326,7 @@ function TopNav({pg,go,cur,setCur,user,logout,bp,drawerOpen,setDrawerOpen}){
   const solid=sc||inApp;
   const navItems=[["home","Home"],["about","About"],["courses","Courses"],["pricing","Pricing"],["faqs","FAQs"],["contact","Contact"]];
   return(
-    <header style={{position:"fixed",top:0,left:0,right:0,zIndex:200,background:solid?"rgba(5,11,26,.97)":"transparent",backdropFilter:solid?"blur(20px)":"none",borderBottom:solid?`1px solid ${T.rl}`:`1px solid rgba(245,200,66,.08)`,transition:"all .3s"}}>
+    <header style={{position:"fixed",top:0,left:0,right:0,zIndex:200,background:solid?"rgba(255,255,255,.95)":"transparent",backdropFilter:solid?"blur(20px)":"none",borderBottom:solid?`1px solid ${T.rl}`:`1px solid transparent`,transition:"all .3s"}}>
       <div style={{maxWidth:1360,margin:"0 auto",display:"flex",alignItems:"center",height:66,padding:"0 1.5rem",gap:"1rem"}}>
         <button onClick={()=>go("home")} style={{background:"none",border:"none",cursor:"pointer",padding:0}}><Logo size={bp.mobile?28:32}/></button>
         {bp.desktop&&(
@@ -489,21 +469,21 @@ function Home({go,cur,bp}){
         {/* Rich background */}
         <div style={{position:"absolute",inset:0,background:`linear-gradient(175deg,${T.n} 0%,${T.n2} 100%)`}}/>
         {/* Colored glow orbs */}
-        <div className="glow-pulse" style={{position:"absolute",top:"8%",left:"62%",width:480,height:480,borderRadius:"50%",background:"radial-gradient(circle,rgba(160,122,255,.18) 0%,transparent 70%)",pointerEvents:"none"}}/>
-        <div className="glow-pulse" style={{position:"absolute",top:"40%",left:"75%",width:300,height:300,borderRadius:"50%",background:"radial-gradient(circle,rgba(90,171,255,.14) 0%,transparent 70%)",pointerEvents:"none",animationDelay:"1.4s"}}/>
-        <div className="glow-pulse" style={{position:"absolute",bottom:"15%",left:"55%",width:350,height:350,borderRadius:"50%",background:"radial-gradient(circle,rgba(0,212,145,.12) 0%,transparent 70%)",pointerEvents:"none",animationDelay:"2.2s"}}/>
+        <div className="glow-pulse" style={{position:"absolute",top:"8%",left:"62%",width:480,height:480,borderRadius:"50%",background:"radial-gradient(circle,rgba(124,58,237,.10) 0%,transparent 70%)",pointerEvents:"none"}}/>
+        <div className="glow-pulse" style={{position:"absolute",top:"40%",left:"75%",width:300,height:300,borderRadius:"50%",background:"radial-gradient(circle,rgba(46,124,230,.09) 0%,transparent 70%)",pointerEvents:"none",animationDelay:"1.4s"}}/>
+        <div className="glow-pulse" style={{position:"absolute",bottom:"15%",left:"55%",width:350,height:350,borderRadius:"50%",background:"radial-gradient(circle,rgba(14,159,110,.08) 0%,transparent 70%)",pointerEvents:"none",animationDelay:"2.2s"}}/>
         {/* Decorative symbols */}
-        {!bp?.mobile&&<div className="drift" style={{position:"absolute",right:"4%",top:"42%",transform:"translateY(-50%)",fontFamily:"'Cormorant Garamond',serif",fontSize:"min(28vw,340px)",fontWeight:600,lineHeight:1,background:"linear-gradient(135deg,rgba(245,200,66,.12),rgba(160,122,255,.08))",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",userSelect:"none",pointerEvents:"none"}}>∑</div>}
-        {!bp?.mobile&&<div className="drift" style={{position:"absolute",right:"20%",bottom:"10%",fontFamily:"'Cormorant Garamond',serif",fontSize:"min(12vw,140px)",fontWeight:300,lineHeight:1,background:"linear-gradient(135deg,rgba(0,212,145,.16),rgba(90,171,255,.1))",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",userSelect:"none",pointerEvents:"none",animationDelay:"2s"}}>⚗</div>}
+        {!bp?.mobile&&<div className="drift" style={{position:"absolute",right:"4%",top:"42%",transform:"translateY(-50%)",fontFamily:"'Sora',sans-serif",fontSize:"min(28vw,340px)",fontWeight:600,lineHeight:1,background:"linear-gradient(135deg,rgba(79,61,245,.14),rgba(124,58,237,.10))",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",userSelect:"none",pointerEvents:"none"}}>∑</div>}
+        {!bp?.mobile&&<div className="drift" style={{position:"absolute",right:"20%",bottom:"10%",fontFamily:"'Sora',sans-serif",fontSize:"min(12vw,140px)",fontWeight:300,lineHeight:1,background:"linear-gradient(135deg,rgba(14,159,110,.16),rgba(46,124,230,.12))",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",userSelect:"none",pointerEvents:"none",animationDelay:"2s"}}>⚗</div>}
         {/* Thin top accent line */}
-        <div style={{position:"absolute",top:0,left:0,right:0,height:2,background:"linear-gradient(90deg,transparent,rgba(245,200,66,.6),rgba(160,122,255,.5),rgba(90,171,255,.4),transparent)"}}/>
+        <div style={{position:"absolute",top:0,left:0,right:0,height:2,background:"linear-gradient(90deg,transparent,rgba(79,61,245,.45),rgba(124,58,237,.4),rgba(46,124,230,.35),transparent)"}}/>
 
         <div style={{maxWidth:1360,margin:"0 auto",padding:`0 ${p}`,width:"100%",position:"relative"}}>
           {!bp?.mobile&&<div className="rise" style={{marginBottom:"1.4rem",display:"flex",alignItems:"center",gap:".85rem"}}>
             <div style={{height:1,width:40,background:`linear-gradient(90deg,${T.gd},${T.vi})`}}/>
             <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".22em",textTransform:"uppercase",background:`linear-gradient(90deg,${T.gd},${T.vi})`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>Specialist Maths & Chemistry Tuition · IB · A-Level · GCSE · AP</p>
           </div>}
-          <h1 className="rise r1" style={{fontFamily:"'Cormorant Garamond',serif",fontSize:`min(${bp?.mobile?"18vw":"10vw"},8.5rem)`,fontWeight:600,lineHeight:.9,letterSpacing:"-.03em",marginBottom:"2.2rem"}}>
+          <h1 className="rise r1" style={{fontFamily:"'Sora',sans-serif",fontSize:`min(${bp?.mobile?"18vw":"10vw"},8.5rem)`,fontWeight:600,lineHeight:.9,letterSpacing:"-.03em",marginBottom:"2.2rem"}}>
             Academic<br/>excellence<br/><em style={{fontStyle:"italic",background:`linear-gradient(135deg,${T.gd},${T.am})`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>with purpose.</em>
           </h1>
           <p className="rise r2" style={{fontSize:bp?.mobile?".9rem":"1.05rem",color:T.ash,lineHeight:1.82,maxWidth:440,fontWeight:300,marginBottom:"2.5rem"}}>Students enrol in structured courses — lesson by lesson, assessment by assessment — and book live Zoom sessions at their own pace.</p>
@@ -512,10 +492,10 @@ function Home({go,cur,bp}){
             <Btn ch="Meet Lynda" v="outline" sz={bp?.mobile?"md":"lg"} onClick={()=>go("about")}/>
           </div>
           {/* Stats grid — vivid color-coded */}
-          <div className="rise r4" style={{display:"grid",gridTemplateColumns:bp?.mobile?"1fr 1fr":"repeat(4,1fr)",gap:1,background:"rgba(255,255,255,.06)",borderRadius:14,overflow:"hidden",maxWidth:bp?.mobile?"100%":640}}>
+          <div className="rise r4" style={{display:"grid",gridTemplateColumns:bp?.mobile?"1fr 1fr":"repeat(4,1fr)",gap:1,background:"rgba(29,26,51,.08)",borderRadius:14,overflow:"hidden",maxWidth:bp?.mobile?"100%":640}}>
             {[["MSc","Cambridge Maths",T.vi],["12+","Years teaching",T.gd],["20","Courses",T.gr],["6","IB pathways",T.bl]].map(([n,l,c])=>(
               <div key={n} style={{background:T.n2,padding:"1.2rem 1.35rem",borderBottom:`2px solid ${c}`,transition:"background .2s"}}>
-                <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.9rem",fontWeight:500,color:c,lineHeight:1,marginBottom:".2rem"}}>{n}</p>
+                <p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.9rem",fontWeight:500,color:c,lineHeight:1,marginBottom:".2rem"}}>{n}</p>
                 <p style={{fontSize:".62rem",color:T.ash2,letterSpacing:".04em"}}>{l}</p>
               </div>
             ))}
@@ -525,21 +505,21 @@ function Home({go,cur,bp}){
 
       {/* ── IB Spotlight ──────────────────────────────────────────── */}
       <section style={{background:T.n2,borderTop:`1px solid ${T.rl}`,borderBottom:`1px solid ${T.rl}`,padding:`${bp?.mobile?"3rem":"4.5rem"} ${p}`,position:"relative",overflow:"hidden"}}>
-        <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 90% 50%,rgba(160,122,255,.08),transparent 55%)"}}/>
+        <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 90% 50%,rgba(124,58,237,.06),transparent 55%)"}}/>
         <div style={{maxWidth:1360,margin:"0 auto",position:"relative"}}>
           <div style={{display:"flex",alignItems:"center",gap:".85rem",marginBottom:"1.2rem"}}>
             <div style={{height:1,width:32,background:T.vi}}/>
             <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".25em",textTransform:"uppercase",color:T.vi}}>IB Mathematics — 6 Separate Courses · AA ≠ AI · SL ≠ HL</p>
           </div>
-          <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:`min(${bp?.mobile?"8vw":"4vw"},3rem)`,fontWeight:500,marginBottom:`${bp?.mobile?"2rem":"3rem"}`}}>Choose the <em style={{fontStyle:"italic",color:T.vi}}>exact</em> course you study.</h2>
-          <div style={{display:"grid",gridTemplateColumns:`repeat(${bp?.mobile?2:3},1fr)`,gap:"1px",background:"rgba(255,255,255,.05)",borderRadius:14,overflow:"hidden"}}>
+          <h2 style={{fontFamily:"'Sora',sans-serif",fontSize:`min(${bp?.mobile?"8vw":"4vw"},3rem)`,fontWeight:500,marginBottom:`${bp?.mobile?"2rem":"3rem"}`}}>Choose the <em style={{fontStyle:"italic",color:T.vi}}>exact</em> course you study.</h2>
+          <div style={{display:"grid",gridTemplateColumns:`repeat(${bp?.mobile?2:3},1fr)`,gap:"1px",background:"rgba(29,26,51,.07)",borderRadius:14,overflow:"hidden"}}>
             {[{id:"ib-aa-sl",l:"Math AA SL",d:"Analysis & Approaches · SL",c:T.vi,sub:"math"},{id:"ib-aa-hl",l:"Math AA HL",d:"Analysis & Approaches · HL",c:T.vi,sub:"math"},{id:"ib-ai-sl",l:"Math AI SL",d:"Applications · SL",c:T.bl,sub:"math"},{id:"ib-ai-hl",l:"Math AI HL",d:"Applications · HL",c:T.bl,sub:"math"},{id:"ib-chem-sl",l:"Chemistry SL",d:"IB Chemistry · SL",c:T.gr,sub:"chem"},{id:"ib-chem-hl",l:"Chemistry HL",d:"IB Chemistry · HL",c:T.gr,sub:"chem"}].map(c=>(
               <button key={c.id} onClick={()=>go("course-"+c.id)} style={{background:T.n2,border:"none",cursor:"pointer",padding:"1.35rem",textAlign:"left",transition:"background .2s",fontFamily:"inherit",borderLeft:`3px solid transparent`}} onMouseEnter={e=>{e.currentTarget.style.background=T.n3;e.currentTarget.style.borderLeftColor=c.c;}} onMouseLeave={e=>{e.currentTarget.style.background=T.n2;e.currentTarget.style.borderLeftColor="transparent";}}>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
                   <Tag l="IB" c={c.c} bg={c.c+"20"} sz="xs"/>
                   <SubIcon sub={c.sub||"math"} col={c.c} size={20}/>
                 </div>
-                <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:bp?.mobile?"1.05rem":"1.15rem",fontWeight:500,color:T.cr,margin:".65rem 0 .25rem"}}>{c.l}</p>
+                <p style={{fontFamily:"'Sora',sans-serif",fontSize:bp?.mobile?"1.05rem":"1.15rem",fontWeight:500,color:T.cr,margin:".65rem 0 .25rem"}}>{c.l}</p>
                 <p style={{fontSize:".7rem",color:T.ash}}>{c.d}</p>
               </button>
             ))}
@@ -550,18 +530,18 @@ function Home({go,cur,bp}){
 
       {/* ── How It Works ─────────────────────────────────────────── */}
       <section style={{padding:`${bp?.mobile?"4rem":"7rem"} ${p}`,position:"relative",overflow:"hidden"}}>
-        <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 20% 50%,rgba(0,212,145,.05),transparent 50%)"}}/>
+        <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 20% 50%,rgba(14,159,110,.05),transparent 50%)"}}/>
         <div style={{maxWidth:1360,margin:"0 auto",position:"relative"}}>
           <div style={{display:"flex",alignItems:"center",gap:".85rem",marginBottom:".85rem"}}>
             <div style={{height:1,width:32,background:T.gr}}/>
             <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".25em",textTransform:"uppercase",color:T.gr}}>How It Works</p>
           </div>
-          <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:`min(${bp?.mobile?"9vw":"5vw"},3.5rem)`,fontWeight:500,marginBottom:`${bp?.mobile?"2.5rem":"4rem"}`}}>Enrol. Learn. <em style={{fontStyle:"italic",color:T.gr}}>Progress.</em></h2>
+          <h2 style={{fontFamily:"'Sora',sans-serif",fontSize:`min(${bp?.mobile?"9vw":"5vw"},3.5rem)`,fontWeight:500,marginBottom:`${bp?.mobile?"2.5rem":"4rem"}`}}>Enrol. Learn. <em style={{fontStyle:"italic",color:T.gr}}>Progress.</em></h2>
           <div style={{display:"grid",gridTemplateColumns:bp?.mobile?"1fr":bp?.tablet?"1fr 1fr":"repeat(4,1fr)",gap:bp?.mobile?"1.75rem":"0"}}>
             {[["01",T.vi,"Choose a course","Browse 20 structured programmes — each with a lesson-by-lesson plan before you commit."],["02",T.gd,"Select a package","Full, Half, or Quarter. Receive lesson credits to book live Zoom sessions at your pace."],["03",T.bl,"Book via Zoom","Pick a slot from the schedule. One booking uses one credit. Zoom link appears instantly."],["04",T.gr,"Track progress","Lesson completions, assessment scores, tutor feedback, and credits remaining — all in one place."]].map((s,i)=>(
               <div key={s[0]} style={{paddingRight:!bp?.mobile&&!bp?.tablet?"2.5rem":"0",paddingLeft:!bp?.mobile&&!bp?.tablet&&i>0?"2.5rem":"0",borderRight:!bp?.mobile&&!bp?.tablet&&i<3?`1px solid ${T.r2}`:"none"}}>
-                <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"2.5rem",fontWeight:600,color:s[1],marginBottom:"1.25rem",lineHeight:1}}>{s[0]}</p>
-                <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.15rem",fontWeight:500,color:T.cr,marginBottom:".55rem"}}>{s[2]}</p>
+                <p style={{fontFamily:"'Sora',sans-serif",fontSize:"2.5rem",fontWeight:600,color:s[1],marginBottom:"1.25rem",lineHeight:1}}>{s[0]}</p>
+                <p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.15rem",fontWeight:500,color:T.cr,marginBottom:".55rem"}}>{s[2]}</p>
                 <p style={{fontSize:".83rem",color:T.ash,lineHeight:1.75,fontWeight:300}}>{s[3]}</p>
               </div>
             ))}
@@ -574,21 +554,21 @@ function Home({go,cur,bp}){
 
       {/* ── Why Lynda ────────────────────────────────────────────── */}
       <section style={{background:T.n2,borderTop:`1px solid ${T.rl}`,padding:`${bp?.mobile?"4rem":"7rem"} ${p}`,position:"relative",overflow:"hidden"}}>
-        <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 80% 50%,rgba(245,200,66,.06),transparent 50%)"}}/>
+        <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 80% 50%,rgba(79,61,245,.05),transparent 50%)"}}/>
         <div style={{maxWidth:1360,margin:"0 auto",display:"grid",gridTemplateColumns:bp?.mobile||bp?.tablet?"1fr":"1fr 1fr",gap:bp?.mobile?"2.5rem":"7rem",alignItems:"center",position:"relative"}}>
           <div>
             <div style={{display:"flex",alignItems:"center",gap:".85rem",marginBottom:".85rem"}}>
               <div style={{height:1,width:32,background:T.gd}}/>
               <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".25em",textTransform:"uppercase",color:T.gd}}>Why Lynda Badmus Education</p>
             </div>
-            <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:`min(${bp?.mobile?"9vw":"5vw"},3.5rem)`,fontWeight:500,lineHeight:1.08,marginBottom:"1.5rem"}}>Most tutors explain.<br/><em style={{fontStyle:"italic",color:T.gd}}>Lynda diagnoses.</em></h2>
+            <h2 style={{fontFamily:"'Sora',sans-serif",fontSize:`min(${bp?.mobile?"9vw":"5vw"},3.5rem)`,fontWeight:500,lineHeight:1.08,marginBottom:"1.5rem"}}>Most tutors explain.<br/><em style={{fontStyle:"italic",color:T.gd}}>Lynda diagnoses.</em></h2>
             <p style={{fontSize:".92rem",color:T.ash,lineHeight:1.88,fontWeight:300,marginBottom:"2rem"}}>MSc Mathematics Education (Cambridge) + BEng Chemical Engineering + 12+ years across IB, A-Level, GCSE, and American curricula. Every session starts with a diagnostic. Every lesson has a structure.</p>
             <Btn ch="Read Lynda's Story →" v="outline" onClick={()=>go("about")}/>
           </div>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:1,background:"rgba(255,255,255,.05)",borderRadius:14,overflow:"hidden"}}>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:1,background:"rgba(29,26,51,.07)",borderRadius:14,overflow:"hidden"}}>
             {[["MSc Cambridge","Mathematics Education",T.vi],["BEng","Chemical Engineering",T.gr],["12+ years","UK & US schools",T.bl],["IB · A-Level · GCSE · AP","All major curricula",T.gd]].map(([n,l,c])=>(
               <div key={n} style={{background:T.n2,padding:"1.65rem",borderBottom:`3px solid ${c}`}}>
-                <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.35rem",fontWeight:500,color:c,marginBottom:".35rem"}}>{n}</p>
+                <p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.35rem",fontWeight:500,color:c,marginBottom:".35rem"}}>{n}</p>
                 <p style={{fontSize:".73rem",color:T.ash}}>{l}</p>
               </div>
             ))}
@@ -598,10 +578,10 @@ function Home({go,cur,bp}){
 
       {/* ── CTA ──────────────────────────────────────────────────── */}
       <section style={{padding:`${bp?.mobile?"5rem":"8rem"} ${p}`,textAlign:"center",position:"relative",overflow:"hidden"}}>
-        <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 50% 50%,rgba(160,122,255,.1) 0%,rgba(245,200,66,.06) 40%,transparent 70%)"}}/>
-        <div style={{position:"absolute",top:0,left:0,right:0,height:1,background:"linear-gradient(90deg,transparent,rgba(160,122,255,.4),rgba(245,200,66,.4),transparent)"}}/>
+        <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 50% 50%,rgba(124,58,237,.08) 0%,rgba(79,61,245,.05) 40%,transparent 70%)"}}/>
+        <div style={{position:"absolute",top:0,left:0,right:0,height:1,background:"linear-gradient(90deg,transparent,rgba(124,58,237,.35),rgba(79,61,245,.35),transparent)"}}/>
         <div style={{maxWidth:640,margin:"0 auto",position:"relative"}}>
-          <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:`min(${bp?.mobile?"10vw":"6vw"},4.5rem)`,fontWeight:600,lineHeight:1.05,marginBottom:"1.5rem"}}>Your strongest year starts with the <em style={{fontStyle:"italic",background:`linear-gradient(135deg,${T.gd},${T.vi})`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>right course.</em></h2>
+          <h2 style={{fontFamily:"'Sora',sans-serif",fontSize:`min(${bp?.mobile?"10vw":"6vw"},4.5rem)`,fontWeight:600,lineHeight:1.05,marginBottom:"1.5rem"}}>Your strongest year starts with the <em style={{fontStyle:"italic",background:`linear-gradient(135deg,${T.gd},${T.vi})`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>right course.</em></h2>
           <p style={{fontSize:".92rem",color:T.ash,lineHeight:1.85,maxWidth:420,margin:"0 auto 2.5rem",fontWeight:300}}>Browse the catalogue, enrol in a structured programme, and book your first Zoom session within 24 hours.</p>
           <div style={{display:"flex",gap:"1rem",justifyContent:"center",flexWrap:"wrap"}}>
             <Btn ch="Browse All Courses" v="gold" sz={bp?.mobile?"md":"xl"} onClick={()=>go("courses")}/>
@@ -621,7 +601,7 @@ function About({go,bp}){
       <section style={{background:T.n2,padding:`${bp?.mobile?"5rem":"7rem"} ${p} 4rem`,borderBottom:`1px solid ${T.rl}`}}>
         <div style={{maxWidth:1360,margin:"0 auto"}}>
           <p style={{fontSize:".65rem",color:T.gd,letterSpacing:".25em",textTransform:"uppercase",marginBottom:".85rem"}}>About Lynda Badmus</p>
-          <h1 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:`min(${bp?.mobile?"14vw":"8vw"},6rem)`,fontWeight:300,lineHeight:.96,marginBottom:"3rem"}}>Most tutors explain.<br/><em style={{fontStyle:"italic",color:T.gd}}>Lynda diagnoses.</em></h1>
+          <h1 style={{fontFamily:"'Sora',sans-serif",fontSize:`min(${bp?.mobile?"14vw":"8vw"},6rem)`,fontWeight:300,lineHeight:.96,marginBottom:"3rem"}}>Most tutors explain.<br/><em style={{fontStyle:"italic",color:T.gd}}>Lynda diagnoses.</em></h1>
           <div style={{display:"grid",gridTemplateColumns:bp?.mobile||bp?.tablet?"1fr":"1fr 1.65fr",gap:bp?.mobile?"2.5rem":"7rem",alignItems:"start"}}>
             <div>
               <div style={{background:T.n3,border:`1px solid ${T.rl}`,borderRadius:20,padding:"2.5rem",textAlign:"center",marginBottom:"1.5rem"}}>
@@ -630,15 +610,15 @@ function About({go,bp}){
                   <div style={{position:"absolute",inset:-3,borderRadius:"50%",background:`linear-gradient(135deg,${T.gd},${T.vi})`,zIndex:0}}/>
                   <div style={{position:"relative",width:"100%",height:"100%",borderRadius:"50%",overflow:"hidden",border:`3px solid ${T.n3}`,zIndex:1,background:`linear-gradient(135deg,${T.vi},${T.bl})`}}>
                     <img
-                      src="/src/assets/lynda.png"
+                      src={lyndaPhoto}
                       alt="Lynda Badmus"
                       onError={e=>{e.currentTarget.style.display="none";e.currentTarget.nextSibling.style.display="flex";}}
                       style={{width:"100%",height:"100%",objectFit:"cover",objectPosition:"center top",display:"block"}}
                     />
-                    <div style={{display:"none",width:"100%",height:"100%",alignItems:"center",justifyContent:"center",fontFamily:"'Cormorant Garamond',serif",fontSize:"2.5rem",fontWeight:500,color:"#fff"}}>LB</div>
+                    <div style={{display:"none",width:"100%",height:"100%",alignItems:"center",justifyContent:"center",fontFamily:"'Sora',sans-serif",fontSize:"2.5rem",fontWeight:500,color:"#fff"}}>LB</div>
                   </div>
                 </div>
-                <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.3rem",fontWeight:400,marginBottom:".3rem"}}>Lynda Badmus</p>
+                <p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.3rem",fontWeight:400,marginBottom:".3rem"}}>Lynda Badmus</p>
                 <p style={{fontSize:".75rem",color:T.gd,letterSpacing:".08em",textTransform:"uppercase",marginBottom:".2rem"}}>Founder & Principal Tutor</p>
                 <p style={{fontSize:".68rem",color:T.ash}}>MSc Mathematics Education, Cambridge</p>
               </div>
@@ -678,7 +658,7 @@ function CoursesPage({go,cur,bp}){
     const m=CAT[c.g]||CAT.ib;
     const qP=cur==="GBP"?`£${Math.round(c.hours.q*c.rate.gbp*.96)}`:`$${Math.round(c.hours.q*c.rate.usd*.96)}`;
     return(
-      <div onClick={()=>go("course-"+c.id)} style={{background:T.n,cursor:"pointer",transition:"background .2s",border:`1px solid rgba(255,255,255,.07)`,borderRadius:10,overflow:"hidden",borderBottom:`3px solid ${c.col}`}} onMouseEnter={e=>e.currentTarget.style.background=T.n2} onMouseLeave={e=>e.currentTarget.style.background=T.n}>
+      <div onClick={()=>go("course-"+c.id)} style={{background:T.n,cursor:"pointer",transition:"background .2s",border:`1px solid rgba(29,26,51,.08)`,borderRadius:10,overflow:"hidden",borderBottom:`3px solid ${c.col}`}} onMouseEnter={e=>e.currentTarget.style.background=T.n2} onMouseLeave={e=>e.currentTarget.style.background=T.n}>
         <div style={{borderBottom:`1px solid ${T.rl}`,padding:"1.5rem 1.75rem 1.1rem",display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
           <div>
             <div style={{display:"flex",gap:".4rem",marginBottom:".75rem",flexWrap:"wrap"}}>
@@ -686,7 +666,7 @@ function CoursesPage({go,cur,bp}){
               {c.lvl&&<Tag l={c.lvl.toUpperCase()} c={T.ash} bg={T.r2} sz="xs"/>}
               {c.path&&<Tag l={"AA/AI: "+c.path.toUpperCase()} c={T.ash} bg={T.r2} sz="xs"/>}
             </div>
-            <h3 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.2rem",fontWeight:500,marginBottom:".2rem"}}>{c.title}</h3>
+            <h3 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.2rem",fontWeight:500,marginBottom:".2rem"}}>{c.title}</h3>
             <p style={{fontSize:".72rem",color:T.ash}}>{c.curr}</p>
           </div>
           <SubIcon sub={c.sub} col={c.col} size={22}/>
@@ -694,7 +674,7 @@ function CoursesPage({go,cur,bp}){
         <div style={{padding:"1.1rem 1.75rem"}}>
           <p style={{fontSize:".81rem",color:T.ash,lineHeight:1.65,marginBottom:"1rem",fontWeight:300}}>{c.desc.slice(0,115)}…</p>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",flexWrap:"wrap",gap:".75rem"}}>
-            <div><p style={{fontSize:".62rem",color:T.ash2,letterSpacing:".06em"}}>FROM (quarter)</p><p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.35rem",fontWeight:500,color:T.gd,lineHeight:1}}>{qP}</p></div>
+            <div><p style={{fontSize:".62rem",color:T.ash2,letterSpacing:".06em"}}>FROM (quarter)</p><p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.35rem",fontWeight:500,color:T.gd,lineHeight:1}}>{qP}</p></div>
             <div style={{textAlign:"right"}}><p style={{fontSize:".68rem",color:T.c2}}>{c.hours.full}h full</p><p style={{fontSize:".68rem",color:T.ash}}>{c.lessons} lessons</p></div>
           </div>
         </div>
@@ -706,7 +686,7 @@ function CoursesPage({go,cur,bp}){
       <section style={{background:T.n2,padding:`4.5rem ${p} 2.5rem`,borderBottom:`1px solid ${T.rl}`}}>
         <div style={{maxWidth:1360,margin:"0 auto"}}>
           <p style={{fontSize:".65rem",color:T.gd,letterSpacing:".25em",textTransform:"uppercase",marginBottom:".75rem"}}>Course Catalogue</p>
-          <h1 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:`min(${bp?.mobile?"10vw":"6vw"},4rem)`,fontWeight:300,marginBottom:"1rem"}}>Every curriculum. <em style={{fontStyle:"italic",color:T.gd}}>Every level.</em></h1>
+          <h1 style={{fontFamily:"'Sora',sans-serif",fontSize:`min(${bp?.mobile?"10vw":"6vw"},4rem)`,fontWeight:300,marginBottom:"1rem"}}>Every curriculum. <em style={{fontStyle:"italic",color:T.gd}}>Every level.</em></h1>
           <div style={{background:T.gdaa,border:`1px solid ${T.rl}`,borderRadius:8,padding:".85rem 1.25rem",maxWidth:580}}>
             <p style={{fontSize:".78rem",color:T.cr,fontWeight:500}}>⚠ IB students: AA ≠ AI · SL ≠ HL. Choose your exact course — each is a separate programme.</p>
           </div>
@@ -729,7 +709,7 @@ function CoursesPage({go,cur,bp}){
               <div key={grp.key} style={{marginBottom:"4rem"}}>
                 <div style={{display:"flex",alignItems:"center",gap:"1rem",marginBottom:".6rem"}}>
                   <div style={{height:2,width:28,background:grp.accent,borderRadius:2}}/>
-                  <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:bp?.mobile?"1.6rem":"2rem",fontWeight:500,color:T.cr}}>{grp.label}</h2>
+                  <h2 style={{fontFamily:"'Sora',sans-serif",fontSize:bp?.mobile?"1.6rem":"2rem",fontWeight:500,color:T.cr}}>{grp.label}</h2>
                   <div style={{height:"1px",flex:1,background:`linear-gradient(90deg,${grp.accent}30,transparent)`}}/>
                 </div>
                 <p style={{fontSize:".72rem",color:T.ash,marginBottom:"1.5rem",marginLeft:"2.75rem"}}>{grp.note} · {courses.length} course{courses.length!==1?"s":""}</p>
@@ -778,16 +758,16 @@ function CourseDetail({courseId,go,cur,user,setUser,bp}){
                 {c.lvl&&<Tag l={c.lvl.toUpperCase()+" Level"} c={T.ash} bg={T.r2}/>}
                 {c.path&&<Tag l={"Math "+c.path.toUpperCase()} c={T.ash} bg={T.r2}/>}
               </div>
-              <h1 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:`min(${bp?.mobile?"8vw":"5.5vw"},3.2rem)`,fontWeight:300,lineHeight:1.08,marginBottom:".85rem"}}>{c.title}</h1>
+              <h1 style={{fontFamily:"'Sora',sans-serif",fontSize:`min(${bp?.mobile?"8vw":"5.5vw"},3.2rem)`,fontWeight:300,lineHeight:1.08,marginBottom:".85rem"}}>{c.title}</h1>
               <p style={{fontSize:".9rem",color:T.ash,lineHeight:1.78,maxWidth:540,fontWeight:300,marginBottom:"1.75rem"}}>{c.desc}</p>
               <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:bp?.mobile?"1rem":"2rem"}}>
                 {[[c.hours.full+"h","Full course"],[c.lessons+" lessons","Structured plan"],[c.assess.length+" assessments","Checkpoints"],[fccy(c.rate.gbp,c.rate.usd,cur)+"/hr","Rate"]].map(([v,l])=>(
-                  <div key={l}><p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.45rem",fontWeight:300,color:T.gd,lineHeight:1,marginBottom:".18rem"}}>{v}</p><p style={{fontSize:".65rem",color:T.ash2}}>{l}</p></div>
+                  <div key={l}><p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.45rem",fontWeight:300,color:T.gd,lineHeight:1,marginBottom:".18rem"}}>{v}</p><p style={{fontSize:".65rem",color:T.ash2}}>{l}</p></div>
                 ))}
               </div>
               {c.eq&&<div style={{background:T.gdaa,border:`1px solid ${T.rl}`,borderRadius:10,padding:"1rem 1.25rem",marginTop:"1.5rem",display:"inline-flex",alignItems:"center",gap:"1rem",flexWrap:"wrap"}}>
                 <span style={{fontSize:".62rem",color:T.gd,letterSpacing:".1em",textTransform:"uppercase"}}>{c.eq.l}</span>
-                <span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.1rem",color:T.cr}}>{c.eq.d}</span>
+                <span style={{fontFamily:"'Sora',sans-serif",fontSize:"1.1rem",color:T.cr}}>{c.eq.d}</span>
               </div>}
             </div>
             <div style={{background:T.n,border:`1px solid ${T.rl}`,borderRadius:20,padding:"1.75rem",boxShadow:T.s2}}>
@@ -795,7 +775,7 @@ function CourseDetail({courseId,go,cur,user,setUser,bp}){
               {Object.entries(pkgs).map(([k,pk2])=>(
                 <button key={k} onClick={()=>sSelPkg(k)} style={{background:selPkg===k?T.gdaa:"transparent",border:`1px solid ${selPkg===k?c.col:T.rl}`,borderRadius:8,padding:".95rem 1.1rem",cursor:"pointer",textAlign:"left",width:"100%",transition:"all .18s",marginBottom:".55rem",display:"flex",justifyContent:"space-between",alignItems:"center",fontFamily:"inherit"}}>
                   <div><p style={{fontWeight:500,fontSize:".88rem",color:T.cr,marginBottom:".18rem"}}>{pk2.l}</p><p style={{fontSize:".72rem",color:T.ash}}>{pk2.credits} credits · {pk2.h}h{pk2.disc&&<span style={{color:T.gr,marginLeft:".4rem"}}>{pk2.disc}</span>}</p></div>
-                  <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.5rem",fontWeight:300,color:selPkg===k?c.col:T.gd,lineHeight:1}}>{cur==="GBP"?`£${pk2.gbp}`:`$${pk2.usd}`}</p>
+                  <p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.5rem",fontWeight:300,color:selPkg===k?c.col:T.gd,lineHeight:1}}>{cur==="GBP"?`£${pk2.gbp}`:`$${pk2.usd}`}</p>
                 </button>
               ))}
               <div style={{height:1,background:T.rl,margin:"1rem 0"}}/>
@@ -838,7 +818,7 @@ function PricingPage({go,cur,bp}){
       <section style={{background:T.n2,padding:`4.5rem ${p} 3rem`,borderBottom:`1px solid ${T.rl}`}}>
         <div style={{maxWidth:1360,margin:"0 auto"}}>
           <p style={{fontSize:".65rem",color:T.gd,letterSpacing:".25em",textTransform:"uppercase",marginBottom:".75rem"}}>Pricing</p>
-          <h1 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:`min(${bp?.mobile?"10vw":"6vw"},4rem)`,fontWeight:300}}>Course <em style={{fontStyle:"italic",color:T.gd}}>Packages.</em></h1>
+          <h1 style={{fontFamily:"'Sora',sans-serif",fontSize:`min(${bp?.mobile?"10vw":"6vw"},4rem)`,fontWeight:300}}>Course <em style={{fontStyle:"italic",color:T.gd}}>Packages.</em></h1>
           <p style={{fontSize:".88rem",color:T.ash,maxWidth:480,lineHeight:1.75,fontWeight:300,marginTop:".85rem"}}>Full, Half, or Quarter packages. Credits book live Zoom sessions at your own pace. All IB at £50/$70/hr.</p>
         </div>
       </section>
@@ -863,7 +843,7 @@ function PricingPage({go,cur,bp}){
                               {c.lvl&&<Tag l={c.lvl.toUpperCase()} c={m.c} bg={m.bg} sz="xs"/>}
                               {c.path&&<Tag l={c.path.toUpperCase()} c={T.ash} bg={T.r2} sz="xs"/>}
                             </div>
-                            <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.2rem",fontWeight:400,marginBottom:".2rem"}}>{c.title}</p>
+                            <p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.2rem",fontWeight:400,marginBottom:".2rem"}}>{c.title}</p>
                             <p style={{fontSize:".7rem",color:T.ash}}>{c.hours.full}h · {fccy(c.rate.gbp,c.rate.usd,cur)}/hr</p>
                           </div>
                           <span style={{color:c.col,fontSize:"1.5rem",opacity:.35}}>{c.icon}</span>
@@ -872,7 +852,7 @@ function PricingPage({go,cur,bp}){
                           {[["Quarter",qP,c.hours.q,"4%"],["Half",hP,c.hours.half,"2%"],["Full",fP,c.hours.full,null]].map(([l2,price,h2,d])=>(
                             <div key={l2} style={{background:T.n,padding:".9rem .65rem",textAlign:"center"}}>
                               <p style={{fontSize:".6rem",color:T.ash2,letterSpacing:".08em",textTransform:"uppercase",marginBottom:".4rem"}}>{l2}</p>
-                              <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.3rem",color:l2==="Full"?T.gd:T.cr,fontWeight:300}}>{price}</p>
+                              <p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.3rem",color:l2==="Full"?T.gd:T.cr,fontWeight:300}}>{price}</p>
                               <p style={{fontSize:".6rem",color:T.ash2,marginTop:".15rem"}}>{h2}h{d&&<span style={{color:T.gr}}> {d}</span>}</p>
                             </div>
                           ))}
@@ -908,7 +888,7 @@ function FAQsPage({bp}){
       <section style={{background:T.n2,padding:`4.5rem ${p} 3rem`,borderBottom:`1px solid ${T.rl}`}}>
         <div style={{maxWidth:1360,margin:"0 auto"}}>
           <p style={{fontSize:".65rem",color:T.gd,letterSpacing:".25em",textTransform:"uppercase",marginBottom:".75rem"}}>FAQs</p>
-          <h1 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:`min(${bp?.mobile?"10vw":"6vw"},4rem)`,fontWeight:300}}>Common questions <em style={{fontStyle:"italic",color:T.gd}}>answered.</em></h1>
+          <h1 style={{fontFamily:"'Sora',sans-serif",fontSize:`min(${bp?.mobile?"10vw":"6vw"},4rem)`,fontWeight:300}}>Common questions <em style={{fontStyle:"italic",color:T.gd}}>answered.</em></h1>
         </div>
       </section>
       <section style={{padding:`4rem ${p} 6rem`}}>
@@ -916,7 +896,7 @@ function FAQsPage({bp}){
           {faqs.map((f,i)=>(
             <div key={i} style={{borderBottom:`1px solid ${T.rl}`}}>
               <button onClick={()=>sOpen(open===i?null:i)} style={{width:"100%",background:"none",border:"none",cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center",padding:"1.35rem 0",gap:"1rem",fontFamily:"inherit",textAlign:"left"}}>
-                <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.2rem",color:open===i?T.gd:T.cr,transition:"color .2s"}}>{f.q}</p>
+                <p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.2rem",color:open===i?T.gd:T.cr,transition:"color .2s"}}>{f.q}</p>
                 <span style={{color:T.gd,fontSize:"1.1rem",transition:"transform .2s",transform:open===i?"rotate(45deg)":"none",display:"inline-block",lineHeight:1,flexShrink:0}}>+</span>
               </button>
               {open===i&&<p style={{paddingBottom:"1.5rem",fontSize:".87rem",color:T.ash,lineHeight:1.82,fontWeight:300,animation:"fIn .2s ease"}}>{f.a}</p>}
@@ -935,11 +915,11 @@ function Contact({go,bp}){
   return(
     <div style={{paddingTop:66,maxWidth:1000,margin:"0 auto",padding:`5rem ${p}`}}>
       <p style={{fontSize:".65rem",color:T.gd,letterSpacing:".25em",textTransform:"uppercase",marginBottom:".75rem"}}>Contact</p>
-      <h1 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:`min(${bp?.mobile?"10vw":"6vw"},3.8rem)`,fontWeight:300,marginBottom:"2.5rem"}}>Questions before you enrol?</h1>
+      <h1 style={{fontFamily:"'Sora',sans-serif",fontSize:`min(${bp?.mobile?"10vw":"6vw"},3.8rem)`,fontWeight:300,marginBottom:"2.5rem"}}>Questions before you enrol?</h1>
       {sent?(
         <div style={{textAlign:"center",padding:"4rem"}}>
-          <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"2.5rem",color:T.gd,marginBottom:"1rem"}}>✓</p>
-          <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontWeight:300}}>Message received.</h2>
+          <p style={{fontFamily:"'Sora',sans-serif",fontSize:"2.5rem",color:T.gd,marginBottom:"1rem"}}>✓</p>
+          <h2 style={{fontFamily:"'Sora',sans-serif",fontWeight:300}}>Message received.</h2>
           <p style={{fontSize:".88rem",color:T.ash,marginTop:".75rem"}}>Lynda will reply to {f.email} within 24 hours.</p>
         </div>
       ):(
@@ -1019,7 +999,7 @@ function Login({go,setUser,bp}){
     <div style={{paddingTop:70,minHeight:"90vh",display:"flex",alignItems:"center",justifyContent:"center",padding:"2rem"}}>
       <div style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:20,padding:"3rem",width:"100%",maxWidth:440,boxShadow:T.s2}}>
         <Logo size={36}/>
-        <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.8rem",fontWeight:300,marginTop:"1.5rem",marginBottom:".4rem"}}>Sign In</p>
+        <p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginTop:"1.5rem",marginBottom:".4rem"}}>Sign In</p>
         <p style={{fontSize:".75rem",color:T.ash,marginBottom:"2rem"}}>student@demo.com / demo &nbsp;·&nbsp; parent@demo.com / demo<br/>tutor@demo.com / demo &nbsp;·&nbsp; admin@lbe.com / admin</p>
         <Inp label="Email" val={email} onChange={e=>sEmail(e.target.value)} type="email" ph="your@email.com"/>
         <Inp label="Password" val={pw} onChange={e=>sPw(e.target.value)} type="password" ph="••••••••"/>
@@ -1059,7 +1039,7 @@ function Signup({go,setUser}){
     <div style={{paddingTop:70,minHeight:"90vh",display:"flex",alignItems:"center",justifyContent:"center",padding:"2rem"}}>
       <div style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:20,padding:"3rem",width:"100%",maxWidth:440}}>
         <Logo size={36}/>
-        <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.8rem",fontWeight:300,marginTop:"1.5rem",marginBottom:"2rem"}}>Create Account</p>
+        <p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginTop:"1.5rem",marginBottom:"2rem"}}>Create Account</p>
         <Inp label="Full Name" val={f.name} onChange={e=>sF({...f,name:e.target.value})} ph="Your full name"/>
         <Inp label="Email" val={f.email} onChange={e=>sF({...f,email:e.target.value})} type="email" ph="your@email.com"/>
         <Inp label="Password" val={f.pw} onChange={e=>sF({...f,pw:e.target.value})} type="password" ph="Choose a password"/>
@@ -1092,7 +1072,7 @@ function BookModal({enrollId,user,setUser,onClose}){
       done?(
         <div style={{textAlign:"center",padding:"2rem 0"}}>
           <div style={{fontSize:"2.5rem",marginBottom:"1rem"}}>✅</div>
-          <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.5rem",marginBottom:".75rem"}}>Session confirmed!</p>
+          <p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.5rem",marginBottom:".75rem"}}>Session confirmed!</p>
           <p style={{fontSize:".85rem",color:T.ash,marginBottom:".6rem"}}>{fmtD(selD)} at {fmt12(selT)} · 1 credit used · {left-1} remaining</p>
           <div style={{background:T.bla,border:`1px solid ${T.bl}40`,borderRadius:10,padding:"1rem",margin:"1rem auto",maxWidth:360}}>
             <p style={{fontSize:".82rem",fontWeight:600,color:T.bl,marginBottom:".3rem"}}>🎥 Zoom link added to your dashboard</p>
@@ -1121,7 +1101,7 @@ function BookModal({enrollId,user,setUser,onClose}){
                 <div key={d} style={{background:isSel?T.gdaa:T.n2}}>
                   <button onClick={()=>{sSelD(d);sSelT(null);}} style={{width:"100%",background:"none",border:"none",cursor:"pointer",padding:".62rem .4rem",textAlign:"center",borderBottom:`1px solid ${isSel?T.gd:T.rl}`,fontFamily:"inherit"}}>
                     <p style={{fontSize:".62rem",color:isSel?T.gd:T.ash,letterSpacing:".08em",textTransform:"uppercase"}}>{ds.l}</p>
-                    <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.25rem",color:isSel?T.gd:T.cr,lineHeight:1.2}}>{new Date(d+"T12:00:00").getDate()}</p>
+                    <p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.25rem",color:isSel?T.gd:T.cr,lineHeight:1.2}}>{new Date(d+"T12:00:00").getDate()}</p>
                   </button>
                   <div style={{padding:".4rem"}}>
                     {ds.s.map(sl=>{const ss=selD===d&&selT===sl;return<button key={sl} onClick={()=>{sSelD(d);sSelT(sl);}} style={{width:"100%",background:ss?T.gd:T.n3,color:ss?T.n:T.ash,border:`1px solid ${ss?T.gd:T.rl}`,borderRadius:6,padding:".3rem .2rem",fontSize:".65rem",cursor:"pointer",marginBottom:".25rem",fontFamily:"inherit",transition:"all .18s"}}>{fmt12(sl)}</button>;})}
@@ -1155,7 +1135,7 @@ function StudentDash({user,setUser,go,bp}){
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:"1.75rem",flexWrap:"wrap",gap:"1rem"}}>
         <div>
           <p style={{fontSize:".65rem",color:T.ash,letterSpacing:".12em",textTransform:"uppercase",marginBottom:".3rem"}}>Student Dashboard</p>
-          <h1 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:bp?.mobile?"1.8rem":"2.1rem",fontWeight:300}}>Welcome, <em style={{fontStyle:"italic",color:T.gd}}>{user.name.split(" ")[0]}</em></h1>
+          <h1 style={{fontFamily:"'Sora',sans-serif",fontSize:bp?.mobile?"1.8rem":"2.1rem",fontWeight:300}}>Welcome, <em style={{fontStyle:"italic",color:T.gd}}>{user.name.split(" ")[0]}</em></h1>
         </div>
         <Btn ch="+ Enrol in a Course" v="gold" sz="sm" onClick={()=>go("courses")}/>
       </div>
@@ -1169,7 +1149,7 @@ function StudentDash({user,setUser,go,bp}){
       <div style={{display:"grid",gridTemplateColumns:bp?.mobile?"1fr":bp?.tablet?"1fr":"1.5fr 1fr",gap:"1.25rem",marginBottom:"1.25rem"}}>
         <div style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:12,padding:"1.5rem"}}>
           <p style={{fontSize:".65rem",color:T.ash,letterSpacing:".12em",textTransform:"uppercase",marginBottom:".4rem"}}>Score Trend</p>
-          <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.1rem",fontWeight:300,marginBottom:"1rem"}}>Up 25 points since baseline — on track</p>
+          <p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.1rem",fontWeight:300,marginBottom:"1rem"}}>Up 25 points since baseline — on track</p>
           <ResponsiveContainer width="100%" height={130}>
             <AreaChart data={SCORE_DATA}>
               <defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={T.gd} stopOpacity={.2}/><stop offset="95%" stopColor={T.gd} stopOpacity={0}/></linearGradient></defs>
@@ -1199,7 +1179,7 @@ function StudentDash({user,setUser,go,bp}){
           <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".14em",textTransform:"uppercase",color:T.ash,marginBottom:"1rem"}}>Enrolled Courses</p>
           {(user.enrollments||[]).length===0&&(
             <div style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:12,padding:"2.5rem",textAlign:"center"}}>
-              <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.3rem",fontWeight:300,marginBottom:".6rem"}}>No courses yet</p>
+              <p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.3rem",fontWeight:300,marginBottom:".6rem"}}>No courses yet</p>
               <Btn ch="Browse Courses →" v="gold" sz="sm" onClick={()=>go("courses")}/>
             </div>
           )}
@@ -1213,11 +1193,11 @@ function StudentDash({user,setUser,go,bp}){
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:"1rem",gap:".75rem",flexWrap:"wrap"}}>
                   <div>
                     <div style={{display:"flex",gap:".45rem",marginBottom:".6rem",flexWrap:"wrap"}}><Tag l={m.l} c={m.c} bg={m.bg}/>{c.lvl&&<Tag l={c.lvl.toUpperCase()} c={T.ash} bg={T.r2} sz="xs"/>}</div>
-                    <h3 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.25rem",fontWeight:400}}>{c.title}</h3>
+                    <h3 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.25rem",fontWeight:400}}>{c.title}</h3>
                     <p style={{fontSize:".72rem",color:T.ash,marginTop:".2rem"}}>Enrolled {fmtD(enr.enrolledAt)} · {enr.pkg} course</p>
                   </div>
                   <div style={{textAlign:"right",flexShrink:0}}>
-                    <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"2rem",fontWeight:300,color:left>10?T.gr:left>5?T.am:T.rd,lineHeight:1}}>{left}</p>
+                    <p style={{fontFamily:"'Sora',sans-serif",fontSize:"2rem",fontWeight:300,color:left>10?T.gr:left>5?T.am:T.rd,lineHeight:1}}>{left}</p>
                     <p style={{fontSize:".65rem",color:T.ash}}>credits left</p>
                   </div>
                 </div>
@@ -1245,7 +1225,7 @@ function StudentDash({user,setUser,go,bp}){
           {(user.enrollments||[]).flatMap(e=>e.assessments||[]).slice(0,3).map(a=>(
             <div key={a.id} style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:8,padding:"1rem",marginBottom:".6rem",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
               <div><p style={{fontWeight:500,fontSize:".85rem",marginBottom:".2rem"}}>{a.title}</p><Tag l={ATLBL[a.type]||a.type} c={ATCOL[a.type]||T.gd} bg={(ATCOL[a.type]||T.gd)+"18"} sz="xs"/></div>
-              {a.done?<div style={{textAlign:"right"}}><p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.3rem",fontWeight:300,color:gc(ptc(a.score,a.max)),lineHeight:1}}>{ptc(a.score,a.max)}%</p><p style={{fontSize:".65rem",color:T.ash}}>{a.score}/{a.max}</p></div>:<Tag l="Pending" c={T.am} bg={T.ama}/>}
+              {a.done?<div style={{textAlign:"right"}}><p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.3rem",fontWeight:300,color:gc(ptc(a.score,a.max)),lineHeight:1}}>{ptc(a.score,a.max)}%</p><p style={{fontSize:".65rem",color:T.ash}}>{a.score}/{a.max}</p></div>:<Tag l="Pending" c={T.am} bg={T.ama}/>}
             </div>
           ))}
         </div>
@@ -1258,7 +1238,7 @@ function StudentDash({user,setUser,go,bp}){
 function MyCourses({user,go}){
   return(
     <div style={{padding:"2rem"}}>
-      <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1.5rem"}}>My Courses</h2>
+      <h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1.5rem"}}>My Courses</h2>
       {(user.enrollments||[]).length===0&&<div style={{textAlign:"center",padding:"4rem"}}><Btn ch="Browse Courses" v="gold" onClick={()=>go("courses")}/></div>}
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(320px,1fr))",gap:"1.25rem"}}>
         {(user.enrollments||[]).map(enr=>{
@@ -1268,7 +1248,7 @@ function MyCourses({user,go}){
           return(
             <div key={enr.id} style={{background:T.n2,border:`1px solid ${c.col}28`,borderRadius:12,padding:"1.6rem",borderLeftWidth:4,borderLeftColor:c.col}}>
               <div style={{display:"flex",gap:".45rem",marginBottom:".75rem",flexWrap:"wrap"}}><Tag l={m.l} c={m.c} bg={m.bg}/>{c.lvl&&<Tag l={c.lvl.toUpperCase()} c={T.ash} bg={T.r2} sz="xs"/>}</div>
-              <h3 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.25rem",fontWeight:400,marginBottom:".85rem"}}>{c.title}</h3>
+              <h3 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.25rem",fontWeight:400,marginBottom:".85rem"}}>{c.title}</h3>
               <PBar p={pct2} col={c.col} h={6}/>
               <div style={{display:"flex",justifyContent:"space-between",marginTop:".45rem",marginBottom:"1.25rem"}}>
                 <p style={{fontSize:".72rem",color:T.ash}}>{enr.completedLessons.length}/{c.lessons} lessons</p>
@@ -1278,7 +1258,7 @@ function MyCourses({user,go}){
               <div style={{background:T.n3,borderRadius:10,padding:"1rem",marginBottom:"1rem"}}>
                 <p style={{fontSize:".65rem",color:T.gd,letterSpacing:".1em",textTransform:"uppercase",marginBottom:".5rem"}}>Sample Lesson</p>
                 <p style={{fontSize:".85rem",fontWeight:500,color:T.cr,marginBottom:".3rem"}}>Lesson {enr.completedLessons.length+1}: {c.lessons>9?"Functions & Transformations":"Introduction & Diagnostic"}</p>
-                {c.eq&&<div style={{background:T.n4,borderRadius:7,padding:".65rem .85rem",marginTop:".5rem",textAlign:"center"}}><span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.1rem",color:T.cr}}>{c.eq.d}</span></div>}
+                {c.eq&&<div style={{background:T.n4,borderRadius:7,padding:".65rem .85rem",marginTop:".5rem",textAlign:"center"}}><span style={{fontFamily:"'Sora',sans-serif",fontSize:"1.1rem",color:T.cr}}>{c.eq.d}</span></div>}
                 <p style={{fontSize:".7rem",color:T.ash,marginTop:".5rem"}}>📊 PPT: 24 slides · ✏ Examples + Practice · 📋 Homework set</p>
               </div>
               <div style={{display:"flex",gap:".5rem",flexWrap:"wrap"}}>
@@ -1300,7 +1280,7 @@ function Assessments({user}){
   });
   return(
     <div style={{padding:"2rem"}}>
-      <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1.5rem"}}>Assessments & Feedback</h2>
+      <h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1.5rem"}}>Assessments & Feedback</h2>
       {all.length===0&&<p style={{fontSize:".85rem",color:T.ash}}>Enrol in a course to access assessments.</p>}
       {all.map(a=>{
         const col=ATCOL[a.type]||T.gd;
@@ -1312,7 +1292,7 @@ function Assessments({user}){
                 <p style={{fontSize:".72rem",color:T.ash}}>{a.courseName}{a.date?` · ${fmtD(a.date)}`:""}</p>
                 {a.notes&&<p style={{fontSize:".78rem",color:T.ash,marginTop:".3rem",fontStyle:"italic"}}>{a.notes}</p>}
               </div>
-              {a.done?<div style={{textAlign:"right",flexShrink:0}}><p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.9rem",fontWeight:300,color:gc(ptc(a.score,a.max)),lineHeight:1}}>{ptc(a.score,a.max)}%</p><p style={{fontSize:".7rem",color:T.ash}}>{a.score}/{a.max}</p></div>:<Tag l="Pending" c={T.am} bg={T.ama}/>}
+              {a.done?<div style={{textAlign:"right",flexShrink:0}}><p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.9rem",fontWeight:300,color:gc(ptc(a.score,a.max)),lineHeight:1}}>{ptc(a.score,a.max)}%</p><p style={{fontSize:".7rem",color:T.ash}}>{a.score}/{a.max}</p></div>:<Tag l="Pending" c={T.am} bg={T.ama}/>}
             </div>
             {a.done&&a.strengths&&(
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"1rem",marginTop:".85rem",paddingTop:".85rem",borderTop:`1px solid ${T.r2}`}}>
@@ -1339,20 +1319,20 @@ function ParentPortal({user,go,bp}){
     <div style={{padding:bp?.mobile?"1.25rem":"2rem"}}>
       <div style={{marginBottom:"1.75rem"}}>
         <p style={{fontSize:".65rem",color:T.ash,letterSpacing:".12em",textTransform:"uppercase",marginBottom:".3rem"}}>Parent Portal</p>
-        <h1 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:bp?.mobile?"1.8rem":"2rem",fontWeight:300}}>Hello, <em style={{fontStyle:"italic",color:T.te}}>{user.name.split(" ")[0]}</em> — {child?.name}'s progress</h1>
+        <h1 style={{fontFamily:"'Sora',sans-serif",fontSize:bp?.mobile?"1.8rem":"2rem",fontWeight:300}}>Hello, <em style={{fontStyle:"italic",color:T.te}}>{user.name.split(" ")[0]}</em> — {child?.name}'s progress</h1>
       </div>
       {c&&m&&<div style={{background:T.n2,border:`1px solid ${c.col}30`,borderRadius:12,padding:"1.6rem",marginBottom:"1.25rem",borderLeftWidth:4,borderLeftColor:c.col}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:"1.25rem",flexWrap:"wrap",gap:".75rem"}}>
           <div>
             <div style={{display:"flex",gap:".45rem",marginBottom:".65rem",flexWrap:"wrap"}}><Tag l={m.l} c={m.c} bg={m.bg}/>{c.lvl&&<Tag l={c.lvl.toUpperCase()} c={T.ash} bg={T.r2} sz="xs"/>}</div>
-            <h3 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.35rem",fontWeight:400}}>{c.title}</h3>
+            <h3 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.35rem",fontWeight:400}}>{c.title}</h3>
             <p style={{fontSize:".75rem",color:T.ash,marginTop:".25rem"}}>Enrolled {fmtD(enr.enrolledAt)} · {enr.pkg} course</p>
           </div>
           <SBadge s="active"/>
         </div>
         <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:1,background:T.rl,borderRadius:8,overflow:"hidden",marginBottom:"1.25rem"}}>
           {[[enr.completedLessons.length+"/"+c.lessons,"Lessons",T.bl],[enr.credits-enr.used,"Credits left",T.gr],[(enr.assessments||[]).filter(a=>a.done).length,"Assessments done",T.gd]].map(([v,l,col])=>(
-            <div key={l} style={{background:T.n3,padding:".9rem 1rem",textAlign:"center"}}><p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.5rem",fontWeight:300,color:col,lineHeight:1}}>{v}</p><p style={{fontSize:".68rem",color:T.ash,marginTop:".2rem"}}>{l}</p></div>
+            <div key={l} style={{background:T.n3,padding:".9rem 1rem",textAlign:"center"}}><p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.5rem",fontWeight:300,color:col,lineHeight:1}}>{v}</p><p style={{fontSize:".68rem",color:T.ash,marginTop:".2rem"}}>{l}</p></div>
           ))}
         </div>
         <PBar p={c.lessons?Math.round(enr.completedLessons.length/c.lessons*100):0} col={c.col} h={6}/>
@@ -1378,7 +1358,7 @@ function ParentPortal({user,go,bp}){
             <div key={a.id} style={{background:T.n3,borderRadius:8,padding:".95rem 1rem",marginBottom:".6rem",border:`1px solid ${T.r2}`}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:".35rem"}}>
                 <div><p style={{fontSize:".82rem",fontWeight:500,marginBottom:".2rem"}}>{a.title}</p><Tag l={ATLBL[a.type]||a.type} c={ATCOL[a.type]||T.gd} bg={(ATCOL[a.type]||T.gd)+"18"} sz="xs"/></div>
-                {a.done?<div style={{textAlign:"right"}}><p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.3rem",fontWeight:300,color:gc(ptc(a.score,a.max)),lineHeight:1}}>{ptc(a.score,a.max)}%</p><p style={{fontSize:".65rem",color:T.ash}}>{a.score}/{a.max}</p></div>:<Tag l="Pending" c={T.am} bg={T.ama}/>}
+                {a.done?<div style={{textAlign:"right"}}><p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.3rem",fontWeight:300,color:gc(ptc(a.score,a.max)),lineHeight:1}}>{ptc(a.score,a.max)}%</p><p style={{fontSize:".65rem",color:T.ash}}>{a.score}/{a.max}</p></div>:<Tag l="Pending" c={T.am} bg={T.ama}/>}
               </div>
               {a.done&&a.notes&&<p style={{fontSize:".72rem",color:T.ash,marginTop:".3rem",fontStyle:"italic"}}>{a.notes}</p>}
             </div>
@@ -1390,7 +1370,7 @@ function ParentPortal({user,go,bp}){
         <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".14em",textTransform:"uppercase",color:T.ash,marginBottom:"1rem"}}>Billing History</p>
         <div style={{background:T.n3,borderRadius:8,padding:"1.1rem 1.25rem",display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:"1rem"}}>
           <div><p style={{fontWeight:500,fontSize:".88rem"}}>{c?.title||"Course"} — Full Course</p><p style={{fontSize:".72rem",color:T.ash}}>Enrolled {fmtD(enr?.enrolledAt||today())} · Stripe payment · Reference: LBE-{uid().toUpperCase()}</p></div>
-          <div style={{textAlign:"right"}}><p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.4rem",fontWeight:300,color:T.gd}}>£{(enr?.credits||50)*(c?.rate?.gbp||50)}</p><SBadge s="paid"/></div>
+          <div style={{textAlign:"right"}}><p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.4rem",fontWeight:300,color:T.gd}}>£{(enr?.credits||50)*(c?.rate?.gbp||50)}</p><SBadge s="paid"/></div>
         </div>
       </div>
     </div>
@@ -1408,7 +1388,7 @@ function TutorDash({user,go,bp}){
     <div style={{padding:bp?.mobile?"1.25rem":"2rem"}}>
       <div style={{marginBottom:"1.75rem"}}>
         <p style={{fontSize:".65rem",color:T.ash,letterSpacing:".12em",textTransform:"uppercase",marginBottom:".3rem"}}>Tutor Portal</p>
-        <h1 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:bp?.mobile?"1.8rem":"2rem",fontWeight:300}}>Welcome, <em style={{fontStyle:"italic",color:T.am}}>{user.name.split(" ")[0]}</em></h1>
+        <h1 style={{fontFamily:"'Sora',sans-serif",fontSize:bp?.mobile?"1.8rem":"2rem",fontWeight:300}}>Welcome, <em style={{fontStyle:"italic",color:T.am}}>{user.name.split(" ")[0]}</em></h1>
       </div>
       <div style={{display:"grid",gridTemplateColumns:bp?.mobile?"1fr 1fr":"repeat(4,1fr)",gap:1,background:T.rl,borderRadius:10,overflow:"hidden",marginBottom:"1.5rem"}}>
         {[[upcoming.length,"Upcoming",T.bl],[completed.length,"Completed",T.gr],[`£${pendingPay}`,"Pending payout",T.am],[sessions.length+"h","Hours logged",T.gd]].map(([v,l,c])=>(
@@ -1430,7 +1410,7 @@ function TutorDash({user,go,bp}){
           {completed.slice(0,3).map(s=>(
             <div key={s.id} style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:8,padding:"1rem",marginBottom:".55rem",display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:".5rem"}}>
               <div><p style={{fontSize:".83rem",fontWeight:500}}>{s.student}</p><p style={{fontSize:".72rem",color:T.ash}}>{fmtD(s.date)} · {s.course}</p></div>
-              <div style={{textAlign:"right"}}><p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.1rem",color:T.gr}}>£{s.amount}</p><SBadge s={s.payStatus||"pending"}/></div>
+              <div style={{textAlign:"right"}}><p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.1rem",color:T.gr}}>£{s.amount}</p><SBadge s={s.payStatus||"pending"}/></div>
             </div>
           ))}
           <Btn ch="Hours Log & Invoices →" v="navy" sz="sm" sx={{marginTop:".75rem"}} onClick={()=>go("tutor-hours")}/>
@@ -1444,7 +1424,7 @@ function TutorSchedule(){
   const t=USERS.find(u=>u.role==="tutor");
   return(
     <div style={{padding:"2rem"}}>
-      <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1.5rem"}}>My Schedule</h2>
+      <h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1.5rem"}}>My Schedule</h2>
       <div style={{display:"flex",flexDirection:"column",gap:".65rem"}}>
         {(t?.sessions||[]).sort((a,b)=>b.date.localeCompare(a.date)).map(s=>(
           <div key={s.id}>
@@ -1464,7 +1444,7 @@ function TutorHours({go}){
   return(
     <div style={{padding:"2rem"}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"1.5rem",flexWrap:"wrap",gap:"1rem"}}>
-        <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.8rem",fontWeight:300}}>Hours Log</h2>
+        <h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300}}>Hours Log</h2>
         <Btn ch="Submit Invoice →" v="gold" sz="sm" onClick={()=>go("tutor-invoices")}/>
       </div>
       <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:1,background:T.rl,borderRadius:10,overflow:"hidden",marginBottom:"2rem"}}>
@@ -1476,7 +1456,7 @@ function TutorHours({go}){
         <div key={s.id} style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:8,padding:".95rem 1.2rem",display:"grid",gridTemplateColumns:"1fr auto auto auto",gap:"1.5rem",alignItems:"center",marginBottom:".5rem",flexWrap:"wrap"}}>
           <div><p style={{fontWeight:500,fontSize:".87rem"}}>{s.student}</p><p style={{fontSize:".72rem",color:T.ash}}>{fmtD(s.date)} · {s.course}</p></div>
           <p style={{fontSize:".83rem",color:T.c2}}>{s.dur/60}h</p>
-          <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.1rem",color:T.gd}}>£{s.amount}</p>
+          <p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.1rem",color:T.gd}}>£{s.amount}</p>
           <SBadge s={s.payStatus||"pending"}/>
         </div>
       ))}
@@ -1491,13 +1471,13 @@ function TutorInvoices(){
   return(
     <div style={{padding:"2rem"}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"1.5rem",flexWrap:"wrap",gap:"1rem"}}>
-        <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.8rem",fontWeight:300}}>Invoices & Payouts</h2>
+        <h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300}}>Invoices & Payouts</h2>
         <Btn ch="+ Submit Invoice" v="gold" sz="sm" onClick={()=>sSF(true)}/>
       </div>
       {invoices.map(inv=>(
         <div key={inv.id} style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:8,padding:"1.25rem 1.5rem",marginBottom:".65rem",display:"grid",gridTemplateColumns:"1fr auto auto",gap:"2rem",alignItems:"center"}}>
           <div><p style={{fontWeight:500,fontSize:".92rem"}}>{inv.period}</p><p style={{fontSize:".75rem",color:T.ash}}>{inv.sessions} sessions · {inv.hours}h · £{inv.rate}/hr{inv.paid?` · Paid ${fmtD(inv.paid)}`:""}</p></div>
-          <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.6rem",fontWeight:300,color:T.gd}}>£{inv.total}</p>
+          <p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.6rem",fontWeight:300,color:T.gd}}>£{inv.total}</p>
           <SBadge s={inv.status}/>
         </div>
       ))}
@@ -1527,15 +1507,15 @@ function PostSession(){
   const[submitted,sSubmitted]=useState(false);
   if(submitted)return(
     <div style={{padding:"2rem",textAlign:"center"}}>
-      <div style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"3rem",color:T.gd,marginBottom:"1rem"}}>✓</div>
-      <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontWeight:300,marginBottom:".75rem"}}>Session logged.</h2>
+      <div style={{fontFamily:"'Sora',sans-serif",fontSize:"3rem",color:T.gd,marginBottom:"1rem"}}>✓</div>
+      <h2 style={{fontFamily:"'Sora',sans-serif",fontWeight:300,marginBottom:".75rem"}}>Session logged.</h2>
       <p style={{fontSize:".85rem",color:T.ash}}>Hours added to your log. Parent-visible summary saved. Assessment result entered.</p>
     </div>
   );
   return(
     <div style={{padding:"2rem",maxWidth:760}}>
       <p style={{fontSize:".65rem",color:T.ash,letterSpacing:".12em",textTransform:"uppercase",marginBottom:".3rem"}}>Post-Session Form</p>
-      <h1 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.9rem",fontWeight:300,marginBottom:"1.75rem"}}>Alex Chen · IB Math AA HL · Lesson 9</h1>
+      <h1 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.9rem",fontWeight:300,marginBottom:"1.75rem"}}>Alex Chen · IB Math AA HL · Lesson 9</h1>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1.5fr",gap:"1.5rem",alignItems:"start"}}>
         <div>
           <div style={{display:"flex",gap:0,marginBottom:"1.5rem",borderRadius:8,overflow:"hidden",border:`1px solid ${T.rl}`}}>
@@ -1590,7 +1570,7 @@ function AdminDash({go,bp}){
     <div style={{padding:bp?.mobile?"1.25rem":"2rem"}}>
       <div style={{marginBottom:"1.75rem"}}>
         <p style={{fontSize:".65rem",color:T.ash,letterSpacing:".12em",textTransform:"uppercase",marginBottom:".3rem"}}>Platform Admin</p>
-        <h1 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:bp?.mobile?"1.8rem":"2rem",fontWeight:300}}>Lynda <em style={{fontStyle:"italic",color:T.gd}}>Badmus Education</em></h1>
+        <h1 style={{fontFamily:"'Sora',sans-serif",fontSize:bp?.mobile?"1.8rem":"2rem",fontWeight:300}}>Lynda <em style={{fontStyle:"italic",color:T.gd}}>Badmus Education</em></h1>
       </div>
       <div style={{display:"grid",gridTemplateColumns:bp?.mobile?"1fr 1fr":"repeat(4,1fr)",gap:1,background:T.rl,borderRadius:10,overflow:"hidden",marginBottom:"1.5rem"}}>
         {[[ADM.tutors.length,"Tutors",T.vi],[ADM.students.length,"Students",T.bl],[COURSES.length,"Courses",T.gd],[ADM.bookings.filter(b=>b.status==="scheduled").length,"Live bookings",T.gr]].map(([v,l,c])=>(
@@ -1626,7 +1606,7 @@ function AdminDash({go,bp}){
       <div style={{display:"grid",gridTemplateColumns:bp?.mobile?"1fr":bp?.tablet?"1fr 1fr":"repeat(3,1fr)",gap:"1rem"}}>
         {[["admin-tutors","Manage Tutors","Approve, assign, set pay rates."],["admin-bookings","Bookings & Zoom","Add Zoom links, manage all sessions."],["admin-payouts","Payouts","Approve invoices, mark paid."]].map(([id,h,b])=>(
           <button key={id} onClick={()=>go(id)} style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:12,padding:"1.5rem",textAlign:"left",cursor:"pointer",transition:"all .2s",fontFamily:"inherit"}} onMouseEnter={e=>e.currentTarget.style.borderColor=T.gd} onMouseLeave={e=>e.currentTarget.style.borderColor=T.rl}>
-            <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.15rem",fontWeight:400,marginBottom:".35rem"}}>{h}</p>
+            <p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.15rem",fontWeight:400,marginBottom:".35rem"}}>{h}</p>
             <p style={{fontSize:".8rem",color:T.ash,lineHeight:1.6,fontWeight:300}}>{b}</p>
           </button>
         ))}
@@ -1640,7 +1620,7 @@ function AdminTutors(){
   return(
     <div style={{padding:"2rem"}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"1.5rem",flexWrap:"wrap",gap:"1rem"}}>
-        <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.8rem",fontWeight:300}}>Tutor Manager</h2>
+        <h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300}}>Tutor Manager</h2>
         <div style={{display:"flex",gap:".65rem"}}><Tag l={`${tutors.filter(t=>t.status==="pending").length} pending`} c={T.am} bg={T.ama}/><Tag l={`${tutors.filter(t=>t.status==="active").length} active`} c={T.gr} bg={T.gra}/></div>
       </div>
       {tutors.map(t=>(
@@ -1662,7 +1642,7 @@ function AdminTutors(){
 function AdminStudents(){
   return(
     <div style={{padding:"2rem"}}>
-      <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1.5rem"}}>Students</h2>
+      <h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1.5rem"}}>Students</h2>
       {ADM.students.map(s=>(
         <div key={s.id} style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:8,padding:"1.1rem 1.3rem",marginBottom:".6rem"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:"1rem"}}>
@@ -1685,7 +1665,7 @@ function AdminBookings(){
   return(
     <div style={{padding:"2rem"}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"1.25rem",flexWrap:"wrap",gap:"1rem"}}>
-        <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.8rem",fontWeight:300}}>Bookings & Zoom Links</h2>
+        <h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300}}>Bookings & Zoom Links</h2>
       </div>
       <div style={{background:T.bla,border:`1px solid ${T.bl}40`,borderRadius:8,padding:".85rem 1.2rem",marginBottom:"1.5rem",fontSize:".82rem",color:T.c2}}>
         <strong style={{color:T.bl}}>Phase 1 (Active):</strong> Admin adds Zoom links manually below. <strong style={{color:T.am}}>Phase 2 (Coming):</strong> Auto-generated via Zoom Server-to-Server OAuth on booking confirmation.
@@ -1726,7 +1706,7 @@ function AdminCourses(){
   const[sel,sSel]=useState(null);
   return(
     <div style={{padding:"2rem"}}>
-      <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1.5rem"}}>Course Manager</h2>
+      <h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1.5rem"}}>Course Manager</h2>
       <div style={{display:"grid",gridTemplateColumns:"230px 1fr",gap:"1.5rem",alignItems:"start"}}>
         <div style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:12,overflow:"hidden"}}>
           {COURSES.map(c=>{const m=CAT[c.g]||CAT.ib;return(
@@ -1740,11 +1720,11 @@ function AdminCourses(){
           <div>
             <div style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:12,padding:"2rem",marginBottom:"1.25rem"}}>
               <div style={{display:"flex",gap:".45rem",marginBottom:"1rem",flexWrap:"wrap"}}><Tag l={m.l} c={m.c} bg={m.bg}/>{c.lvl&&<Tag l={c.lvl.toUpperCase()} c={T.ash} bg={T.r2} sz="xs"/>}{c.path&&<Tag l={"Math "+c.path.toUpperCase()} c={T.ash} bg={T.r2} sz="xs"/>}</div>
-              <h3 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.5rem",fontWeight:400,marginBottom:"1.25rem"}}>{c.title}</h3>
-              {c.eq&&<div style={{background:T.gdaa,border:`1px solid ${T.rl}`,borderRadius:8,padding:".85rem 1.25rem",marginBottom:"1.25rem",display:"inline-flex",alignItems:"center",gap:"1rem"}}><span style={{fontSize:".62rem",color:T.gd,letterSpacing:".1em",textTransform:"uppercase"}}>{c.eq.l}</span><span style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.1rem",color:T.cr}}>{c.eq.d}</span></div>}
+              <h3 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.5rem",fontWeight:400,marginBottom:"1.25rem"}}>{c.title}</h3>
+              {c.eq&&<div style={{background:T.gdaa,border:`1px solid ${T.rl}`,borderRadius:8,padding:".85rem 1.25rem",marginBottom:"1.25rem",display:"inline-flex",alignItems:"center",gap:"1rem"}}><span style={{fontSize:".62rem",color:T.gd,letterSpacing:".1em",textTransform:"uppercase"}}>{c.eq.l}</span><span style={{fontFamily:"'Sora',sans-serif",fontSize:"1.1rem",color:T.cr}}>{c.eq.d}</span></div>}
               <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:1,background:T.rl,borderRadius:8,overflow:"hidden"}}>
                 {[[c.hours.full+"h","Full"],[c.hours.half+"h","Half"],[c.hours.q+"h","Quarter"],[`£${c.rate.gbp}/$${c.rate.usd}`,"/hr"]].map(([v,l])=>(
-                  <div key={l} style={{background:T.n3,padding:".9rem 1rem"}}><p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.3rem",fontWeight:300,color:T.gd}}>{v}</p><p style={{fontSize:".68rem",color:T.ash}}>{l}</p></div>
+                  <div key={l} style={{background:T.n3,padding:".9rem 1rem"}}><p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.3rem",fontWeight:300,color:T.gd}}>{v}</p><p style={{fontSize:".68rem",color:T.ash}}>{l}</p></div>
                 ))}
               </div>
             </div>
@@ -1760,7 +1740,7 @@ function AdminCourses(){
               </div>
             </div>
           </div>
-        );})():<div style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:12,padding:"4rem",textAlign:"center"}}><p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.4rem",fontWeight:300,color:T.ash}}>Select a course to manage</p></div>}
+        );})():<div style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:12,padding:"4rem",textAlign:"center"}}><p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.4rem",fontWeight:300,color:T.ash}}>Select a course to manage</p></div>}
       </div>
     </div>
   );
@@ -1775,7 +1755,7 @@ function AdminPayouts(){
   const approved=payouts.filter(p=>p.status==="approved").reduce((a,p)=>a+p.total,0);
   return(
     <div style={{padding:"2rem"}}>
-      <h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1.5rem"}}>Tutor Payouts</h2>
+      <h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1.5rem"}}>Tutor Payouts</h2>
       <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:1,background:T.rl,borderRadius:10,overflow:"hidden",marginBottom:"2rem"}}>
         {[[`£${total}`,"Total recorded",T.gd],[`£${pending}`,"Pending review",T.am],[`£${approved}`,"Approved, unpaid",T.bl]].map(([v,l,c])=>(
           <div key={l} style={{background:T.n2,padding:"1.2rem 1.4rem"}}><Stat v={v} l={l} c={c}/></div>
@@ -1786,7 +1766,7 @@ function AdminPayouts(){
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:"1rem"}}>
             <div><p style={{fontWeight:500,fontSize:".92rem"}}>{p.tutor}</p><p style={{fontSize:".75rem",color:T.ash}}>{p.period} · {p.hours}h · £{p.rate}/hr{p.ref?` · Ref: ${p.ref}`:""}</p>{p.paidAt&&<p style={{fontSize:".72rem",color:T.ash2,marginTop:".1rem"}}>Paid: {fmtD(p.paidAt)}</p>}</div>
             <div style={{display:"flex",gap:".65rem",alignItems:"center",flexWrap:"wrap"}}>
-              <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.6rem",fontWeight:300,color:T.gd}}>£{p.total}</p>
+              <p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.6rem",fontWeight:300,color:T.gd}}>£{p.total}</p>
               <SBadge s={p.status}/>
               {p.status==="pending"&&<Btn ch="Approve" v="success" sz="xs" onClick={()=>approve(p.id)}/>}
               {p.status==="approved"&&<Btn ch="Mark Paid ✓" v="gold" sz="xs" onClick={()=>markPaid(p.id)}/>}
@@ -1801,7 +1781,7 @@ function AdminPayouts(){
           <div key={t.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:".75rem 0",borderBottom:`1px solid ${T.r2}`}}>
             <p style={{fontSize:".85rem",fontWeight:500}}>{t.name}</p>
             <div style={{display:"flex",alignItems:"center",gap:"1rem"}}>
-              <p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.1rem",color:T.gd}}>£{t.payRate}/hr</p>
+              <p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.1rem",color:T.gd}}>£{t.payRate}/hr</p>
               <Btn ch="Edit Rate" v="navy" sz="xs" onClick={()=>{}}/>
             </div>
           </div>
@@ -1840,7 +1820,7 @@ function AIWidget(){
         <div style={{position:"fixed",bottom:"1.5rem",right:"1.5rem",zIndex:1000,width:360,maxWidth:"calc(100vw - 2rem)",background:T.n2,border:`1px solid ${T.rl}`,borderRadius:20,display:"flex",flexDirection:"column",height:470,overflow:"hidden",boxShadow:T.s3}}>
           <div style={{background:T.n3,padding:".9rem 1.2rem",display:"flex",alignItems:"center",gap:".65rem",borderBottom:`1px solid ${T.rl}`,flexShrink:0}}>
             <Logo size={26} text={false}/>
-            <div style={{flex:1}}><p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:".95rem"}}>Course Guide</p><p style={{fontSize:".62rem",color:T.ash}}>Lynda Badmus Education · AI</p></div>
+            <div style={{flex:1}}><p style={{fontFamily:"'Sora',sans-serif",fontSize:".95rem"}}>Course Guide</p><p style={{fontSize:".62rem",color:T.ash}}>Lynda Badmus Education · AI</p></div>
             <div style={{display:"flex",alignItems:"center",gap:".35rem",flexShrink:0}}>
               <div style={{width:6,height:6,borderRadius:"50%",background:T.gr}}/>
               <button onClick={()=>sOpen(false)} style={{background:"none",border:"none",color:T.ash,fontSize:"1.2rem",cursor:"pointer",marginLeft:".4rem"}}>&times;</button>
@@ -1860,7 +1840,7 @@ function AIWidget(){
           </div>
           <div style={{padding:".75rem .95rem",borderTop:`1px solid ${T.rl}`,display:"flex",gap:".55rem",alignItems:"flex-end",flexShrink:0}}>
             <textarea value={inp} onChange={e=>sInp(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}}} placeholder="Ask about courses…" rows={1} style={{flex:1,background:"transparent",border:"none",borderBottom:`1px solid ${T.rl}`,padding:".4rem 0",fontFamily:"inherit",fontSize:".82rem",color:T.cr,outline:"none",resize:"none",maxHeight:66,lineHeight:1.5,transition:"border-color .2s"}} onFocus={e=>e.currentTarget.style.borderBottomColor=T.gd} onBlur={e=>e.currentTarget.style.borderBottomColor=T.rl}/>
-            <button onClick={()=>send()} disabled={loading||!inp.trim()} style={{background:T.gd,border:"none",width:30,height:30,borderRadius:8,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color:T.n,fontSize:"1rem",transition:"background .18s",opacity:loading||!inp.trim()?.4:1,flexShrink:0}} onMouseEnter={e=>{if(!loading&&inp.trim())e.currentTarget.style.background="#9A7848";}} onMouseLeave={e=>e.currentTarget.style.background=T.gd}>›</button>
+            <button onClick={()=>send()} disabled={loading||!inp.trim()} style={{background:T.gd,border:"none",width:30,height:30,borderRadius:8,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color:T.n,fontSize:"1rem",transition:"background .18s",opacity:loading||!inp.trim()?.4:1,flexShrink:0}} onMouseEnter={e=>{if(!loading&&inp.trim())e.currentTarget.style.background="#3E2EE0";}} onMouseLeave={e=>e.currentTarget.style.background=T.gd}>›</button>
           </div>
         </div>
       )}
@@ -1947,14 +1927,14 @@ export default function App(){
       case"signup":     return<Signup go={go} setUser={setUser}/>;
       case"dashboard":  return<StudentDash user={user} setUser={setUser} go={go} bp={bp}/>;
       case"my-courses": return<MyCourses user={user} go={go}/>;
-      case"booking":    return<div style={{padding:"2rem"}}><h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1rem"}}>🎥 Book Zoom Lessons</h2><p style={{fontSize:".85rem",color:T.ash}}>Use the "Book Lesson" button on your enrolled course in the Dashboard to open the full booking calendar with credit deduction and Zoom link generation.</p></div>;
+      case"booking":    return<div style={{padding:"2rem"}}><h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1rem"}}>🎥 Book Zoom Lessons</h2><p style={{fontSize:".85rem",color:T.ash}}>Use the "Book Lesson" button on your enrolled course in the Dashboard to open the full booking calendar with credit deduction and Zoom link generation.</p></div>;
       case"assessments":return<Assessments user={user}/>;
-      case"progress":   return<div style={{padding:"2rem"}}><h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1rem"}}>Progress Tracker</h2><p style={{fontSize:".85rem",color:T.ash,marginBottom:"1.5rem"}}>Score trend and unit progress are displayed on your Dashboard. Full progress view available here in production.</p>{UNITS.map(u=><div key={u.u} style={{marginBottom:"1rem"}}><div style={{display:"flex",justifyContent:"space-between",marginBottom:".4rem"}}><p style={{fontSize:".88rem",color:u.p>0?T.cr:T.ash2}}>{u.u}</p><p style={{fontSize:".82rem",color:u.p===100?T.gr:u.p>0?u.c:T.ash2,fontWeight:600}}>{u.p}%</p></div><PBar p={u.p} col={u.c} h={7}/></div>)}</div>;
-      case"account":    return<div style={{padding:"2rem",maxWidth:500}}><h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"2rem"}}>Account</h2>{[["Name",user.name],["Email",user.email],["Role",user.role],["Timezone","Europe/London"],["Currency",cur]].map(([k,v])=><div key={k} style={{display:"flex",justifyContent:"space-between",padding:".8rem 0",borderBottom:`1px solid ${T.r2}`}}><span style={{fontSize:".72rem",color:T.ash2,letterSpacing:".08em",textTransform:"uppercase"}}>{k}</span><span style={{fontSize:".85rem",color:T.ash}}>{v}</span></div>)}</div>;
+      case"progress":   return<div style={{padding:"2rem"}}><h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1rem"}}>Progress Tracker</h2><p style={{fontSize:".85rem",color:T.ash,marginBottom:"1.5rem"}}>Score trend and unit progress are displayed on your Dashboard. Full progress view available here in production.</p>{UNITS.map(u=><div key={u.u} style={{marginBottom:"1rem"}}><div style={{display:"flex",justifyContent:"space-between",marginBottom:".4rem"}}><p style={{fontSize:".88rem",color:u.p>0?T.cr:T.ash2}}>{u.u}</p><p style={{fontSize:".82rem",color:u.p===100?T.gr:u.p>0?u.c:T.ash2,fontWeight:600}}>{u.p}%</p></div><PBar p={u.p} col={u.c} h={7}/></div>)}</div>;
+      case"account":    return<div style={{padding:"2rem",maxWidth:500}}><h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"2rem"}}>Account</h2>{[["Name",user.name],["Email",user.email],["Role",user.role],["Timezone","Europe/London"],["Currency",cur]].map(([k,v])=><div key={k} style={{display:"flex",justifyContent:"space-between",padding:".8rem 0",borderBottom:`1px solid ${T.r2}`}}><span style={{fontSize:".72rem",color:T.ash2,letterSpacing:".08em",textTransform:"uppercase"}}>{k}</span><span style={{fontSize:".85rem",color:T.ash}}>{v}</span></div>)}</div>;
       case"parent":     return<ParentPortal user={user} go={go} bp={bp}/>;
       case"par-assess": return<Assessments user={USERS.find(u=>u.id==(user.childId))||USERS[0]}/>;
-      case"par-sessions":return<div style={{padding:"2rem"}}><h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1rem"}}>Session History</h2>{(USERS.find(u=>u.id==user.childId)||USERS[0]).enrollments?.[0]?.bookings?.map(b=><div key={b.id} style={{marginBottom:".65rem"}}><ZoomCard link={b.zoom} meetingId={b.meetingId} date={b.date} time={b.time} course="IB Math AA HL" tutor={b.tutor} status={b.status}/></div>)}</div>;
-      case"par-billing":return<div style={{padding:"2rem"}}><h2 style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1rem"}}>Billing</h2><div style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:8,padding:"1.2rem 1.5rem",display:"flex",justifyContent:"space-between",alignItems:"center"}}><div><p style={{fontWeight:500}}>IB Math AA HL — Full Course</p><p style={{fontSize:".72rem",color:T.ash}}>Sep 2025 · Stripe</p></div><div style={{textAlign:"right"}}><p style={{fontFamily:"'Cormorant Garamond',serif",fontSize:"1.4rem",color:T.gd}}>£2,500</p><SBadge s="paid"/></div></div></div>;
+      case"par-sessions":return<div style={{padding:"2rem"}}><h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1rem"}}>Session History</h2>{(USERS.find(u=>u.id==user.childId)||USERS[0]).enrollments?.[0]?.bookings?.map(b=><div key={b.id} style={{marginBottom:".65rem"}}><ZoomCard link={b.zoom} meetingId={b.meetingId} date={b.date} time={b.time} course="IB Math AA HL" tutor={b.tutor} status={b.status}/></div>)}</div>;
+      case"par-billing":return<div style={{padding:"2rem"}}><h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1rem"}}>Billing</h2><div style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:8,padding:"1.2rem 1.5rem",display:"flex",justifyContent:"space-between",alignItems:"center"}}><div><p style={{fontWeight:500}}>IB Math AA HL — Full Course</p><p style={{fontSize:".72rem",color:T.ash}}>Sep 2025 · Stripe</p></div><div style={{textAlign:"right"}}><p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.4rem",color:T.gd}}>£2,500</p><SBadge s="paid"/></div></div></div>;
       case"tutor-dash": return<TutorDash user={user} go={go} bp={bp}/>;
       case"tutor-schedule":return<TutorSchedule/>;
       case"tutor-hours":return<TutorHours go={go}/>;
