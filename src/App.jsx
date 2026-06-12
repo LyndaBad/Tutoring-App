@@ -1540,13 +1540,13 @@ function PostSession(){
               <div><p style={{fontSize:".72rem",color:T.ash,marginBottom:".4rem"}}>Grade / IB Level</p><input type="text" value={grade} onChange={e=>sGrade(e.target.value)} placeholder="e.g. 7" style={{width:"100%",background:T.n3,border:`1px solid ${T.rl}`,borderRadius:8,padding:".65rem .85rem",color:T.cr,fontFamily:"inherit",fontSize:".9rem",outline:"none"}}/></div>
             </div>
             <p style={{fontSize:".72rem",color:T.ash,marginBottom:".4rem"}}>Feedback (visible to student + parent)</p>
-            <textarea value={fb} onChange={e=>sFb(e.target.value)} placeholder="Alex scored well on algebra questions. Coefficient technique needs more practice before the mid-course assessment…" rows={3} style={{width:"100%",background:T.n3,border:`1px solid ${T.rl}`,borderRadius:8,padding:".75rem",color:T.c2,fontFamily:"inherit",fontSize:".82rem",resize:"vertical",outline:"none",marginBottom:"1rem"}}/>
+            <textarea value={fb} onChange={e=>sFb(e.target.value)} placeholder="e.g. Scored well on algebra questions. Coefficient technique needs more practice before the mid-course assessment…" rows={3} style={{width:"100%",background:T.n3,border:`1px solid ${T.rl}`,borderRadius:8,padding:".75rem",color:T.c2,fontFamily:"inherit",fontSize:".82rem",resize:"vertical",outline:"none",marginBottom:"1rem"}}/>
             <Btn ch="Submit Session Complete ✓" v="success" sx={{width:"100%",justifyContent:"center"}} onClick={()=>sSubmitted(true)}/>
           </div>}
         </div>
         <div style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:12,padding:"1.5rem"}}>
           <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".14em",textTransform:"uppercase",color:T.ash,marginBottom:"1rem"}}>Session Zoom Details</p>
-          <ZoomCard link="https://zoom.us/j/123456789?pwd=abc" meetingId="123 456 789" date="2025-11-22" time="15:30" course="IB Math AA HL" tutor="Alex Chen" status="scheduled"/>
+          <EmptyNote text="The session's Zoom details appear here when you open this form from a scheduled session."/>
           <div style={{marginTop:"1rem",background:T.n3,borderRadius:8,padding:".85rem"}}>
             <p style={{fontSize:".65rem",color:T.ash,letterSpacing:".1em",textTransform:"uppercase",marginBottom:".5rem"}}>Zoom Phase 1 / Phase 2</p>
             <p style={{fontSize:".78rem",color:T.c2,lineHeight:1.6}}>Phase 1 (now): Admin adds Zoom links manually. You see them here and in your schedule. Phase 2: Links auto-generate via Zoom OAuth API on booking confirmation.</p>
