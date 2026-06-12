@@ -11,10 +11,6 @@
  * ✦ 4-tier assessments + tutor entry form
  * ✦ Tutor payout workflow (submit → approve → mark paid)
  * ✦ AI Course Guide assistant (Claude API)
- *
- * DEMO LOGINS:
- *   student@demo.com / demo   |   parent@demo.com / demo
- *   tutor@demo.com  / demo   |   admin@lbe.com   / admin
  */
 import { useState, useEffect, useRef, useCallback } from "react";
 import { supabase } from "./lib/supabase";
@@ -985,18 +981,14 @@ function Login({go,setUser,bp}){
       const u=await loadUserFromAuth(data.user);
       setUser(u);go(roleLanding(u.role));
     }catch(e){
-      // Fallback: demo accounts still work when Supabase isn't configured or the user hasn't been created yet.
-      const demo=USERS.find(u=>u.email===email&&u.pw===pw);
-      if(demo){setUser(demo);go(roleLanding(demo.role));}
-      else sErr(e?.message||"Incorrect email or password.");
+      sErr(e?.message||"Incorrect email or password.");
     }finally{sBusy(false);}
   };
   return(
     <div style={{paddingTop:70,minHeight:"90vh",display:"flex",alignItems:"center",justifyContent:"center",padding:"2rem"}}>
       <div style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:20,padding:"3rem",width:"100%",maxWidth:440,boxShadow:T.s2}}>
         <Logo size={36}/>
-        <p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginTop:"1.5rem",marginBottom:".4rem"}}>Sign In</p>
-        <p style={{fontSize:".75rem",color:T.ash,marginBottom:"2rem"}}>student@demo.com / demo &nbsp;·&nbsp; parent@demo.com / demo<br/>tutor@demo.com / demo &nbsp;·&nbsp; admin@lbe.com / admin</p>
+        <p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginTop:"1.5rem",marginBottom:"2rem"}}>Sign In</p>
         <Inp label="Email" val={email} onChange={e=>sEmail(e.target.value)} type="email" ph="your@email.com"/>
         <Inp label="Password" val={pw} onChange={e=>sPw(e.target.value)} type="password" ph="••••••••"/>
         {err&&<p style={{fontSize:".78rem",color:T.rd,marginBottom:"1rem"}}>{err}</p>}
@@ -1800,7 +1792,7 @@ function AIWidget(){
     const hist=[...msgs,{role:"user",text:txt}];
     sMsgs(hist);sInp("");sLoading(true);
     try{
-      const res=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:700,system:AI_SYS,messages:hist.map(m=>({role:m.role,content:m.text}))})});
+      const res=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:700,system:AI_SYS,messages:hist.map(m=>({role:m.role,content:m.text}))})});
       const data=await res.json();
       const reply=data.content?.map(b=>b.text||"").join("")||"Connection issue — please try again.";
       sMsgs(p=>[...p,{role:"assistant",text:reply}]);
@@ -1857,7 +1849,7 @@ export default function App(){
 
   useEffect(()=>{
     let cancelled=false;
-    // Rehydrate: prefer a live Supabase session; fall back to the cached demo user.
+    // Rehydrate from the live Supabase session.
     (async()=>{
       try{
         const{data}=await supabase.auth.getSession();
@@ -1868,7 +1860,7 @@ export default function App(){
           return;
         }
       }catch{}
-      try{const saved=localStorage.getItem("lbe-v3");if(saved&&!cancelled)setUser(JSON.parse(saved));}catch{}
+      try{localStorage.removeItem("lbe-v3");}catch{}
     })();
     // Keep the app in sync with auth events (sign-in in another tab, token refresh, etc.).
     // NOTE: do NOT await supabase queries inside this callback — the auth client holds
@@ -1883,9 +1875,6 @@ export default function App(){
     });
     return()=>{cancelled=true;sub?.subscription?.unsubscribe?.();};
   },[]);
-  useEffect(()=>{
-    try{if(user)localStorage.setItem("lbe-v3",JSON.stringify(user));else localStorage.removeItem("lbe-v3");}catch{}
-  },[user]);
 
   const go=useCallback(p=>{setPg(p);setSideOpen(false);requestAnimationFrame(()=>window.scrollTo({top:0,behavior:"smooth"}));},[]);
   const logout=useCallback(async()=>{try{await supabase.auth.signOut();}catch{}setUser(null);go("home");},[go]);
