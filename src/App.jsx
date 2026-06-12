@@ -174,6 +174,15 @@ const UNITS=[{u:"Number & Algebra",p:100,c:T.gr},{u:"Functions",p:85,c:T.bl},{u:
 const ATCOL={baseline:T.te,topic_check:T.bl,mid_course:T.am,final:T.vi};
 const ATLBL={baseline:"Baseline",topic_check:"Topic Check",mid_course:"Mid-Course",final:"Final"};
 
+// Lightweight markdown for chat bubbles: **bold**, *italic*, and "- " bullets.
+function MdText({text}){
+  return String(text).split(/(\*\*[^*\n]+\*\*|\*[^*\n]+\*)/g).map((part,i)=>{
+    if(part.startsWith("**")&&part.endsWith("**"))return <strong key={i} style={{fontWeight:600,color:T.cr}}>{part.slice(2,-2)}</strong>;
+    if(part.startsWith("*")&&part.endsWith("*")&&part.length>2)return <em key={i}>{part.slice(1,-1)}</em>;
+    return part.replace(/^- /gm,"• ").replace(/\n- /g,"\n• ");
+  });
+}
+
 const AI_SYS=`You are the Course Guide for Lynda Badmus Education ("Academic excellence with purpose.").
 Lynda: BEng Chemical Engineering + MSc Mathematics Education (Cambridge) + 12+ years IB/A-Level/GCSE/US curricula.
 IB COURSES — 6 SEPARATE (AA≠AI, SL≠HL):
@@ -1817,7 +1826,7 @@ function AIWidget(){
           <div style={{flex:1,overflowY:"auto",padding:"1rem",display:"flex",flexDirection:"column",gap:".55rem"}}>
             {msgs.map((m,i)=>(
               <div key={i} style={{display:"flex",justifyContent:m.role==="user"?"flex-end":"flex-start"}}>
-                <div style={{maxWidth:"85%",background:m.role==="user"?T.gdaa:T.n3,border:`1px solid ${m.role==="user"?T.rl:T.r2}`,borderRadius:11,borderBottomRightRadius:m.role==="user"?3:11,borderBottomLeftRadius:m.role==="user"?11:3,padding:".65rem .9rem",fontSize:".82rem",color:T.c2,lineHeight:1.62,fontWeight:300,whiteSpace:"pre-line"}}>{m.text}</div>
+                <div style={{maxWidth:"85%",background:m.role==="user"?T.gdaa:T.n3,border:`1px solid ${m.role==="user"?T.rl:T.r2}`,borderRadius:11,borderBottomRightRadius:m.role==="user"?3:11,borderBottomLeftRadius:m.role==="user"?11:3,padding:".65rem .9rem",fontSize:".82rem",color:T.c2,lineHeight:1.62,fontWeight:300,whiteSpace:"pre-line"}}><MdText text={m.text}/></div>
               </div>
             ))}
             {loading&&<div style={{alignSelf:"flex-start",background:T.n3,border:`1px solid ${T.r2}`,borderRadius:11,borderBottomLeftRadius:3,padding:".65rem .9rem",fontSize:".78rem",color:T.ash,fontStyle:"italic"}}>Thinking…</div>}
