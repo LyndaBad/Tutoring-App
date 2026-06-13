@@ -99,8 +99,17 @@ const COURSES=[
   {id:"ms-sci",g:"ms",sub:"sci",icon:"🔬",col:T.te,pale:T.tea,rate:{gbp:30,usd:40},hours:{full:20,half:10,q:5},lessons:10,title:"Middle School Science",curr:"US Grades 6–8",desc:"Wide-ranging MS Science building vocabulary, inquiry habits, and scientific thinking.",assess:["Diagnostic (L1)","Mid (L5)","End (L10)"],outcomes:["HS readiness","Scientific thinking"],eq:{l:"Speed",d:"v=distance/time"}},
   {id:"hs-math",g:"us",sub:"math",icon:"∑",col:T.bl,pale:T.bla,rate:{gbp:38,usd:50},hours:{full:36,half:18,q:9},lessons:14,title:"High School Math",curr:"US Grades 9–12",desc:"Algebra through Pre-Calculus — concept-first sessions making AP and Honors accessible.",assess:["Diagnostic (L1)","Unit Check (L5)","Mid (L10)","Mock (L14)"],outcomes:["Algebra 2 & Pre-Calc","AP/Honors readiness"],eq:{l:"Slope",d:"m=(y₂−y₁)/(x₂−x₁)"}},
   {id:"hs-chem",g:"us",sub:"chem",icon:"⚗",col:T.bl,pale:T.bla,rate:{gbp:38,usd:50},hours:{full:30,half:15,q:7},lessons:12,title:"High School Chemistry",curr:"US Grades 9–12",desc:"Atomic structure, bonding, stoichiometry, thermochemistry as a coherent whole.",assess:["Diagnostic (L1)","Unit Check (L4)","Mid (L8)","Mock (L12)"],outcomes:["HS Chem coverage","Honors/AP readiness"],eq:{l:"Molar Mass",d:"n=mass/M (mol)"}},
+  {id:"igcse-math",g:"igcse",sub:"math",icon:"∑",col:T.gr,pale:T.gra,rate:{gbp:40,usd:54},hours:{full:36,half:18,q:9},lessons:36,title:"IGCSE Mathematics",curr:"International GCSE",board:"Cambridge (CIE 0580) · Edexcel (4MA1)",desc:"Full IGCSE Maths (Extended): number, algebra, geometry, trigonometry, statistics and probability for grade 7–9 / A*.",assess:["Baseline","Mid-course","Final"],outcomes:["Extended tier coverage","Exam technique for CIE & Edexcel","Target: 7–9 / A*"],eq:{l:"Quadratic Formula",d:"x=(−b±√(b²−4ac))/2a"}},
+  {id:"igcse-chem",g:"igcse",sub:"chem",icon:"⚗",col:T.gr,pale:T.gra,rate:{gbp:40,usd:54},hours:{full:30,half:15,q:7},lessons:30,title:"IGCSE Chemistry",curr:"International GCSE",board:"Cambridge (CIE 0620) · Edexcel (4CH1)",desc:"Complete IGCSE Chemistry with practical-skills and six-mark question technique.",assess:["Baseline","Mid-course","Final"],outcomes:["Full IGCSE Chem","Practical paper technique","Target: 7–9 / A*"],eq:{l:"Moles",d:"n = mass / Mᵣ"}},
+  {id:"ial-math",g:"ial",sub:"math",icon:"∑",col:T.rd,pale:T.rda,rate:{gbp:48,usd:64},hours:{full:45,half:22,q:11},lessons:45,title:"International A-Level Mathematics",curr:"International A-Level (IAL)",board:"Edexcel IAL · Cambridge International AS/A",desc:"Full IAL Maths: Pure (P1–P4) plus Statistics and Mechanics units, with A* exam technique.",assess:["Baseline","Mid-course","Final"],outcomes:["Full IAL units","Unit-based exam technique","Target: A/A*"],eq:{l:"Integration by Parts",d:"∫u dv = uv − ∫v du"}},
+  {id:"ial-chem",g:"ial",sub:"chem",icon:"⚗",col:T.rd,pale:T.rda,rate:{gbp:48,usd:64},hours:{full:45,half:22,q:11},lessons:45,title:"International A-Level Chemistry",curr:"International A-Level (IAL)",board:"Edexcel IAL · Cambridge International AS/A",desc:"Full IAL Chemistry across all units — physical, inorganic and organic with practical endorsement support.",assess:["Baseline","Mid-course","Final"],outcomes:["All IAL units","Organic mechanisms","Target: A/A*"],eq:{l:"Arrhenius",d:"k=A·e^(−Eₐ/RT)"}},
+  {id:"pp-gcse",g:"pp",sub:"math",icon:"✎",col:T.am,pale:T.ama,rate:{gbp:35,usd:48},hours:{full:12,half:6,q:3},lessons:12,practice:true,title:"GCSE Practice Papers",curr:"Exam-focused · GCSE",board:"AQA · Edexcel · OCR",desc:"Intensive past-paper and exam-style practice for GCSE Maths & Sciences — timed papers, mark schemes and examiner-style feedback every session.",assess:["Timed paper each session"],outcomes:["Exam timing & technique","Mark-scheme mastery","Targeted weak-area drilling"],eq:{l:"Exam Focus",d:"Practice · Mark · Improve"}},
+  {id:"pp-igcse",g:"pp",sub:"math",icon:"✎",col:T.am,pale:T.ama,rate:{gbp:38,usd:52},hours:{full:12,half:6,q:3},lessons:12,practice:true,title:"IGCSE Practice Papers",curr:"Exam-focused · IGCSE",board:"Cambridge (CIE) · Edexcel",desc:"Past-paper and exam-style practice for IGCSE — timed papers with full feedback against CIE and Edexcel mark schemes.",assess:["Timed paper each session"],outcomes:["Exam timing & technique","CIE/Edexcel mark schemes","Targeted weak-area drilling"],eq:{l:"Exam Focus",d:"Practice · Mark · Improve"}},
+  {id:"pp-alevel",g:"pp",sub:"math",icon:"✎",col:T.am,pale:T.ama,rate:{gbp:42,usd:56},hours:{full:12,half:6,q:3},lessons:12,practice:true,title:"A-Level Practice Papers",curr:"Exam-focused · A-Level",board:"AQA · Edexcel · OCR",desc:"Past-paper intensive for A-Level Maths & Sciences — full timed papers and synoptic exam-style questions with detailed feedback.",assess:["Timed paper each session"],outcomes:["A* exam technique","Synoptic question practice","Targeted weak-area drilling"],eq:{l:"Exam Focus",d:"Practice · Mark · Improve"}},
+  {id:"pp-ial",g:"pp",sub:"math",icon:"✎",col:T.am,pale:T.ama,rate:{gbp:45,usd:60},hours:{full:12,half:6,q:3},lessons:12,practice:true,title:"International A-Level Practice Papers",curr:"Exam-focused · IAL",board:"Edexcel IAL · Cambridge International",desc:"Unit-by-unit IAL past-paper practice with timed conditions and examiner-style feedback.",assess:["Timed paper each session"],outcomes:["Unit exam technique","IAL mark schemes","Targeted weak-area drilling"],eq:{l:"Exam Focus",d:"Practice · Mark · Improve"}},
+  {id:"pp-ib",g:"pp",sub:"math",icon:"✎",col:T.am,pale:T.ama,rate:{gbp:45,usd:60},hours:{full:12,half:6,q:3},lessons:12,practice:true,title:"IB Practice Papers",curr:"Exam-focused · IB Diploma",board:"IB · Papers 1, 2 & 3",desc:"IB exam-paper practice across Papers 1–3 with timed conditions, mark schemes and Paper 3 investigation technique.",assess:["Timed paper each session"],outcomes:["Paper 1–3 technique","IB mark schemes","Targeted weak-area drilling"],eq:{l:"Exam Focus",d:"Practice · Mark · Improve"}},
 ];
-const CAT={ib:{l:"IB Diploma",c:T.vi,bg:T.via},al:{l:"A-Level",c:T.rd,bg:T.rda},gcse:{l:"GCSE",c:T.gr,bg:T.gra},pre:{l:"Pre-GCSE",c:T.te,bg:T.tea},preib:{l:"Pre-IB",c:T.am,bg:T.ama},ap:{l:"AP",c:T.am,bg:T.ama},hon:{l:"Honors",c:T.am,bg:T.ama},ms:{l:"Middle School",c:T.te,bg:T.tea},us:{l:"US Curriculum",c:T.bl,bg:T.bla}};
+const CAT={ib:{l:"IB Diploma",c:T.vi,bg:T.via},al:{l:"A-Level",c:T.rd,bg:T.rda},gcse:{l:"GCSE",c:T.gr,bg:T.gra},pre:{l:"Pre-GCSE",c:T.te,bg:T.tea},preib:{l:"Pre-IB",c:T.am,bg:T.ama},ap:{l:"AP",c:T.am,bg:T.ama},hon:{l:"Honors",c:T.am,bg:T.ama},ms:{l:"Middle School",c:T.te,bg:T.tea},us:{l:"US Curriculum",c:T.bl,bg:T.bla},igcse:{l:"IGCSE",c:T.gr,bg:T.gra},ial:{l:"International A-Level",c:T.rd,bg:T.rda},pp:{l:"Practice Papers",c:T.am,bg:T.ama}};
 function SubIcon({sub,col,size=20}){
   const s={color:col,opacity:.8,flexShrink:0};
   if(sub==="chem") return <FlaskConical size={size} style={s} strokeWidth={1.5}/>;
@@ -623,9 +632,10 @@ function CoursesPage({go,cur,bp}){
   const[sub,sSub]=useState("all");
   const p=bp?.mobile?"1.5rem":"2rem";
   const groups=[
-    {key:"intl",label:"IB & International",accent:T.vi,gs:["ib","preib"],note:"AA ≠ AI · SL ≠ HL — choose your exact programme."},
+    {key:"intl",label:"IB & International",accent:T.vi,gs:["ib","preib","igcse","ial"],note:"IB · IGCSE · International A-Level — choose your exact programme."},
     {key:"uk",label:"UK Curriculum",accent:T.rd,gs:["al","gcse","pre"],note:"A-Level · GCSE · Pre-GCSE — all major UK exam boards."},
     {key:"us",label:"US Curriculum",accent:T.bl,gs:["ap","hon","us","ms"],note:"AP · Honors · High School · Middle School."},
+    {key:"pp",label:"Practice Papers",accent:T.am,gs:["pp"],note:"Exam-focused past-paper practice — GCSE · IGCSE · A-Level · IAL · IB."},
   ];
   function CourseCard({c}){
     const m=CAT[c.g]||CAT.ib;
@@ -699,6 +709,27 @@ function CoursesPage({go,cur,bp}){
   );
 }
 
+// Break a course's total hours into taught lessons + end-of-topic tests + 3 main assessments.
+function courseStructure(c){
+  const total=c.hours.full;
+  if(c.practice)return{total,practice:true,sessions:c.lessons};
+  const tests=Math.max(3,Math.round(total/6));     // one end-of-topic test per topic
+  const taught=Math.max(1,total-tests-3);          // 3 main assessments: baseline, mid, final
+  return{total,taught,tests,assessments:3};
+}
+function CourseStructureNote({c}){
+  const st=courseStructure(c);
+  if(st.practice)return(
+    <div style={{background:T.gdaa,border:`1px solid ${T.rl}`,borderRadius:10,padding:"1rem 1.25rem",marginTop:"1.5rem"}}>
+      <p style={{fontSize:".84rem",color:T.cr,lineHeight:1.7,fontWeight:300}}>This {st.total}-hour exam-focused course is built from <strong style={{color:T.gd}}>{st.sessions} past-paper practice sessions</strong> — each a timed paper followed by full examiner-style feedback.</p>
+    </div>
+  );
+  return(
+    <div style={{background:T.gdaa,border:`1px solid ${T.rl}`,borderRadius:10,padding:"1rem 1.25rem",marginTop:"1.5rem"}}>
+      <p style={{fontSize:".84rem",color:T.cr,lineHeight:1.7,fontWeight:300}}>This {st.total}-hour course includes <strong style={{color:T.gd}}>{st.taught} taught lessons</strong>, <strong style={{color:T.gd}}>{st.tests} end-of-topic tests</strong> (one per topic), and <strong style={{color:T.gd}}>3 key assessment points</strong>: baseline, mid-course and final assessment.</p>
+    </div>
+  );
+}
 function CourseDetail({courseId,go,cur,user,setUser,bp}){
   const c=COURSES.find(x=>x.id===courseId);
   const[selPkg,sSelPkg]=useState("full");
@@ -732,12 +763,17 @@ function CourseDetail({courseId,go,cur,user,setUser,bp}){
                 {c.path&&<Tag l={"Math "+c.path.toUpperCase()} c={T.ash} bg={T.r2}/>}
               </div>
               <h1 style={{fontFamily:"'Sora',sans-serif",fontSize:`min(${bp?.mobile?"8vw":"5.5vw"},3.2rem)`,fontWeight:300,lineHeight:1.08,marginBottom:".85rem"}}>{c.title}</h1>
+              {c.board&&<p style={{fontSize:".74rem",color:T.bl,fontWeight:500,marginBottom:".75rem"}}>Exam boards: {c.board}</p>}
               <p style={{fontSize:".9rem",color:T.ash,lineHeight:1.78,maxWidth:540,fontWeight:300,marginBottom:"1.75rem"}}>{c.desc}</p>
               <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:bp?.mobile?"1rem":"2rem"}}>
-                {[[c.hours.full+"h","Full course"],[c.lessons+" lessons","Structured plan"],[c.assess.length+" assessments","Checkpoints"],[fccy(c.rate.gbp,c.rate.usd,cur)+"/hr","Rate"]].map(([v,l])=>(
+                {(c.practice
+                  ?[[c.hours.full+"h","Full course"],[c.lessons+" papers","Past-paper sessions"],["Each","Marked + feedback"],[fccy(c.rate.gbp,c.rate.usd,cur)+"/hr","Rate"]]
+                  :[[c.hours.full+"h","Full course"],[courseStructure(c).taught+" lessons","Taught"],[courseStructure(c).tests+" + 3","Tests + assessments"],[fccy(c.rate.gbp,c.rate.usd,cur)+"/hr","Rate"]]
+                ).map(([v,l])=>(
                   <div key={l}><p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.45rem",fontWeight:300,color:T.gd,lineHeight:1,marginBottom:".18rem"}}>{v}</p><p style={{fontSize:".65rem",color:T.ash2}}>{l}</p></div>
                 ))}
               </div>
+              <CourseStructureNote c={c}/>
               {c.eq&&<div style={{background:T.gdaa,border:`1px solid ${T.rl}`,borderRadius:10,padding:"1rem 1.25rem",marginTop:"1.5rem",display:"inline-flex",alignItems:"center",gap:"1rem",flexWrap:"wrap"}}>
                 <span style={{fontSize:".62rem",color:T.gd,letterSpacing:".1em",textTransform:"uppercase"}}>{c.eq.l}</span>
                 <span style={{fontFamily:"'Sora',sans-serif",fontSize:"1.1rem",color:T.cr}}>{c.eq.d}</span>
@@ -765,12 +801,18 @@ function CourseDetail({courseId,go,cur,user,setUser,bp}){
       <section style={{padding:`4rem ${p} 5rem`}}>
         <div style={{maxWidth:1360,margin:"0 auto",display:"grid",gridTemplateColumns:bp?.mobile?"1fr":"2fr 1fr",gap:bp?.mobile?"2rem":"3.5rem",alignItems:"start"}}>
           <div>
-            <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".16em",textTransform:"uppercase",color:T.gd,marginBottom:"1.25rem"}}>Assessments Included</p>
-            {c.assess.map(a=><div key={a} style={{display:"flex",gap:".65rem",padding:".55rem 0",borderBottom:`1px solid ${T.r2}`}}><span style={{color:T.gd,fontSize:".8rem"}}>◈</span><p style={{fontSize:".82rem",color:T.ash}}>{a}</p></div>)}
+            <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".16em",textTransform:"uppercase",color:T.gd,marginBottom:"1.25rem"}}>Assessment Structure</p>
+            {c.practice
+              ?[["Timed paper every session","Sat under real exam conditions"],["Full marking & feedback","Examiner-style, after each paper"],["Progress tracking","Scores logged to your dashboard"]].map(([t,d])=>(
+                <div key={t} style={{padding:".55rem 0",borderBottom:`1px solid ${T.r2}`}}><p style={{fontSize:".82rem",color:T.cr,fontWeight:500}}>◈ {t}</p><p style={{fontSize:".74rem",color:T.ash,marginLeft:"1.1rem"}}>{d}</p></div>
+              ))
+              :[["Baseline assessment","At the start — sets your target grade"],[courseStructure(c).tests+" end-of-topic tests","One at the end of every topic"],["Mid-course assessment","Checks progress halfway through"],["Final assessment","Full exam-style mock at the end"]].map(([t,d])=>(
+                <div key={t} style={{padding:".55rem 0",borderBottom:`1px solid ${T.r2}`}}><p style={{fontSize:".82rem",color:T.cr,fontWeight:500}}>◈ {t}</p><p style={{fontSize:".74rem",color:T.ash,marginLeft:"1.1rem"}}>{d}</p></div>
+              ))}
             <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".16em",textTransform:"uppercase",color:T.gd,margin:"2rem 0 1rem"}}>Target Outcomes</p>
             {c.outcomes.map(o=><div key={o} style={{display:"flex",gap:".65rem",padding:".5rem 0",borderBottom:`1px solid ${T.r2}`}}><span style={{color:T.bl,fontSize:".8rem"}}>→</span><p style={{fontSize:".82rem",color:T.ash,lineHeight:1.5}}>{o}</p></div>)}
-            <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".16em",textTransform:"uppercase",color:T.gd,margin:"2rem 0 1rem"}}>Full Lesson Plan</p>
-            <LessonList courseId={c.id}/>
+            {!c.practice&&<><p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".16em",textTransform:"uppercase",color:T.gd,margin:"2rem 0 1rem"}}>Full Lesson Plan</p>
+            <LessonList courseId={c.id}/></>}
           </div>
           <div style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:14,padding:"1.6rem"}}>
             <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".16em",textTransform:"uppercase",color:T.gd,marginBottom:"1rem"}}>Every Course Includes</p>
@@ -1931,10 +1973,23 @@ function AIWidget(){
 export default function App(){
   const[pg,setPg]=useState("home");
   const[cur,setCur]=useState("GBP");
+  const curTouched=useRef(false);
+  const setCurManual=useCallback(v=>{curTouched.current=true;setCur(v);},[]);
   const[user,setUser]=useState(null);
   const[drawerOpen,setDrawerOpen]=useState(false);
   const[sideOpen,setSideOpen]=useState(false);
   const bp=useBreakpoint();
+
+  // Auto-pick currency from the visitor's country (US → USD, UK → GBP). Manual toggle always wins.
+  useEffect(()=>{
+    let dead=false;
+    fetch("/api/geo").then(r=>r.json()).then(d=>{
+      if(dead||curTouched.current||!d?.country)return;
+      if(d.country==="US")setCur("USD");
+      else if(["GB","IE","IM","JE","GG"].includes(d.country))setCur("GBP");
+    }).catch(()=>{});
+    return()=>{dead=true;};
+  },[]);
 
   useEffect(()=>{
     let cancelled=false;
@@ -1983,7 +2038,7 @@ export default function App(){
     return false;
   };
   if(authWall(studentPgs,"student")||authWall(parentPgs,"parent")||authWall(tutorPgs,"tutor")||authWall(adminPgs,"admin")){
-    return(<><style dangerouslySetInnerHTML={{__html:CSS}}/><TopNav pg={pg} go={go} cur={cur} setCur={setCur} user={user} logout={logout} bp={bp} drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen}/><SideDrawer pg={pg} go={go} cur={cur} setCur={setCur} user={user} logout={logout} open={drawerOpen} onClose={()=>setDrawerOpen(false)}/><Login go={go} setUser={setUser} bp={bp}/><AIWidget/></>);
+    return(<><style dangerouslySetInnerHTML={{__html:CSS}}/><TopNav pg={pg} go={go} cur={cur} setCur={setCurManual} user={user} logout={logout} bp={bp} drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen}/><SideDrawer pg={pg} go={go} cur={cur} setCur={setCurManual} user={user} logout={logout} open={drawerOpen} onClose={()=>setDrawerOpen(false)}/><Login go={go} setUser={setUser} bp={bp}/><AIWidget/></>);
   }
 
   const inApp=appPgs.includes(pg);
@@ -2027,8 +2082,8 @@ export default function App(){
   return(
     <>
       <style dangerouslySetInnerHTML={{__html:CSS}}/>
-      <TopNav pg={pg} go={go} cur={cur} setCur={setCur} user={user} logout={logout} bp={bp} drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen}/>
-      {!inApp&&<SideDrawer pg={pg} go={go} cur={cur} setCur={setCur} user={user} logout={logout} open={drawerOpen} onClose={()=>setDrawerOpen(false)}/>}
+      <TopNav pg={pg} go={go} cur={cur} setCur={setCurManual} user={user} logout={logout} bp={bp} drawerOpen={drawerOpen} setDrawerOpen={setDrawerOpen}/>
+      {!inApp&&<SideDrawer pg={pg} go={go} cur={cur} setCur={setCurManual} user={user} logout={logout} open={drawerOpen} onClose={()=>setDrawerOpen(false)}/>}
       {inApp?(
         <div style={{paddingTop:66,height:"100vh",display:"flex",overflow:"hidden"}}>
           <Sidebar pg={pg} go={go} user={user} bp={bp} open={sideOpen} onClose={()=>setSideOpen(false)}/>
