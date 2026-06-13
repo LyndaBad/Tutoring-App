@@ -156,7 +156,7 @@ function MdText({text}){
 }
 
 const AI_SYS=`You are the Course Guide for Lynda Badmus Education ("Academic excellence with purpose.").
-Lynda: BEng Chemical Engineering + MSc Mathematics Education (Cambridge) + 12+ years IB/A-Level/GCSE/US curricula.
+Lynda: BEng Chemical Engineering + MEd Mathematics Education (Cambridge) + 12+ years IB/A-Level/GCSE/US curricula.
 IB COURSES — 6 SEPARATE (AA≠AI, SL≠HL):
 IB Math AA SL (36h £50) AA HL (50h £50) AI SL (30h £50) AI HL (42h £50) Chem SL (32h £50) Chem HL (48h £50)
 AA=algebraic/proof (maths/physics/engineering). AI=stats/modelling (social science/business). HL=more content+Paper 3.
@@ -466,7 +466,7 @@ function Home({go,cur,bp}){
           </div>
           {/* Stats grid — vivid color-coded */}
           <div className="rise r4" style={{display:"grid",gridTemplateColumns:bp?.mobile?"1fr 1fr":"repeat(4,1fr)",gap:1,background:"rgba(29,26,51,.08)",borderRadius:14,overflow:"hidden",maxWidth:bp?.mobile?"100%":640}}>
-            {[["MSc","Cambridge Maths",T.vi],["12+","Years teaching",T.gd],["20","Courses",T.gr],["6","IB pathways",T.bl]].map(([n,l,c])=>(
+            {[["MEd","Cambridge Maths",T.vi],["12+","Years teaching",T.gd],["20","Courses",T.gr],["6","IB pathways",T.bl]].map(([n,l,c])=>(
               <div key={n} style={{background:T.n2,padding:"1.2rem 1.35rem",borderBottom:`2px solid ${c}`,transition:"background .2s"}}>
                 <p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.9rem",fontWeight:500,color:c,lineHeight:1,marginBottom:".2rem"}}>{n}</p>
                 <p style={{fontSize:".62rem",color:T.ash2,letterSpacing:".04em"}}>{l}</p>
@@ -535,11 +535,11 @@ function Home({go,cur,bp}){
               <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".25em",textTransform:"uppercase",color:T.gd}}>Why Lynda Badmus Education</p>
             </div>
             <h2 style={{fontFamily:"'Sora',sans-serif",fontSize:`min(${bp?.mobile?"9vw":"5vw"},3.5rem)`,fontWeight:500,lineHeight:1.08,marginBottom:"1.5rem"}}>Most tutors explain.<br/><em style={{fontStyle:"italic",color:T.gd}}>Lynda diagnoses.</em></h2>
-            <p style={{fontSize:".92rem",color:T.ash,lineHeight:1.88,fontWeight:300,marginBottom:"2rem"}}>MSc Mathematics Education (Cambridge) + BEng Chemical Engineering + 12+ years across IB, A-Level, GCSE, and American curricula. Every session starts with a diagnostic. Every lesson has a structure.</p>
+            <p style={{fontSize:".92rem",color:T.ash,lineHeight:1.88,fontWeight:300,marginBottom:"2rem"}}>MEd Mathematics Education (Cambridge) + BEng Chemical Engineering + 12+ years across IB, A-Level, GCSE, and American curricula. Every session starts with a diagnostic. Every lesson has a structure.</p>
             <Btn ch="Read Lynda's Story →" v="outline" onClick={()=>go("about")}/>
           </div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:1,background:"rgba(29,26,51,.07)",borderRadius:14,overflow:"hidden"}}>
-            {[["MSc Cambridge","Mathematics Education",T.vi],["BEng","Chemical Engineering",T.gr],["12+ years","UK & US schools",T.bl],["IB · A-Level · GCSE · AP","All major curricula",T.gd]].map(([n,l,c])=>(
+            {[["MEd Cambridge","Mathematics Education",T.vi],["BEng","Chemical Engineering",T.gr],["12+ years","UK & US schools",T.bl],["IB · A-Level · GCSE · AP","All major curricula",T.gd]].map(([n,l,c])=>(
               <div key={n} style={{background:T.n2,padding:"1.65rem",borderBottom:`3px solid ${c}`}}>
                 <p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.35rem",fontWeight:500,color:c,marginBottom:".35rem"}}>{n}</p>
                 <p style={{fontSize:".73rem",color:T.ash}}>{l}</p>
@@ -593,9 +593,9 @@ function About({go,bp}){
                 </div>
                 <p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.3rem",fontWeight:400,marginBottom:".3rem"}}>Lynda Badmus</p>
                 <p style={{fontSize:".75rem",color:T.gd,letterSpacing:".08em",textTransform:"uppercase",marginBottom:".2rem"}}>Founder & Principal Tutor</p>
-                <p style={{fontSize:".68rem",color:T.ash}}>MSc Mathematics Education, Cambridge</p>
+                <p style={{fontSize:".68rem",color:T.ash}}>MEd Mathematics Education, Cambridge</p>
               </div>
-              {[["Post-grad","MSc Mathematics Education — University of Cambridge"],["Degree","BEng Chemical Engineering"],["Experience","12+ years teaching & leadership"],["Curricula","IB · A-Level · GCSE · US Curriculum"],["Schools","Prestigious UK & US institutions"]].map(([k,v])=>(
+              {[["Post-grad","MEd Mathematics Education — University of Cambridge"],["Degree","BEng Chemical Engineering"],["Experience","12+ years teaching & leadership"],["Curricula","IB · A-Level · GCSE · US Curriculum"],["Schools","Prestigious UK & US institutions"]].map(([k,v])=>(
                 <div key={k} style={{display:"flex",justifyContent:"space-between",padding:".72rem 0",borderBottom:`1px solid ${T.r2}`}}>
                   <span style={{fontSize:".68rem",color:T.ash2,letterSpacing:".08em",textTransform:"uppercase"}}>{k}</span>
                   <span style={{fontSize:".82rem",color:T.ash,textAlign:"right",maxWidth:"57%"}}>{v}</span>
@@ -769,6 +769,8 @@ function CourseDetail({courseId,go,cur,user,setUser,bp}){
             {c.assess.map(a=><div key={a} style={{display:"flex",gap:".65rem",padding:".55rem 0",borderBottom:`1px solid ${T.r2}`}}><span style={{color:T.gd,fontSize:".8rem"}}>◈</span><p style={{fontSize:".82rem",color:T.ash}}>{a}</p></div>)}
             <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".16em",textTransform:"uppercase",color:T.gd,margin:"2rem 0 1rem"}}>Target Outcomes</p>
             {c.outcomes.map(o=><div key={o} style={{display:"flex",gap:".65rem",padding:".5rem 0",borderBottom:`1px solid ${T.r2}`}}><span style={{color:T.bl,fontSize:".8rem"}}>→</span><p style={{fontSize:".82rem",color:T.ash,lineHeight:1.5}}>{o}</p></div>)}
+            <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".16em",textTransform:"uppercase",color:T.gd,margin:"2rem 0 1rem"}}>Full Lesson Plan</p>
+            <LessonList courseId={c.id}/>
           </div>
           <div style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:14,padding:"1.6rem"}}>
             <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".16em",textTransform:"uppercase",color:T.gd,marginBottom:"1rem"}}>Every Course Includes</p>
@@ -898,7 +900,7 @@ function Contact({go,bp}){
       ):(
         <div style={{display:"grid",gridTemplateColumns:bp?.mobile?"1fr":"1fr 1.5fr",gap:bp?.mobile?"2rem":"5rem",alignItems:"start"}}>
           <div>
-            {[["Email","badmusl@outlook.com"],["Platform","Zoom · Online · All time zones"],["Response","Within 24 hours"]].map(([k,v])=>(
+            {[["Email","lbadmuseducation@outlook.com"],["Platform","Zoom · Online · All time zones"],["Response","Within 24 hours"]].map(([k,v])=>(
               <div key={k} style={{display:"flex",justifyContent:"space-between",padding:".75rem 0",borderBottom:`1px solid ${T.rl}`}}><span style={{fontSize:".68rem",color:T.ash2,letterSpacing:".1em",textTransform:"uppercase"}}>{k}</span><span style={{fontSize:".83rem",color:T.ash}}>{v}</span></div>
             ))}
             <div style={{marginTop:"1.5rem"}}><Btn ch="Browse Courses →" v="gold" sz="sm" onClick={()=>go("courses")}/></div>
@@ -1628,26 +1630,41 @@ function AdminTutors(){
     ]);
     return(profs||[]).map(pr=>({id:pr.id,name:pr.name||pr.email,email:pr.email,status:"active",subjects:[],payRate:pr.pay_rate||0,sessions:(ss||[]).filter(x=>x.tutor_id===pr.id).length,pending:(invs||[]).filter(i=>i.tutor_id===pr.id&&i.status==="pending").reduce((a,i)=>a+Number(i.total),0)}));
   });
-  const tutors=tutorsLive||[];
+  const[tutors,setTutors]=useState(null);
+  useEffect(()=>{if(tutorsLive&&tutors===null)setTutors(tutorsLive);},[tutorsLive,tutors]);
+  const list=tutors||[];
+  const[edit,setEdit]=useState(null);
+  const[rate,setRate]=useState("");
+  const saveRate=async()=>{
+    const v=parseFloat(rate);if(isNaN(v)){setEdit(null);return;}
+    try{await supabase.from("profiles").update({pay_rate:v}).eq("id",edit.id);}catch(e){console.warn(e);}
+    setTutors(list.map(x=>x.id===edit.id?{...x,payRate:v}:x));setEdit(null);
+  };
   return(
     <div style={{padding:"2rem"}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"1.5rem",flexWrap:"wrap",gap:"1rem"}}>
         <h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300}}>Tutor Manager</h2>
-        <div style={{display:"flex",gap:".65rem"}}><Tag l={`${tutors.filter(t=>t.status==="pending").length} pending`} c={T.am} bg={T.ama}/><Tag l={`${tutors.filter(t=>t.status==="active").length} active`} c={T.gr} bg={T.gra}/></div>
+        <div style={{display:"flex",gap:".65rem"}}><Tag l={`${list.filter(t=>t.status==="pending").length} pending`} c={T.am} bg={T.ama}/><Tag l={`${list.filter(t=>t.status==="active").length} active`} c={T.gr} bg={T.gra}/></div>
       </div>
-      {tutorsLive&&tutors.length===0&&<EmptyNote text="No tutors yet. When a tutor creates an account, they'll appear here for you to manage."/>}
-      {tutors.map(t=>(
+      {tutors&&list.length===0&&<EmptyNote text="No tutors yet. When a tutor creates an account, they'll appear here for you to manage."/>}
+      {list.map(t=>(
         <div key={t.id} style={{background:T.n2,border:`1px solid ${t.status==="pending"?T.am:T.rl}`,borderRadius:8,padding:"1.25rem 1.5rem",marginBottom:".65rem"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:"1rem"}}>
             <div><p style={{fontWeight:500,fontSize:".92rem"}}>{t.name}</p><p style={{fontSize:".75rem",color:T.ash}}>{t.email}{t.subjects.length?" · "+t.subjects.join(", "):""} · £{t.payRate}/hr · {t.sessions} sessions</p>{t.pending>0&&<p style={{fontSize:".72rem",color:T.am,marginTop:".15rem"}}>£{t.pending} pending payout</p>}</div>
             <div style={{display:"flex",gap:".65rem",alignItems:"center",flexWrap:"wrap"}}>
               <SBadge s={t.status}/>
-              {t.status==="pending"&&<Btn ch="Approve" v="success" sz="xs" onClick={()=>{}}/>}
-              <Btn ch="Edit Pay Rate" v="navy" sz="xs" onClick={()=>{}}/>
+              <Btn ch="Edit Pay Rate" v="navy" sz="xs" onClick={()=>{setEdit(t);setRate(String(t.payRate||""));}}/>
             </div>
           </div>
         </div>
       ))}
+      {edit&&<Modal title={`Pay Rate — ${edit.name}`} onClose={()=>setEdit(null)} ch={
+        <div>
+          <p style={{fontSize:".85rem",color:T.ash,marginBottom:"1.25rem"}}>Set this tutor's hourly pay rate (£). Used to calculate invoices and payouts going forward.</p>
+          <Inp label="Pay rate (£ per hour)" val={rate} onChange={e=>setRate(e.target.value)} type="number" ph="e.g. 25"/>
+          <Btn ch="Save Pay Rate" v="gold" sx={{width:"100%",justifyContent:"center"}} onClick={saveRate}/>
+        </div>
+      }/>}
     </div>
   );
 }
@@ -1737,8 +1754,29 @@ function AdminBookings(){
   );
 }
 
+function LessonList({courseId}){
+  const lessons=useTable(async()=>{const{data}=await supabase.from("lessons").select("*").eq("course_id",courseId).order("num");return data||[];},[courseId]);
+  if(lessons===null)return<p style={{fontSize:".82rem",color:T.ash}}>Loading lessons…</p>;
+  if(lessons.length===0)return<EmptyNote text="No lessons uploaded for this course yet."/>;
+  return(<div style={{display:"flex",flexDirection:"column",gap:".5rem"}}>
+    {lessons.map(l=>(
+      <div key={l.num} style={{background:T.n3,border:`1px solid ${T.r2}`,borderRadius:8,padding:"1rem 1.15rem"}}>
+        <div style={{display:"flex",gap:".75rem",alignItems:"baseline"}}>
+          <span style={{fontFamily:"'Sora',sans-serif",fontSize:"1rem",fontWeight:500,color:T.gd,flexShrink:0}}>{l.num}</span>
+          <div style={{flex:1,minWidth:0}}>
+            <p style={{fontWeight:500,fontSize:".88rem",marginBottom:".2rem"}}>{l.title}</p>
+            <p style={{fontSize:".76rem",color:T.ash,lineHeight:1.6}}>{l.objectives}</p>
+            <p style={{fontSize:".74rem",color:T.bl,marginTop:".4rem"}}><strong style={{color:T.bl}}>Homework:</strong> {l.homework}</p>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>);
+}
+
 function AdminCourses(){
   const[sel,sSel]=useState(null);
+  const[tab,setTab]=useState("overview");
   return(
     <div style={{padding:"2rem"}}>
       <h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1.5rem"}}>Course Manager</h2>
@@ -1763,17 +1801,20 @@ function AdminCourses(){
                 ))}
               </div>
             </div>
-            <div style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:12,padding:"1.75rem"}}>
+            <div style={{display:"flex",gap:".5rem",marginBottom:"1rem"}}>
+              {[["overview","Overview"],["lessons","Lessons"]].map(([id,lb])=>(
+                <button key={id} onClick={()=>setTab(id)} style={{background:tab===id?T.gdaa:T.n2,border:`1px solid ${tab===id?T.gd:T.rl}`,borderRadius:8,padding:".45rem 1.1rem",fontSize:".8rem",color:tab===id?T.gd:T.ash,cursor:"pointer",fontFamily:"inherit",fontWeight:500}}>{lb}</button>
+              ))}
+            </div>
+            {tab==="overview"?<div style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:12,padding:"1.75rem"}}>
               <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".14em",textTransform:"uppercase",color:T.gd,marginBottom:"1rem"}}>Assessments</p>
               {c.assess.map(a=><p key={a} style={{fontSize:".83rem",color:T.ash,padding:".38rem 0",borderBottom:`1px solid ${T.r2}`}}>{a}</p>)}
               <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".14em",textTransform:"uppercase",color:T.bl,margin:"1.25rem 0 .85rem"}}>Outcomes</p>
               {c.outcomes.map(o=><p key={o} style={{fontSize:".83rem",color:T.ash,padding:".35rem 0",borderBottom:`1px solid ${T.r2}`}}>{o}</p>)}
-              <div style={{marginTop:"1.25rem",display:"flex",gap:".65rem"}}>
-                <Btn ch="Edit Lessons" v="navy" sz="sm" onClick={()=>{}}/>
-                <Btn ch="Assign Tutor" v="gold" sz="sm" onClick={()=>{}}/>
-                <Btn ch="Manage Assessments" v="navy" sz="sm" onClick={()=>{}}/>
-              </div>
-            </div>
+            </div>:<div style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:12,padding:"1.75rem"}}>
+              <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".14em",textTransform:"uppercase",color:T.gd,marginBottom:"1rem"}}>Lesson Plan ({c.lessons} lessons)</p>
+              <LessonList courseId={c.id}/>
+            </div>}
           </div>
         );})():<div style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:12,padding:"4rem",textAlign:"center"}}><p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.4rem",fontWeight:300,color:T.ash}}>Select a course to manage</p></div>}
       </div>
