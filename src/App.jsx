@@ -308,7 +308,7 @@ function Stat({v,l,c,delta}){
 function TopNav({pg,go,cur,setCur,user,logout,bp,drawerOpen,setDrawerOpen}){
   const[sc,sSc]=useState(false);
   useEffect(()=>{const f=()=>sSc(window.scrollY>40);window.addEventListener("scroll",f,{passive:true});return()=>window.removeEventListener("scroll",f);},[]);
-  const inApp=["dashboard","my-courses","booking","assessments","progress","account","parent","par-assess","par-sessions","par-billing","tutor-dash","tutor-schedule","tutor-hours","tutor-invoices","admin","admin-tutors","admin-students","admin-courses","admin-bookings","admin-payouts"].includes(pg);
+  const inApp=["dashboard","my-courses","booking","assessments","progress","account","parent","par-assess","par-sessions","par-billing","tutor-dash","tutor-calendar","tutor-schedule","tutor-hours","tutor-invoices","admin","admin-tutors","admin-students","admin-courses","admin-bookings","admin-payouts"].includes(pg);
   const solid=sc||inApp;
   const navItems=[["home","Home"],["about","About"],["courses","Courses"],["pricing","Pricing"],["faqs","FAQs"],["contact","Contact"]];
   return(
@@ -379,7 +379,7 @@ function SideDrawer({pg,go,cur,setCur,user,logout,open,onClose}){
 function Sidebar({pg,go,user,bp,open,onClose}){
   const sLinks=[["dashboard",<HomeIcon size={15}/>,"Dashboard"],["my-courses",<BookOpen size={15}/>,"My Courses"],["booking",<Calendar size={15}/>,"Book Lessons"],["assessments",<ClipboardList size={15}/>,"Assessments"],["progress",<TrendingUp size={15}/>,"Progress"],["account",<Settings size={15}/>,"Account"]];
   const pLinks=[["parent",<HomeIcon size={15}/>,"Overview"],["par-assess",<Award size={15}/>,"Assessments"],["par-sessions",<Calendar size={15}/>,"Sessions"],["par-billing",<CreditCard size={15}/>,"Billing"]];
-  const tLinks=[["tutor-dash",<HomeIcon size={15}/>,"Dashboard"],["tutor-schedule",<Calendar size={15}/>,"Schedule"],["tutor-hours",<Clock size={15}/>,"Hours Log"],["tutor-invoices",<CreditCard size={15}/>,"Invoices"]];
+  const tLinks=[["tutor-dash",<HomeIcon size={15}/>,"Dashboard"],["tutor-calendar",<Calendar size={15}/>,"Calendar"],["tutor-schedule",<ClipboardList size={15}/>,"Schedule"],["tutor-hours",<Clock size={15}/>,"Hours Log"],["tutor-invoices",<CreditCard size={15}/>,"Invoices"]];
   const aLinks=[["admin",<HomeIcon size={15}/>,"Overview"],["admin-tutors",<Users size={15}/>,"Tutors"],["admin-students",<GraduationCap size={15}/>,"Students"],["admin-courses",<BookOpen size={15}/>,"Courses"],["admin-bookings",<Calendar size={15}/>,"Bookings"],["admin-payouts",<CreditCard size={15}/>,"Payouts"]];
   const links=user?.role==="admin"?aLinks:user?.role==="tutor"?tLinks:user?.role==="parent"?pLinks:sLinks;
   const rc={student:T.bl,parent:T.te,tutor:T.am,admin:T.gd}[user?.role]||T.gd;
@@ -743,9 +743,14 @@ function CourseDetail({courseId,go,cur,user,setUser,bp}){
     quarter:{l:"Quarter",h:c.hours.q,credits:c.hours.q,gbp:Math.round(c.hours.q*c.rate.gbp*.96),usd:Math.round(c.hours.q*c.rate.usd*.96),disc:"4% off"},
   };
   const pk=pkgs[selPkg];
-  const handleEnrol=()=>{
+  const handleEnrol=async()=>{
     if(!user){go("login");return;}
-    const ne={id:uid(),courseId:c.id,pkg:selPkg,credits:pk.credits,used:0,completedLessons:[],enrolledAt:today(),bookings:[],assessments:[{id:uid(),title:"Diagnostic Assessment",type:"baseline",score:null,max:100,done:false}]};
+    let id=uid();
+    try{
+      const{data,error}=await supabase.from("enrollments").insert({student_id:user.id,course_id:c.id,package:selPkg,credits_purchased:pk.credits,credits_used:0,completed_lessons:[]}).select().single();
+      if(!error&&data)id=data.id;else if(error)console.warn("[enrol]",error.message);
+    }catch(e){console.warn("[enrol]",e);}
+    const ne={id,courseId:c.id,pkg:selPkg,credits:pk.credits,used:0,completedLessons:[],enrolledAt:today(),bookings:[],assessments:[{id:uid(),title:"Diagnostic Assessment",type:"baseline",score:null,max:100,done:false}]};
     setUser({...user,enrollments:[...(user.enrollments||[]),ne]});
     sEnrolled(true);
   };
@@ -1074,10 +1079,28 @@ function BookModal({enrollId,user,setUser,onClose}){
   const course=enr?COURSES.find(c=>c.id===enr.courseId):null;
   const[wOff,sWOff]=useState(0);const[selD,sSelD]=useState(null);const[selT,sSelT]=useState(null);const[done,sDone]=useState(false);
   const wk=wkDates(wOff);const left=enr?(enr.credits-enr.used):0;const nxt=enr?(enr.completedLessons.length+1):1;
-  const confirm=()=>{
+  const confirm=async()=>{
     if(!selD||!selT||!enr)return;
     const meetId=String(Math.floor(Math.random()*900000000+100000000));
-    const nb={id:uid(),date:selD,time:selT,ln:nxt,status:"scheduled",zoom:`https://zoom.us/j/${meetId}?pwd=lbe${uid()}`,meetingId:meetId.replace(/(\d{3})(\d{3})(\d{3})/,"$1 $2 $3"),tutor:"Lynda Badmus"};
+    const zoom=`https://zoom.us/j/${meetId}?pwd=lbe${uid()}`;
+    const meetingId=meetId.replace(/(\d{3})(\d{3})(\d{3})/,"$1 $2 $3");
+    const startsAt=new Date(`${selD}T${selT}:00`).toISOString();
+    let bookingId=uid();
+    try{
+      let adminId=null;
+      try{const{data:adm}=await supabase.from("profiles").select("id").eq("role","admin").limit(1).maybeSingle();adminId=adm?.id||null;}catch{}
+      const{data,error}=await supabase.from("bookings").insert({
+        enrollment_id:enr.id,student_id:user.id,tutor_id:adminId,course_id:enr.courseId,
+        session_date:selD,session_time:selT,lesson_number:nxt,status:"scheduled",
+        zoom_url:zoom,meeting_id:meetingId,starts_at:startsAt,
+      }).select().single();
+      if(!error&&data){
+        bookingId=data.id;
+        try{await supabase.from("enrollments").update({credits_used:enr.used+1}).eq("id",enr.id);}catch{}
+        try{fetch("/api/notify-booking",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({bookingId:data.id})});}catch{}
+      }else if(error)console.warn("[book]",error.message);
+    }catch(e){console.warn("[book]",e);}
+    const nb={id:bookingId,date:selD,time:selT,ln:nxt,status:"scheduled",zoom,meetingId,tutor:"Lynda Badmus"};
     setUser({...user,enrollments:user.enrollments.map(e=>e.id===enrollId?{...e,used:e.used+1,bookings:[...(e.bookings||[]),nb]}:e)});
     sDone(true);
   };
@@ -1437,6 +1460,65 @@ function TutorDash({user,go,bp}){
           ))}
           <Btn ch="Hours Log & Invoices →" v="navy" sz="sm" sx={{marginTop:".75rem"}} onClick={()=>go("tutor-hours")}/>
         </div>
+      </div>
+    </div>
+  );
+}
+
+// Bookings where this user is the tutor (students book against the principal tutor / admin).
+function useTutorBookings(user){
+  return useTable(async()=>{
+    const[{data:bks},{data:profs}]=await Promise.all([
+      supabase.from("bookings").select("*").eq("tutor_id",user.id),
+      supabase.from("profiles").select("id,name"),
+    ]);
+    const nm=id=>profs?.find(pr=>pr.id===id)?.name||"Student";
+    return(bks||[]).map(b=>({id:b.id,student:nm(b.student_id),course:courseTitle(b.course_id),date:b.session_date,time:hhmm(b.session_time),status:b.status,zoom:b.zoom_url||"",meetingId:b.meeting_id||"",startsAt:b.starts_at}));
+  },[user.id]);
+}
+
+function TutorCalendar({user,go}){
+  const bookings=useTutorBookings(user);
+  const[wOff,setWOff]=useState(0);
+  const feed=typeof window!=="undefined"?`${window.location.origin}/api/calendar?tutor=${user.id}`:"";
+  const[copied,setCopied]=useState(false);
+  const monday=(()=>{const d=new Date();const day=(d.getDay()+6)%7;d.setDate(d.getDate()-day+wOff*7);d.setHours(0,0,0,0);return d;})();
+  const days=[...Array(7)].map((_,i)=>{const d=new Date(monday);d.setDate(d.getDate()+i);return d;});
+  const iso=d=>d.toISOString().slice(0,10);
+  const evByDay=d=>(bookings||[]).filter(b=>b.date===iso(d)).sort((a,b)=>a.time.localeCompare(b.time));
+  return(
+    <div style={{padding:"2rem"}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:"1rem",marginBottom:"1.25rem"}}>
+        <h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300}}>My Calendar</h2>
+        <div style={{display:"flex",gap:".4rem",alignItems:"center"}}>
+          <Btn ch="←" v="navy" sz="xs" onClick={()=>setWOff(w=>w-1)}/>
+          <Btn ch="This week" v="navy" sz="xs" onClick={()=>setWOff(0)}/>
+          <Btn ch="→" v="navy" sz="xs" onClick={()=>setWOff(w=>w+1)}/>
+        </div>
+      </div>
+      {bookings&&bookings.length===0&&<EmptyNote text="No lessons booked yet. When a student books a lesson with you, it appears here and in your subscribed calendar."/>}
+      <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:1,background:T.rl,borderRadius:10,overflow:"hidden",marginBottom:"1.5rem"}}>
+        {days.map(d=>{const ev=evByDay(d);const isToday=iso(d)===new Date().toISOString().slice(0,10);return(
+          <div key={iso(d)} style={{background:T.n2,minHeight:120,padding:".6rem .5rem",borderTop:isToday?`2px solid ${T.gd}`:"2px solid transparent"}}>
+            <p style={{fontSize:".6rem",color:T.ash2,textTransform:"uppercase",letterSpacing:".05em"}}>{d.toLocaleDateString("en-GB",{weekday:"short"})}</p>
+            <p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.1rem",fontWeight:500,color:isToday?T.gd:T.cr,marginBottom:".4rem"}}>{d.getDate()}</p>
+            {ev.map(e=>(
+              <div key={e.id} style={{background:T.gdaa,borderLeft:`2px solid ${T.gd}`,borderRadius:4,padding:".25rem .35rem",marginBottom:".25rem"}}>
+                <p style={{fontSize:".62rem",fontWeight:600,color:T.gd}}>{e.time}</p>
+                <p style={{fontSize:".6rem",color:T.c2,lineHeight:1.3,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{e.student}</p>
+              </div>
+            ))}
+          </div>
+        );})}
+      </div>
+      <div style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:12,padding:"1.4rem"}}>
+        <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".14em",textTransform:"uppercase",color:T.gd,marginBottom:".6rem"}}>Sync to your personal calendar</p>
+        <p style={{fontSize:".82rem",color:T.ash,lineHeight:1.7,marginBottom:".9rem"}}>Subscribe to this private link in Google, Apple or Outlook Calendar. New lessons appear automatically, with 1-hour and 10-minute alerts built in.</p>
+        <div style={{display:"flex",gap:".5rem",flexWrap:"wrap",alignItems:"center"}}>
+          <input readOnly value={feed} onFocus={e=>e.target.select()} style={{flex:1,minWidth:240,background:T.n3,border:`1px solid ${T.rl}`,borderRadius:8,padding:".55rem .8rem",fontSize:".74rem",color:T.c2,fontFamily:"monospace"}}/>
+          <Btn ch={copied?"Copied ✓":"Copy link"} v="gold" sz="sm" onClick={()=>{try{navigator.clipboard.writeText(feed);setCopied(true);setTimeout(()=>setCopied(false),1800);}catch{}}}/>
+        </div>
+        <p style={{fontSize:".7rem",color:T.ash2,marginTop:".7rem"}}>Google Calendar → Other calendars → From URL → paste · Apple Calendar → File → New Calendar Subscription</p>
       </div>
     </div>
   );
@@ -2025,7 +2107,7 @@ export default function App(){
 
   const studentPgs=["dashboard","my-courses","booking","assessments","progress","account"];
   const parentPgs=["parent","par-assess","par-sessions","par-billing"];
-  const tutorPgs=["tutor-dash","tutor-schedule","tutor-hours","tutor-invoices","tutor-post"];
+  const tutorPgs=["tutor-dash","tutor-calendar","tutor-schedule","tutor-hours","tutor-invoices","tutor-post"];
   const adminPgs=["admin","admin-tutors","admin-students","admin-courses","admin-bookings","admin-payouts"];
   const appPgs=[...studentPgs,...parentPgs,...tutorPgs,...adminPgs];
 
@@ -2065,6 +2147,7 @@ export default function App(){
       case"par-sessions":return<div style={{padding:"2rem"}}><h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1rem"}}>Session History</h2>{((user.child?.enrollments||[]).flatMap(e=>e.bookings||[])).length===0&&<EmptyNote text="No sessions yet."/>}{(user.child?.enrollments||[]).flatMap(e=>e.bookings||[]).map(b=><div key={b.id} style={{marginBottom:".65rem"}}><ZoomCard link={b.zoom} meetingId={b.meetingId} date={b.date} time={b.time} course="Session" tutor={b.tutor} status={b.status}/></div>)}</div>;
       case"par-billing":return<div style={{padding:"2rem"}}><h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1rem"}}>Billing</h2><EmptyNote text="Billing history appears once your child is enrolled in a course."/></div>;
       case"tutor-dash": return<TutorDash user={user} go={go} bp={bp}/>;
+      case"tutor-calendar":return<TutorCalendar user={user} go={go}/>;
       case"tutor-schedule":return<TutorSchedule user={user}/>;
       case"tutor-hours":return<TutorHours go={go} user={user}/>;
       case"tutor-invoices":return<TutorInvoices user={user}/>;
