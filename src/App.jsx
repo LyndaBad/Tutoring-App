@@ -639,7 +639,7 @@ function CoursesPage({go,cur,bp}){
   ];
   function CourseCard({c}){
     const m=CAT[c.g]||CAT.ib;
-    const qP=cur==="GBP"?`£${Math.round(c.hours.q*c.rate.gbp*.96)}`:`$${Math.round(c.hours.q*c.rate.usd*.96)}`;
+    const qP=cur==="GBP"?`£${c.hours.q*c.rate.gbp}`:`$${c.hours.q*c.rate.usd}`;
     return(
       <div onClick={()=>go("course-"+c.id)} style={{background:T.n,cursor:"pointer",transition:"background .2s",border:`1px solid rgba(29,26,51,.08)`,borderRadius:10,overflow:"hidden",borderBottom:`3px solid ${c.col}`}} onMouseEnter={e=>e.currentTarget.style.background=T.n2} onMouseLeave={e=>e.currentTarget.style.background=T.n}>
         <div style={{borderBottom:`1px solid ${T.rl}`,padding:"1.5rem 1.75rem 1.1rem",display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
@@ -738,9 +738,9 @@ function CourseDetail({courseId,go,cur,user,setUser,bp}){
   if(!c)return<div style={{paddingTop:80,padding:"5rem 2rem",textAlign:"center"}}><Btn ch="← Back" v="ghost" onClick={()=>go("courses")}/></div>;
   const m=CAT[c.g]||CAT.ib;
   const pkgs={
-    full:{l:"Full Course",h:c.hours.full,credits:c.hours.full,gbp:c.hours.full*c.rate.gbp,usd:c.hours.full*c.rate.usd,disc:null},
+    full:{l:"Full Course",h:c.hours.full,credits:c.hours.full,gbp:Math.round(c.hours.full*c.rate.gbp*.95),usd:Math.round(c.hours.full*c.rate.usd*.95),disc:"5% off"},
     half:{l:"Half Course",h:c.hours.half,credits:c.hours.half,gbp:Math.round(c.hours.half*c.rate.gbp*.98),usd:Math.round(c.hours.half*c.rate.usd*.98),disc:"2% off"},
-    quarter:{l:"Quarter",h:c.hours.q,credits:c.hours.q,gbp:Math.round(c.hours.q*c.rate.gbp*.96),usd:Math.round(c.hours.q*c.rate.usd*.96),disc:"4% off"},
+    quarter:{l:"Quarter",h:c.hours.q,credits:c.hours.q,gbp:c.hours.q*c.rate.gbp,usd:c.hours.q*c.rate.usd,disc:null},
   };
   const pk=pkgs[selPkg];
   const handleEnrol=async()=>{
@@ -856,7 +856,7 @@ function PricingPage({go,cur,bp}){
                   {gcs.map(c=>{
                     const fP=cur==="GBP"?`£${c.hours.full*c.rate.gbp}`:`$${c.hours.full*c.rate.usd}`;
                     const hP=cur==="GBP"?`£${Math.round(c.hours.half*c.rate.gbp*.98)}`:`$${Math.round(c.hours.half*c.rate.usd*.98)}`;
-                    const qP=cur==="GBP"?`£${Math.round(c.hours.q*c.rate.gbp*.96)}`:`$${Math.round(c.hours.q*c.rate.usd*.96)}`;
+                    const qP=cur==="GBP"?`£${c.hours.q*c.rate.gbp}`:`$${c.hours.q*c.rate.usd}`;
                     return(
                       <div key={c.id} style={{background:T.n2,padding:"2rem"}}>
                         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:"1.1rem"}}>
