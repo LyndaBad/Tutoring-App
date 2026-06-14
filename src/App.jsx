@@ -381,9 +381,13 @@ function Sidebar({pg,go,user,bp,open,onClose}){
   const pLinks=[["parent",<HomeIcon size={15}/>,"Overview"],["par-assess",<Award size={15}/>,"Assessments"],["par-sessions",<Calendar size={15}/>,"Sessions"],["par-billing",<CreditCard size={15}/>,"Billing"]];
   const tLinks=[["tutor-dash",<HomeIcon size={15}/>,"Dashboard"],["tutor-calendar",<Calendar size={15}/>,"Calendar"],["tutor-schedule",<ClipboardList size={15}/>,"Schedule"],["tutor-hours",<Clock size={15}/>,"Hours Log"],["tutor-invoices",<CreditCard size={15}/>,"Invoices"]];
   const aLinks=[["admin",<HomeIcon size={15}/>,"Overview"],["admin-tutors",<Users size={15}/>,"Tutors"],["admin-students",<GraduationCap size={15}/>,"Students"],["admin-courses",<BookOpen size={15}/>,"Courses"],["admin-bookings",<Calendar size={15}/>,"Bookings"],["admin-payouts",<CreditCard size={15}/>,"Payouts"]];
-  const links=user?.role==="admin"?aLinks:user?.role==="tutor"?tLinks:user?.role==="parent"?pLinks:sLinks;
-  const rc={student:T.bl,parent:T.te,tutor:T.am,admin:T.gd}[user?.role]||T.gd;
-  const rl={student:"Student Portal",parent:"Parent Portal",tutor:"Tutor Portal",admin:"Platform Admin"}[user?.role]||"Portal";
+  // Effective portal: admins can preview other portals, so derive it from the page.
+  const pgRole=pg.startsWith("tutor")?"tutor":(pg==="parent"||pg.startsWith("par-"))?"parent":["dashboard","my-courses","booking","assessments","progress","account"].includes(pg)?"student":pg.startsWith("admin")?"admin":user?.role;
+  const effRole=user?.role==="admin"?pgRole:user?.role;
+  const previewing=user?.role==="admin"&&effRole!=="admin";
+  const links=effRole==="admin"?aLinks:effRole==="tutor"?tLinks:effRole==="parent"?pLinks:sLinks;
+  const rc={student:T.bl,parent:T.te,tutor:T.am,admin:T.gd}[effRole]||T.gd;
+  const rl=(previewing?"Preview · ":"")+({student:"Student Portal",parent:"Parent Portal",tutor:"Tutor Portal",admin:"Platform Admin"}[effRole]||"Portal");
   const inner=(
     <div style={{display:"flex",flexDirection:"column",height:"100%"}}>
       <div style={{padding:"1.2rem 1.2rem .9rem",borderBottom:`1px solid ${T.rl}`}}>
@@ -400,7 +404,8 @@ function Sidebar({pg,go,user,bp,open,onClose}){
           return<button key={id} onClick={()=>{go(id);if(bp.mobile||bp.tablet)onClose?.();}} style={{width:"100%",background:act?`${rc}15`:"none",border:"none",borderLeft:`3px solid ${act?rc:"transparent"}`,display:"flex",alignItems:"center",gap:".82rem",padding:".7rem 1.2rem",cursor:"pointer",fontSize:".8rem",fontWeight:act?600:400,color:act?rc:T.ash,transition:"all .18s",fontFamily:"inherit",textAlign:"left"}}><span style={{opacity:act?1:.7}}>{icon}</span>{lbl}</button>;
         })}
       </nav>
-      <div style={{padding:".85rem 1.2rem",borderTop:`1px solid ${T.rl}`}}>
+      <div style={{padding:".85rem 1.2rem",borderTop:`1px solid ${T.rl}`,display:"flex",flexDirection:"column",gap:".4rem"}}>
+        {previewing&&<Btn ch="← Back to Admin" v="gold" sz="xs" onClick={()=>{go("admin");onClose?.();}} sx={{width:"100%",justifyContent:"center"}}/>}
         <Btn ch="← Public Site" v="ghost" sz="xs" onClick={()=>{go("home");onClose?.();}} sx={{width:"100%",justifyContent:"center"}}/>
       </div>
     </div>
@@ -724,9 +729,23 @@ function CourseStructureNote({c}){
       <p style={{fontSize:".84rem",color:T.cr,lineHeight:1.7,fontWeight:300}}>This {st.total}-hour exam-focused course is built from <strong style={{color:T.gd}}>{st.sessions} past-paper practice sessions</strong> — each a timed paper followed by full examiner-style feedback.</p>
     </div>
   );
+  const testH=st.tests*0.5;
+  const fmtH=n=>Number.isInteger(n)?String(n):n.toFixed(1);
   return(
-    <div style={{background:T.gdaa,border:`1px solid ${T.rl}`,borderRadius:10,padding:"1rem 1.25rem",marginTop:"1.5rem"}}>
-      <p style={{fontSize:".84rem",color:T.cr,lineHeight:1.7,fontWeight:300}}>This {st.total}-hour course includes <strong style={{color:T.gd}}>{st.taught} one-hour taught lessons</strong>, <strong style={{color:T.gd}}>{st.tests} end-of-topic tests</strong> (30 minutes each, one per topic), and <strong style={{color:T.gd}}>3 key assessments</strong>: baseline, mid-course and final.</p>
+    <div style={{background:T.gdaa,border:`1px solid ${T.rl}`,borderRadius:10,padding:"1.1rem 1.3rem",marginTop:"1.5rem"}}>
+      <p style={{fontSize:".7rem",fontWeight:600,letterSpacing:".12em",textTransform:"uppercase",color:T.gd,marginBottom:".6rem"}}>How the {st.total} hours are made up</p>
+      {[[`${st.taught} taught lessons`,"1 hour each",`${st.taught}h`],
+        [`${st.tests} end-of-topic tests`,"30 minutes each",`${fmtH(testH)}h`],
+        ["3 assessments","baseline · mid-course · final, 1 hour each","3h"]].map(([a,b,h])=>(
+        <div key={a} style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",gap:".75rem",padding:".25rem 0"}}>
+          <span style={{fontSize:".82rem",color:T.cr}}><strong style={{fontWeight:600}}>{a}</strong> <span style={{color:T.ash}}>· {b}</span></span>
+          <span style={{fontSize:".82rem",fontWeight:600,color:T.gd,flexShrink:0}}>{h}</span>
+        </div>
+      ))}
+      <div style={{display:"flex",justifyContent:"space-between",borderTop:`1px solid ${T.rl}`,marginTop:".5rem",paddingTop:".5rem"}}>
+        <span style={{fontSize:".84rem",fontWeight:600}}>Total</span>
+        <span style={{fontSize:".84rem",fontWeight:600,color:T.gd}}>{st.total} hours</span>
+      </div>
     </div>
   );
 }
@@ -816,8 +835,20 @@ function CourseDetail({courseId,go,cur,user,setUser,bp}){
               ))}
             <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".16em",textTransform:"uppercase",color:T.gd,margin:"2rem 0 1rem"}}>Target Outcomes</p>
             {c.outcomes.map(o=><div key={o} style={{display:"flex",gap:".65rem",padding:".5rem 0",borderBottom:`1px solid ${T.r2}`}}><span style={{color:T.bl,fontSize:".8rem"}}>→</span><p style={{fontSize:".82rem",color:T.ash,lineHeight:1.5}}>{o}</p></div>)}
-            {!c.practice&&<><p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".16em",textTransform:"uppercase",color:T.gd,margin:"2rem 0 1rem"}}>Full Lesson Plan</p>
-            <LessonList courseId={c.id}/></>}
+            {!c.practice&&(()=>{
+              const r=user?.role;
+              const enrolledHere=(user?.enrollments||[]).some(e=>e.courseId===c.id) || (user?.child?.enrollments||[]).some(e=>e.courseId===c.id);
+              const canSee = r==="tutor"||r==="admin"|| ((r==="student"||r==="parent")&&enrolledHere);
+              return(<>
+                <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".16em",textTransform:"uppercase",color:T.gd,margin:"2rem 0 1rem"}}>Full Lesson Plan</p>
+                {canSee
+                  ? <LessonList courseId={c.id}/>
+                  : <div style={{background:T.n2,border:`1px dashed ${T.r2}`,borderRadius:10,padding:"1.5rem",textAlign:"center"}}>
+                      <p style={{fontSize:".85rem",color:T.cr,fontWeight:500,marginBottom:".35rem"}}>🔒 The full lesson-by-lesson plan unlocks when you enrol</p>
+                      <p style={{fontSize:".78rem",color:T.ash,lineHeight:1.6}}>Enrolled students and parents see every lesson, objective and homework here. The topic and assessment overview above shows what the course covers.</p>
+                    </div>}
+              </>);
+            })()}
           </div>
           <div style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:14,padding:"1.6rem"}}>
             <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".16em",textTransform:"uppercase",color:T.gd,marginBottom:"1rem"}}>Every Course Includes</p>
@@ -1698,9 +1729,19 @@ function AdminDash({go,bp}){
   const weekData=["Mon","Tue","Wed","Thu","Fri","Sat"].map(w=>({d:w,n:(d?.bookings||[]).filter(b=>b.status==="scheduled"&&new Date(b.session_date+"T12:00:00").toLocaleString("en-GB",{weekday:"short"})===w).length}));
   return(
     <div style={{padding:bp?.mobile?"1.25rem":"2rem"}}>
-      <div style={{marginBottom:"1.75rem"}}>
-        <p style={{fontSize:".65rem",color:T.ash,letterSpacing:".12em",textTransform:"uppercase",marginBottom:".3rem"}}>Platform Admin</p>
-        <h1 style={{fontFamily:"'Sora',sans-serif",fontSize:bp?.mobile?"1.8rem":"2rem",fontWeight:300}}>Lynda <em style={{fontStyle:"italic",color:T.gd}}>Badmus Education</em></h1>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:"1rem",marginBottom:"1.75rem"}}>
+        <div>
+          <p style={{fontSize:".65rem",color:T.ash,letterSpacing:".12em",textTransform:"uppercase",marginBottom:".3rem"}}>Platform Admin</p>
+          <h1 style={{fontFamily:"'Sora',sans-serif",fontSize:bp?.mobile?"1.8rem":"2rem",fontWeight:300}}>Lynda <em style={{fontStyle:"italic",color:T.gd}}>Badmus Education</em></h1>
+        </div>
+        <div style={{display:"flex",flexDirection:"column",gap:".4rem",alignItems:"flex-end"}}>
+          <p style={{fontSize:".6rem",color:T.ash2,letterSpacing:".1em",textTransform:"uppercase"}}>Switch / preview</p>
+          <div style={{display:"flex",gap:".45rem",flexWrap:"wrap"}}>
+            <Btn ch="My Tutor Portal" v="gold" sz="xs" onClick={()=>go("tutor-dash")}/>
+            <Btn ch="Preview Student" v="navy" sz="xs" onClick={()=>go("dashboard")}/>
+            <Btn ch="Preview Parent" v="navy" sz="xs" onClick={()=>go("parent")}/>
+          </div>
+        </div>
       </div>
       <div style={{display:"grid",gridTemplateColumns:bp?.mobile?"1fr 1fr":"repeat(4,1fr)",gap:1,background:T.rl,borderRadius:10,overflow:"hidden",marginBottom:"1.5rem"}}>
         {[[d?d.tutors:"…","Tutors",T.vi],[d?d.students:"…","Students",T.bl],[COURSES.length,"Courses",T.gd],[d?d.bookings.filter(b=>b.status==="scheduled").length:"…","Live bookings",T.gr]].map(([v,l,c])=>(
@@ -2113,10 +2154,11 @@ export default function App(){
 
   let courseId=null;if(pg.startsWith("course-"))courseId=pg.slice(7);
 
-  // Auth guards
+  // Auth guards. Admin may preview the student/parent/tutor portals.
   const authWall=(pages,role)=>{
     if(!pages.includes(pg))return false;
-    if(!user||user.role!==role){return true;}
+    if(!user)return true;
+    if(user.role!==role&&user.role!=="admin")return true;
     return false;
   };
   if(authWall(studentPgs,"student")||authWall(parentPgs,"parent")||authWall(tutorPgs,"tutor")||authWall(adminPgs,"admin")){
