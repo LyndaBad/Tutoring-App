@@ -379,7 +379,7 @@ function SideDrawer({pg,go,cur,setCur,user,logout,open,onClose}){
 function Sidebar({pg,go,user,bp,open,onClose}){
   const sLinks=[["dashboard",<HomeIcon size={15}/>,"Dashboard"],["my-courses",<BookOpen size={15}/>,"My Courses"],["booking",<Calendar size={15}/>,"Book Lessons"],["assessments",<ClipboardList size={15}/>,"Assessments"],["progress",<TrendingUp size={15}/>,"Progress"],["account",<Settings size={15}/>,"Account"]];
   const pLinks=[["parent",<HomeIcon size={15}/>,"Overview"],["par-assess",<Award size={15}/>,"Assessments"],["par-sessions",<Calendar size={15}/>,"Sessions"],["par-billing",<CreditCard size={15}/>,"Billing"]];
-  const tLinks=[["tutor-dash",<HomeIcon size={15}/>,"Dashboard"],["tutor-calendar",<Calendar size={15}/>,"Calendar"],["tutor-schedule",<ClipboardList size={15}/>,"Schedule"],["tutor-hours",<Clock size={15}/>,"Hours Log"],["tutor-invoices",<CreditCard size={15}/>,"Invoices"]];
+  const tLinks=[["tutor-dash",<HomeIcon size={15}/>,"Dashboard"],["tutor-calendar",<Calendar size={15}/>,"Calendar"],["tutor-content",<BookOpen size={15}/>,"Lessons & Tests"],["tutor-schedule",<ClipboardList size={15}/>,"Schedule"],["tutor-hours",<Clock size={15}/>,"Hours Log"],["tutor-invoices",<CreditCard size={15}/>,"Invoices"]];
   const aLinks=[["admin",<HomeIcon size={15}/>,"Overview"],["admin-tutors",<Users size={15}/>,"Tutors"],["admin-students",<GraduationCap size={15}/>,"Students"],["admin-courses",<BookOpen size={15}/>,"Courses"],["admin-bookings",<Calendar size={15}/>,"Bookings"],["admin-payouts",<CreditCard size={15}/>,"Payouts"]];
   // Effective portal: admins can preview other portals, so derive it from the page.
   const pgRole=pg.startsWith("tutor")?"tutor":(pg==="parent"||pg.startsWith("par-"))?"parent":["dashboard","my-courses","booking","assessments","progress","account"].includes(pg)?"student":pg.startsWith("admin")?"admin":user?.role;
@@ -842,7 +842,7 @@ function CourseDetail({courseId,go,cur,user,setUser,bp}){
               return(<>
                 <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".16em",textTransform:"uppercase",color:T.gd,margin:"2rem 0 1rem"}}>Full Lesson Plan</p>
                 {canSee
-                  ? <LessonList courseId={c.id} subject={c.sub}/>
+                  ? <LessonList courseId={c.id} subject={c.sub} viewer={user}/>
                   : <div style={{background:T.n2,border:`1px dashed ${T.r2}`,borderRadius:10,padding:"1.5rem",textAlign:"center"}}>
                       <p style={{fontSize:".85rem",color:T.cr,fontWeight:500,marginBottom:".35rem"}}>🔒 The full lesson-by-lesson plan unlocks when you enrol</p>
                       <p style={{fontSize:".78rem",color:T.ash,lineHeight:1.6}}>Enrolled students and parents see every lesson and its objectives here. The topic and assessment overview above shows what the course covers.</p>
@@ -1452,6 +1452,242 @@ function ParentPortal({user,go,bp}){
   );
 }
 
+/* ─── TUTOR: LESSONS & ASSESSMENTS RELEASE / MARKING ───────────────── */
+function TutorContent({user}){
+  const students=useTable(async()=>{const{data}=await supabase.from("profiles").select("id,name,email").eq("role","student").order("name");return data||[];},[]);
+  const[sid,setSid]=useState("");
+  const[cid,setCid]=useState("");
+  const enrs=useTable(async()=>{if(!sid)return[];const{data}=await supabase.from("enrollments").select("course_id").eq("student_id",sid);return data||[];},[sid]);
+  const courseIds=[...new Set((enrs||[]).map(e=>e.course_id))];
+  const courses=courseIds.map(id=>COURSES.find(c=>c.id===id)).filter(Boolean);
+  const student=(students||[]).find(s=>s.id===sid);
+  return(
+    <div style={{padding:"2rem"}}>
+      <p style={{fontSize:".65rem",color:T.ash,letterSpacing:".12em",textTransform:"uppercase",marginBottom:".3rem"}}>Tutor Portal</p>
+      <h1 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.9rem",fontWeight:300,marginBottom:".4rem"}}>Lessons &amp; Assessments</h1>
+      <p style={{fontSize:".82rem",color:T.ash,marginBottom:"1.5rem",maxWidth:640,lineHeight:1.6}}>Lessons stay private to tutors until you release them to a student. Release lessons as the student progresses, set assessments for them to complete online, and mark their submissions here. Mark schemes are never shown to students.</p>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"1rem",maxWidth:640,marginBottom:"1.5rem"}}>
+        <div>
+          <p style={{fontSize:".7rem",color:T.ash,marginBottom:".35rem",textTransform:"uppercase",letterSpacing:".08em"}}>Student</p>
+          <select value={sid} onChange={e=>{setSid(e.target.value);setCid("");}} style={{width:"100%",background:T.n3,border:`1px solid ${T.rl}`,borderRadius:8,padding:".6rem .8rem",color:T.cr,fontFamily:"inherit",fontSize:".85rem"}}>
+            <option value="">{students===null?"Loading…":"Select a student…"}</option>
+            {(students||[]).map(s=><option key={s.id} value={s.id}>{s.name} ({s.email})</option>)}
+          </select>
+        </div>
+        <div>
+          <p style={{fontSize:".7rem",color:T.ash,marginBottom:".35rem",textTransform:"uppercase",letterSpacing:".08em"}}>Course</p>
+          <select value={cid} onChange={e=>setCid(e.target.value)} disabled={!sid} style={{width:"100%",background:T.n3,border:`1px solid ${T.rl}`,borderRadius:8,padding:".6rem .8rem",color:T.cr,fontFamily:"inherit",fontSize:".85rem",opacity:sid?1:.5}}>
+            <option value="">{!sid?"Pick a student first":enrs===null?"Loading…":courses.length?"Select a course…":"No enrolments"}</option>
+            {courses.map(c=><option key={c.id} value={c.id}>{c.title}</option>)}
+          </select>
+        </div>
+      </div>
+      {sid&&cid&&<ReleasePanel key={sid+cid} student={student} courseId={cid} user={user}/>}
+      {!sid&&<EmptyNote text="Select a student to manage their lessons and assessments."/>}
+    </div>
+  );
+}
+
+function ReleasePanel({student,courseId,user}){
+  const course=COURSES.find(c=>c.id===courseId);
+  const lessons=useTable(async()=>{const{data}=await supabase.from("lessons").select("num,title").eq("course_id",courseId).order("num");return data||[];},[courseId]);
+  const[relSet,setRelSet]=useState(null);
+  useEffect(()=>{let dead=false;(async()=>{const{data}=await supabase.from("lesson_releases").select("lesson_num").eq("student_id",student.id).eq("course_id",courseId);if(!dead)setRelSet(new Set((data||[]).map(r=>r.lesson_num)));})();return()=>{dead=true;};},[student.id,courseId]);
+  const papers=useTable(async()=>{const{data}=await supabase.from("assessment_papers").select("*").eq("course_id",courseId).order("code");return data||[];},[courseId]);
+
+  const toggleLesson=async(num)=>{
+    if(!relSet)return;const next=new Set(relSet);
+    if(next.has(num)){next.delete(num);setRelSet(next);await supabase.from("lesson_releases").delete().eq("student_id",student.id).eq("course_id",courseId).eq("lesson_num",num);}
+    else{next.add(num);setRelSet(next);await supabase.from("lesson_releases").insert({student_id:student.id,course_id:courseId,lesson_num:num,released_by:user.id});}
+  };
+  const releaseUpTo=async(num)=>{
+    const toAdd=(lessons||[]).filter(l=>l.num<=num&&!relSet.has(l.num)).map(l=>l.num);
+    if(!toAdd.length)return;const next=new Set(relSet);toAdd.forEach(n=>next.add(n));setRelSet(next);
+    await supabase.from("lesson_releases").insert(toAdd.map(n=>({student_id:student.id,course_id:courseId,lesson_num:n,released_by:user.id})));
+  };
+
+  return(
+    <div>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",flexWrap:"wrap",gap:".5rem",marginBottom:".75rem"}}>
+        <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".14em",textTransform:"uppercase",color:T.gd}}>Lesson release — {student?.name} · {course?.title}</p>
+        <p style={{fontSize:".72rem",color:T.ash}}>{relSet?`${relSet.size}/${(lessons||[]).length} released`:""}</p>
+      </div>
+      {lessons===null&&<p style={{fontSize:".82rem",color:T.ash}}>Loading…</p>}
+      <div style={{display:"flex",flexDirection:"column",gap:".4rem",marginBottom:"2rem"}}>
+        {(lessons||[]).map(l=>{const on=relSet?.has(l.num);return(
+          <div key={l.num} style={{display:"flex",alignItems:"center",gap:".75rem",background:T.n2,border:`1px solid ${on?T.gr+"40":T.rl}`,borderRadius:8,padding:".55rem .85rem"}}>
+            <span style={{fontFamily:"'Sora',sans-serif",fontSize:".9rem",color:T.gd,width:24,flexShrink:0}}>{l.num}</span>
+            <p style={{flex:1,fontSize:".82rem",color:T.cr}}>{l.title}</p>
+            <button onClick={()=>releaseUpTo(l.num)} title="Release this and all earlier lessons" style={{background:"none",border:`1px solid ${T.rl}`,color:T.ash,borderRadius:6,padding:".25rem .5rem",fontSize:".66rem",cursor:"pointer",fontFamily:"inherit"}}>↥ up to here</button>
+            <button onClick={()=>toggleLesson(l.num)} style={{background:on?T.gra:"transparent",border:`1px solid ${on?T.gr+"55":T.rl}`,color:on?T.gr:T.ash,borderRadius:6,padding:".3rem .7rem",fontSize:".72rem",cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:".35rem",flexShrink:0}}><CheckCircle size={12}/>{on?"Released":"Release"}</button>
+          </div>
+        );})}
+      </div>
+
+      <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".14em",textTransform:"uppercase",color:T.vi,marginBottom:".75rem"}}>Assessments to set</p>
+      {papers===null&&<p style={{fontSize:".82rem",color:T.ash}}>Loading…</p>}
+      {papers&&papers.length===0&&<EmptyNote text="No assessment papers built for this course yet."/>}
+      <div style={{display:"flex",flexDirection:"column",gap:".6rem"}}>
+        {(papers||[]).map(p=><PaperRow key={p.id} paper={p} student={student} user={user}/>)}
+      </div>
+    </div>
+  );
+}
+
+function PaperRow({paper,student,user}){
+  const[released,setReleased]=useState(null);
+  const[sub,setSub]=useState(undefined); // undefined=loading, null=none
+  const[open,setOpen]=useState(false);
+  useEffect(()=>{let dead=false;(async()=>{
+    const[{data:rel},{data:subs}]=await Promise.all([
+      supabase.from("paper_releases").select("id").eq("student_id",student.id).eq("paper_id",paper.id).maybeSingle(),
+      supabase.from("paper_submissions").select("*").eq("student_id",student.id).eq("paper_id",paper.id).maybeSingle(),
+    ]);
+    if(dead)return;setReleased(!!rel);setSub(subs||null);
+  })();return()=>{dead=true;};},[student.id,paper.id]);
+  const toggle=async()=>{
+    if(released){setReleased(false);await supabase.from("paper_releases").delete().eq("student_id",student.id).eq("paper_id",paper.id);}
+    else{setReleased(true);await supabase.from("paper_releases").insert({student_id:student.id,paper_id:paper.id,released_by:user.id});}
+  };
+  const status=sub===undefined?"…":sub?(sub.score!=null?`Marked · ${sub.score}/${sub.max_marks||paper.total_marks}`:"Submitted — needs marking"):(released?"Set, not yet taken":"Not set");
+  const stCol=sub&&sub.score!=null?T.gr:sub?T.am:T.ash;
+  return(
+    <div style={{background:T.n2,border:`1px solid ${released?T.vi+"40":T.rl}`,borderRadius:10,padding:"1rem 1.1rem"}}>
+      <div style={{display:"flex",alignItems:"center",gap:".75rem",flexWrap:"wrap"}}>
+        <div style={{flex:1,minWidth:160}}>
+          <p style={{fontSize:".88rem",fontWeight:500,color:T.cr}}>{paper.title}</p>
+          <p style={{fontSize:".72rem",color:stCol,marginTop:".2rem"}}>{paper.time_min?`${paper.time_min} min · `:""}{paper.total_marks?`${paper.total_marks} marks · `:""}{status}</p>
+        </div>
+        {sub&&<button onClick={()=>setOpen(o=>!o)} style={{background:"none",border:`1px solid ${T.rl}`,color:T.bl,borderRadius:6,padding:".35rem .7rem",fontSize:".72rem",cursor:"pointer",fontFamily:"inherit"}}>{open?"Close":"Mark / view"}</button>}
+        <button onClick={toggle} style={{background:released?T.via:"transparent",border:`1px solid ${released?T.vi+"55":T.rl}`,color:released?T.vi:T.ash,borderRadius:6,padding:".35rem .8rem",fontSize:".74rem",cursor:"pointer",fontFamily:"inherit"}}>{released?"Set ✓":"Set for student"}</button>
+      </div>
+      {open&&sub&&<MarkPanel paper={paper} sub={sub} user={user} onMarked={s=>setSub(s)}/>}
+    </div>
+  );
+}
+
+function MarkPanel({paper,sub,user,onMarked}){
+  const[scheme,setScheme]=useState(null);
+  const[score,setScore]=useState(sub.score!=null?String(sub.score):"");
+  const[fb,setFb]=useState(sub.feedback||"");
+  const[saved,setSaved]=useState(false);
+  useEffect(()=>{let dead=false;(async()=>{const{data}=await supabase.from("paper_markschemes").select("scheme").eq("paper_id",paper.id).maybeSingle();if(!dead)setScheme(data?.scheme||[]);})();return()=>{dead=true;};},[paper.id]);
+  const qs=Array.isArray(paper.questions)?paper.questions:[];
+  const save=async()=>{
+    const payload={score:score===""?null:Number(score),max_marks:paper.total_marks,feedback:fb,marked_by:user.id,marked_at:new Date().toISOString()};
+    const{data}=await supabase.from("paper_submissions").update(payload).eq("id",sub.id).select().maybeSingle();
+    setSaved(true);setTimeout(()=>setSaved(false),1800);if(data)onMarked(data);
+  };
+  return(
+    <div style={{marginTop:"1rem",borderTop:`1px solid ${T.r2}`,paddingTop:"1rem"}}>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"1rem"}}>
+        <div>
+          <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".1em",textTransform:"uppercase",color:T.ash,marginBottom:".5rem"}}>Student's answers</p>
+          {qs.map(q=>(<div key={q.n} style={{marginBottom:".6rem"}}>
+            <p style={{fontSize:".74rem",color:T.cr}}><strong>{q.n}.</strong> {q.prompt} <span style={{color:T.ash}}>[{q.marks}]</span></p>
+            <p style={{fontSize:".76rem",color:T.gr,background:T.n3,borderRadius:6,padding:".4rem .55rem",marginTop:".25rem",whiteSpace:"pre-wrap"}}>{(sub.answers&&sub.answers[String(q.n)])||"— no answer —"}</p>
+          </div>))}
+        </div>
+        <div>
+          <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".1em",textTransform:"uppercase",color:T.cr2||T.am,marginBottom:".5rem"}}>Mark scheme (tutor only)</p>
+          {scheme===null?<p style={{fontSize:".76rem",color:T.ash}}>Loading…</p>:(scheme.length===0?<p style={{fontSize:".76rem",color:T.ash}}>No mark scheme stored.</p>:scheme.map((m,i)=>(
+            <p key={i} style={{fontSize:".75rem",color:T.c2,background:T.ama,borderRadius:6,padding:".4rem .55rem",marginBottom:".35rem"}} dangerouslySetInnerHTML={{__html:typeof m==="string"?m:(m.text||"")}}/>
+          )))}
+        </div>
+      </div>
+      <div style={{display:"flex",gap:".75rem",alignItems:"flex-end",marginTop:"1rem",flexWrap:"wrap"}}>
+        <div><p style={{fontSize:".7rem",color:T.ash,marginBottom:".3rem"}}>Score (/{paper.total_marks})</p><input type="number" value={score} onChange={e=>setScore(e.target.value)} style={{width:110,background:T.n3,border:`1px solid ${T.rl}`,borderRadius:8,padding:".5rem .7rem",color:T.cr,fontFamily:"inherit",fontSize:".85rem"}}/></div>
+        <div style={{flex:1,minWidth:200}}><p style={{fontSize:".7rem",color:T.ash,marginBottom:".3rem"}}>Feedback (visible to student &amp; parent)</p><input value={fb} onChange={e=>setFb(e.target.value)} placeholder="e.g. Strong on series; revise log laws." style={{width:"100%",background:T.n3,border:`1px solid ${T.rl}`,borderRadius:8,padding:".5rem .7rem",color:T.cr,fontFamily:"inherit",fontSize:".82rem"}}/></div>
+        <Btn ch={saved?"Saved ✓":"Save mark"} v="gold" sz="sm" onClick={save}/>
+      </div>
+    </div>
+  );
+}
+
+/* ─── STUDENT: ASSESSMENTS TO COMPLETE (interactive) ───────────────── */
+function StudentPapers({user}){
+  const studentId=user.role==="parent"?user.child?.id:user.id;
+  const data=useTable(async()=>{
+    if(!studentId)return[];
+    const{data:rels}=await supabase.from("paper_releases").select("paper_id").eq("student_id",studentId);
+    const ids=[...new Set((rels||[]).map(r=>r.paper_id))];
+    if(!ids.length)return[];
+    const[{data:papers},{data:subs}]=await Promise.all([
+      supabase.from("assessment_papers").select("*").in("id",ids),
+      supabase.from("paper_submissions").select("*").eq("student_id",studentId).in("paper_id",ids),
+    ]);
+    const subMap=Object.fromEntries((subs||[]).map(s=>[s.paper_id,s]));
+    return(papers||[]).map(p=>({...p,sub:subMap[p.id]||null}));
+  },[studentId]);
+  const[taking,setTaking]=useState(null);
+  if(taking)return<PaperTake paper={taking} studentId={studentId} canSubmit={user.role!=="parent"} onDone={()=>setTaking(null)}/>;
+  if(data===null)return null;
+  if(data.length===0)return null;
+  return(
+    <div style={{marginBottom:"2rem"}}>
+      <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".14em",textTransform:"uppercase",color:T.vi,marginBottom:"1rem"}}>Assessments set for you</p>
+      <div style={{display:"flex",flexDirection:"column",gap:".7rem"}}>
+        {data.map(p=>{
+          const s=p.sub;const marked=s&&s.score!=null;const submitted=s&&s.score==null;
+          return(
+            <div key={p.id} style={{background:T.n2,border:`1px solid ${T.vi}30`,borderRadius:10,padding:"1.2rem",borderLeftWidth:4,borderLeftColor:T.vi,display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:".75rem"}}>
+              <div>
+                <p style={{fontSize:".9rem",fontWeight:500,color:T.cr}}>{p.title}</p>
+                <p style={{fontSize:".72rem",color:T.ash,marginTop:".2rem"}}>{p.time_min?`${p.time_min} min · `:""}{p.total_marks} marks{marked?` · scored ${s.score}/${s.max_marks||p.total_marks}`:submitted?" · submitted, awaiting marking":""}</p>
+                {marked&&s.feedback&&<p style={{fontSize:".76rem",color:T.c2,marginTop:".35rem",fontStyle:"italic"}}>“{s.feedback}”</p>}
+              </div>
+              {marked?<div style={{textAlign:"right"}}><p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.6rem",fontWeight:300,color:gc(ptc(s.score,s.max_marks||p.total_marks)),lineHeight:1}}>{ptc(s.score,s.max_marks||p.total_marks)}%</p></div>
+                :submitted?<Tag l="Submitted" c={T.am} bg={T.ama}/>
+                :user.role==="parent"?<Tag l="Set" c={T.vi} bg={T.via}/>
+                :<Btn ch="Start →" v="gold" sz="sm" onClick={()=>setTaking(p)}/>}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function PaperTake({paper,studentId,canSubmit,onDone}){
+  const qs=Array.isArray(paper.questions)?paper.questions:[];
+  const[ans,setAns]=useState({});
+  const[done,setDone]=useState(false);
+  const[busy,setBusy]=useState(false);
+  const submit=async()=>{
+    setBusy(true);
+    try{await supabase.from("paper_submissions").insert({paper_id:paper.id,student_id:studentId,answers:ans,max_marks:paper.total_marks});}catch(e){console.warn(e);}
+    setBusy(false);setDone(true);
+  };
+  if(done)return(
+    <div style={{padding:"2rem",textAlign:"center"}}>
+      <div style={{fontFamily:"'Sora',sans-serif",fontSize:"3rem",color:T.gr}}>✓</div>
+      <h2 style={{fontFamily:"'Sora',sans-serif",fontWeight:300,margin:".5rem 0"}}>Submitted</h2>
+      <p style={{fontSize:".85rem",color:T.ash,marginBottom:"1.25rem"}}>Your answers have been sent to your tutor for marking. Your score and feedback will appear here once marked.</p>
+      <Btn ch="← Back" v="navy" sz="sm" onClick={onDone}/>
+    </div>
+  );
+  let section="";
+  return(
+    <div style={{padding:"2rem",maxWidth:760}}>
+      <button onClick={onDone} style={{background:"none",border:"none",color:T.ash,cursor:"pointer",fontFamily:"inherit",fontSize:".8rem",marginBottom:".75rem"}}>← Back</button>
+      <h1 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.7rem",fontWeight:300}}>{paper.title}</h1>
+      <p style={{fontSize:".8rem",color:T.ash,margin:".35rem 0 1.25rem"}}>{paper.time_min?`${paper.time_min} minutes · `:""}{paper.total_marks} marks · Type your working and final answers in each box. Show your method.</p>
+      {qs.map(q=>{
+        const newSec=q.section&&q.section!==section;if(newSec)section=q.section;
+        return(<div key={q.n}>
+          {newSec&&<p style={{fontSize:".66rem",fontWeight:700,letterSpacing:".12em",textTransform:"uppercase",color:T.vi,margin:"1.25rem 0 .6rem"}}>{q.section}</p>}
+          <div style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:10,padding:"1.1rem",marginBottom:".7rem"}}>
+            <p style={{fontSize:".85rem",color:T.cr,marginBottom:".5rem"}}><strong>{q.n}.</strong> <span dangerouslySetInnerHTML={{__html:q.prompt}}/> <span style={{color:T.ash,fontWeight:600}}>[{q.marks}]</span></p>
+            <textarea value={ans[String(q.n)]||""} onChange={e=>setAns(a=>({...a,[String(q.n)]:e.target.value}))} rows={3} placeholder="Your working and answer…" style={{width:"100%",background:T.n3,border:`1px solid ${T.rl}`,borderRadius:8,padding:".65rem",color:T.cr,fontFamily:"inherit",fontSize:".84rem",resize:"vertical",outline:"none"}}/>
+          </div>
+        </div>);
+      })}
+      {canSubmit?<Btn ch={busy?"Submitting…":"Submit assessment ✓"} v="success" dis={busy} sx={{width:"100%",justifyContent:"center",marginTop:".5rem"}} onClick={submit}/>
+        :<p style={{fontSize:".8rem",color:T.ash,textAlign:"center",marginTop:".5rem"}}>Preview only.</p>}
+    </div>
+  );
+}
+
 /* ─── TUTOR PORTAL ────────────────────────────────────────────────── */
 function TutorDash({user,go,bp}){
   const sessions=useTutorSessions(user)||[];
@@ -1919,11 +2155,42 @@ function AdminBookings(){
   );
 }
 
-function LessonList({courseId,subject}){
+function LessonList({courseId,subject,viewer}){
+  const role=viewer?.role;
+  const isStaff=role==="tutor"||role==="admin";
+  const studentId=role==="parent"?viewer?.child?.id:viewer?.id;
   const lessons=useTable(async()=>{const{data}=await supabase.from("lessons").select("*").eq("course_id",courseId).order("num");return data||[];},[courseId]);
+  // For students/parents, only lessons the tutor has released are visible.
+  const releasedNums=useTable(async()=>{
+    if(isStaff||!studentId)return [];
+    const{data}=await supabase.from("lesson_releases").select("lesson_num").eq("student_id",studentId).eq("course_id",courseId);
+    return (data||[]).map(r=>r.lesson_num);
+  },[courseId,studentId,isStaff]);
   if(lessons===null)return<p style={{fontSize:".82rem",color:T.ash}}>Loading lessons…</p>;
   if(lessons.length===0)return<EmptyNote text="No lessons uploaded for this course yet."/>;
   const hwPlatform=(subject==="chem"||subject==="sci")?"Seneca Learning":"Dr Frost Maths";
+  if(!isStaff){
+    if(releasedNums===null)return<p style={{fontSize:".82rem",color:T.ash}}>Loading lessons…</p>;
+    const relSet=new Set(releasedNums);
+    const visible=lessons.filter(l=>relSet.has(l.num));
+    if(visible.length===0)return<EmptyNote text="Your tutor hasn't released any lessons yet. Lessons are unlocked as you progress through the course."/>;
+    return(<div style={{display:"flex",flexDirection:"column",gap:".5rem"}}>
+      {visible.map(l=>{
+        const isAssess=/\b(Test|Assessment|Baseline|Mid-?course|End-?of-?course|Mock|Diagnostic|Unit Check)\b/i.test(l.title);
+        return(
+        <div key={l.num} style={{background:T.n3,border:`1px solid ${T.r2}`,borderRadius:8,padding:"1rem 1.15rem"}}>
+          <div style={{display:"flex",gap:".75rem",alignItems:"baseline"}}>
+            <span style={{fontFamily:"'Sora',sans-serif",fontSize:"1rem",fontWeight:500,color:T.gd,flexShrink:0}}>{l.num}</span>
+            <div style={{flex:1,minWidth:0}}>
+              <p style={{fontWeight:500,fontSize:".88rem",marginBottom:".2rem"}}>{l.title}</p>
+              <p style={{fontSize:".76rem",color:T.ash,lineHeight:1.6}}>{l.objectives}</p>
+              {!isAssess&&<p style={{fontSize:".72rem",color:T.bl,marginTop:".4rem"}}>📚 Homework: practice set on <strong>{hwPlatform}</strong> (auto-marked)</p>}
+            </div>
+          </div>
+        </div>
+      );})}
+    </div>);
+  }
   return(<div style={{display:"flex",flexDirection:"column",gap:".5rem"}}>
     {lessons.map(l=>{
       const isAssess=/\b(Test|Assessment|Baseline|Mid-?course|End-?of-?course|Mock|Diagnostic|Unit Check)\b/i.test(l.title);
@@ -1981,7 +2248,7 @@ function AdminCourses(){
               {c.outcomes.map(o=><p key={o} style={{fontSize:".83rem",color:T.ash,padding:".35rem 0",borderBottom:`1px solid ${T.r2}`}}>{o}</p>)}
             </div>:<div style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:12,padding:"1.75rem"}}>
               <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".14em",textTransform:"uppercase",color:T.gd,marginBottom:"1rem"}}>Lesson Plan ({c.lessons} lessons)</p>
-              <LessonList courseId={c.id} subject={c.sub}/>
+              <LessonList courseId={c.id} subject={c.sub} viewer={{role:"admin"}}/>
             </div>}
           </div>
         );})():<div style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:12,padding:"4rem",textAlign:"center"}}><p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.4rem",fontWeight:300,color:T.ash}}>Select a course to manage</p></div>}
@@ -2151,7 +2418,7 @@ export default function App(){
 
   const studentPgs=["dashboard","my-courses","booking","assessments","progress","account"];
   const parentPgs=["parent","par-assess","par-sessions","par-billing"];
-  const tutorPgs=["tutor-dash","tutor-calendar","tutor-schedule","tutor-hours","tutor-invoices","tutor-post"];
+  const tutorPgs=["tutor-dash","tutor-calendar","tutor-content","tutor-schedule","tutor-hours","tutor-invoices","tutor-post"];
   const adminPgs=["admin","admin-tutors","admin-students","admin-courses","admin-bookings","admin-payouts"];
   const appPgs=[...studentPgs,...parentPgs,...tutorPgs,...adminPgs];
 
@@ -2184,15 +2451,16 @@ export default function App(){
       case"dashboard":  return<StudentDash user={user} setUser={setUser} go={go} bp={bp}/>;
       case"my-courses": return<MyCourses user={user} go={go}/>;
       case"booking":    return<div style={{padding:"2rem"}}><h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1rem"}}>🎥 Book Zoom Lessons</h2><p style={{fontSize:".85rem",color:T.ash}}>Use the "Book Lesson" button on your enrolled course in the Dashboard to open the full booking calendar with credit deduction and Zoom link generation.</p></div>;
-      case"assessments":return<Assessments user={user}/>;
+      case"assessments":return<><div style={{padding:"2rem 2rem 0"}}><StudentPapers user={user}/></div><Assessments user={user}/></>;
       case"progress":   return<div style={{padding:"2rem"}}><h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1rem"}}>Progress Tracker</h2><p style={{fontSize:".85rem",color:T.ash,marginBottom:"1.5rem"}}>Score trend and unit progress are displayed on your Dashboard. Full progress view available here in production.</p>{UNITS.map(u=><div key={u.u} style={{marginBottom:"1rem"}}><div style={{display:"flex",justifyContent:"space-between",marginBottom:".4rem"}}><p style={{fontSize:".88rem",color:u.p>0?T.cr:T.ash2}}>{u.u}</p><p style={{fontSize:".82rem",color:u.p===100?T.gr:u.p>0?u.c:T.ash2,fontWeight:600}}>{u.p}%</p></div><PBar p={u.p} col={u.c} h={7}/></div>)}</div>;
       case"account":    return<div style={{padding:"2rem",maxWidth:500}}><h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"2rem"}}>Account</h2>{[["Name",user.name],["Email",user.email],["Role",user.role],["Timezone","Europe/London"],["Currency",cur]].map(([k,v])=><div key={k} style={{display:"flex",justifyContent:"space-between",padding:".8rem 0",borderBottom:`1px solid ${T.r2}`}}><span style={{fontSize:".72rem",color:T.ash2,letterSpacing:".08em",textTransform:"uppercase"}}>{k}</span><span style={{fontSize:".85rem",color:T.ash}}>{v}</span></div>)}</div>;
       case"parent":     return<ParentPortal user={user} go={go} bp={bp}/>;
-      case"par-assess": return<Assessments user={user.child||{name:user.name,enrollments:[]}}/>;
+      case"par-assess": return<><div style={{padding:"2rem 2rem 0"}}><StudentPapers user={user}/></div><Assessments user={user.child||{name:user.name,enrollments:[]}}/></>;
       case"par-sessions":return<div style={{padding:"2rem"}}><h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1rem"}}>Session History</h2>{((user.child?.enrollments||[]).flatMap(e=>e.bookings||[])).length===0&&<EmptyNote text="No sessions yet."/>}{(user.child?.enrollments||[]).flatMap(e=>e.bookings||[]).map(b=><div key={b.id} style={{marginBottom:".65rem"}}><ZoomCard link={b.zoom} meetingId={b.meetingId} date={b.date} time={b.time} course="Session" tutor={b.tutor} status={b.status}/></div>)}</div>;
       case"par-billing":return<div style={{padding:"2rem"}}><h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1rem"}}>Billing</h2><EmptyNote text="Billing history appears once your child is enrolled in a course."/></div>;
       case"tutor-dash": return<TutorDash user={user} go={go} bp={bp}/>;
       case"tutor-calendar":return<TutorCalendar user={user} go={go}/>;
+      case"tutor-content":return<TutorContent user={user}/>;
       case"tutor-schedule":return<TutorSchedule user={user}/>;
       case"tutor-hours":return<TutorHours go={go} user={user}/>;
       case"tutor-invoices":return<TutorInvoices user={user}/>;
