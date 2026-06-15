@@ -842,7 +842,7 @@ function CourseDetail({courseId,go,cur,user,setUser,bp}){
               return(<>
                 <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".16em",textTransform:"uppercase",color:T.gd,margin:"2rem 0 1rem"}}>Full Lesson Plan</p>
                 {canSee
-                  ? <LessonList courseId={c.id}/>
+                  ? <LessonList courseId={c.id} subject={c.sub}/>
                   : <div style={{background:T.n2,border:`1px dashed ${T.r2}`,borderRadius:10,padding:"1.5rem",textAlign:"center"}}>
                       <p style={{fontSize:".85rem",color:T.cr,fontWeight:500,marginBottom:".35rem"}}>🔒 The full lesson-by-lesson plan unlocks when you enrol</p>
                       <p style={{fontSize:".78rem",color:T.ash,lineHeight:1.6}}>Enrolled students and parents see every lesson and its objectives here. The topic and assessment overview above shows what the course covers.</p>
@@ -1919,22 +1919,26 @@ function AdminBookings(){
   );
 }
 
-function LessonList({courseId}){
+function LessonList({courseId,subject}){
   const lessons=useTable(async()=>{const{data}=await supabase.from("lessons").select("*").eq("course_id",courseId).order("num");return data||[];},[courseId]);
   if(lessons===null)return<p style={{fontSize:".82rem",color:T.ash}}>Loading lessons…</p>;
   if(lessons.length===0)return<EmptyNote text="No lessons uploaded for this course yet."/>;
+  const hwPlatform=(subject==="chem"||subject==="sci")?"Seneca Learning":"Dr Frost Maths";
   return(<div style={{display:"flex",flexDirection:"column",gap:".5rem"}}>
-    {lessons.map(l=>(
+    {lessons.map(l=>{
+      const isAssess=/\b(Test|Assessment|Baseline|Mid-?course|End-?of-?course|Mock|Diagnostic|Unit Check)\b/i.test(l.title);
+      return(
       <div key={l.num} style={{background:T.n3,border:`1px solid ${T.r2}`,borderRadius:8,padding:"1rem 1.15rem"}}>
         <div style={{display:"flex",gap:".75rem",alignItems:"baseline"}}>
           <span style={{fontFamily:"'Sora',sans-serif",fontSize:"1rem",fontWeight:500,color:T.gd,flexShrink:0}}>{l.num}</span>
           <div style={{flex:1,minWidth:0}}>
             <p style={{fontWeight:500,fontSize:".88rem",marginBottom:".2rem"}}>{l.title}</p>
             <p style={{fontSize:".76rem",color:T.ash,lineHeight:1.6}}>{l.objectives}</p>
+            {!isAssess&&<p style={{fontSize:".72rem",color:T.bl,marginTop:".4rem"}}>📚 Homework: practice set on <strong>{hwPlatform}</strong> (auto-marked)</p>}
           </div>
         </div>
       </div>
-    ))}
+    );})}
   </div>);
 }
 
@@ -1977,7 +1981,7 @@ function AdminCourses(){
               {c.outcomes.map(o=><p key={o} style={{fontSize:".83rem",color:T.ash,padding:".35rem 0",borderBottom:`1px solid ${T.r2}`}}>{o}</p>)}
             </div>:<div style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:12,padding:"1.75rem"}}>
               <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".14em",textTransform:"uppercase",color:T.gd,marginBottom:"1rem"}}>Lesson Plan ({c.lessons} lessons)</p>
-              <LessonList courseId={c.id}/>
+              <LessonList courseId={c.id} subject={c.sub}/>
             </div>}
           </div>
         );})():<div style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:12,padding:"4rem",textAlign:"center"}}><p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.4rem",fontWeight:300,color:T.ash}}>Select a course to manage</p></div>}
