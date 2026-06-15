@@ -845,7 +845,7 @@ function CourseDetail({courseId,go,cur,user,setUser,bp}){
                   ? <LessonList courseId={c.id}/>
                   : <div style={{background:T.n2,border:`1px dashed ${T.r2}`,borderRadius:10,padding:"1.5rem",textAlign:"center"}}>
                       <p style={{fontSize:".85rem",color:T.cr,fontWeight:500,marginBottom:".35rem"}}>🔒 The full lesson-by-lesson plan unlocks when you enrol</p>
-                      <p style={{fontSize:".78rem",color:T.ash,lineHeight:1.6}}>Enrolled students and parents see every lesson, objective and homework here. The topic and assessment overview above shows what the course covers.</p>
+                      <p style={{fontSize:".78rem",color:T.ash,lineHeight:1.6}}>Enrolled students and parents see every lesson and its objectives here. The topic and assessment overview above shows what the course covers.</p>
                     </div>}
               </>);
             })()}
@@ -1931,7 +1931,6 @@ function LessonList({courseId}){
           <div style={{flex:1,minWidth:0}}>
             <p style={{fontWeight:500,fontSize:".88rem",marginBottom:".2rem"}}>{l.title}</p>
             <p style={{fontSize:".76rem",color:T.ash,lineHeight:1.6}}>{l.objectives}</p>
-            <p style={{fontSize:".74rem",color:T.bl,marginTop:".4rem"}}><strong style={{color:T.bl}}>Homework:</strong> {l.homework}</p>
           </div>
         </div>
       </div>
