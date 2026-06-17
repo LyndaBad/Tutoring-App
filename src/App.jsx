@@ -151,7 +151,21 @@ function useTutorSessions(user){
   },[user.id]);
 }
 
-const UNITS=[{u:"Number & Algebra",p:100,c:T.gr},{u:"Functions",p:85,c:T.bl},{u:"Geometry & Trig",p:62,c:T.am},{u:"Statistics",p:28,c:T.vi},{u:"Calculus",p:0,c:T.ash2}];
+// Real syllabus units per course, defined by lesson-number ranges. Progress is computed live
+// from each student's completed lessons — never hardcoded.
+const COURSE_UNITS={"ib-aa-sl":[{u:"Number & Algebra",f:2,t:9},{u:"Functions",f:11,t:15},{u:"Geometry & Trigonometry",f:17,t:22},{u:"Statistics & Probability",f:25,t:32},{u:"Calculus",f:34,t:42},{u:"Internal Assessment",f:44,t:45}]};
+const UNIT_COLORS=[T.gr,T.bl,T.am,T.vi,T.te,T.gd];
+function computeUnits(courseId,completed){
+  const defs=COURSE_UNITS[courseId];if(!defs)return null;
+  const done=new Set(completed||[]);
+  return defs.map((u,i)=>{let n=0;for(let k=u.f;k<=u.t;k++)if(done.has(k))n++;const total=u.t-u.f+1;return{u:u.u,p:total?Math.round(n/total*100):0,c:UNIT_COLORS[i%UNIT_COLORS.length]};});
+}
+// Pick the enrollment whose course has a defined unit structure, returning {course,units} or null.
+function unitsForUser(user){
+  const ue=(user?.enrollments||[]).find(e=>COURSE_UNITS[e.courseId]);
+  if(!ue)return null;
+  return{course:COURSES.find(x=>x.id===ue.courseId),units:computeUnits(ue.courseId,ue.completedLessons)};
+}
 const ATCOL={baseline:T.te,topic_check:T.bl,mid_course:T.am,final:T.vi};
 const ATLBL={baseline:"Baseline",topic_check:"Topic Check",mid_course:"Mid-Course",final:"Final"};
 
@@ -1233,16 +1247,23 @@ function StudentDash({user,setUser,go,bp}){
           </ResponsiveContainer></>);})()}
         </div>
         <div style={{background:T.n2,border:`1px solid ${T.rl}`,borderRadius:12,padding:"1.5rem"}}>
-          <p style={{fontSize:".65rem",color:T.ash,letterSpacing:".12em",textTransform:"uppercase",marginBottom:"1rem"}}>Course Units</p>
-          {UNITS.map(u=>(
-            <div key={u.u} style={{marginBottom:".82rem"}}>
-              <div style={{display:"flex",justifyContent:"space-between",marginBottom:".3rem"}}>
-                <p style={{fontSize:".78rem",color:u.p>0?T.cr:T.ash2}}>{u.u}</p>
-                <p style={{fontSize:".73rem",color:u.p===100?T.gr:u.p>0?u.c:T.ash2,fontWeight:600}}>{u.p}%</p>
-              </div>
-              <PBar p={u.p} col={u.c} h={4}/>
-            </div>
-          ))}
+          {(()=>{
+            const uf=unitsForUser(user);
+            return(<>
+              <p style={{fontSize:".65rem",color:T.ash,letterSpacing:".12em",textTransform:"uppercase",marginBottom:uf?".25rem":"1rem"}}>Course Units</p>
+              {uf?.course&&<p style={{fontSize:".82rem",color:T.cr,fontWeight:500,marginBottom:"1rem"}}>{uf.course.title}</p>}
+              {!uf&&<p style={{fontSize:".83rem",color:T.ash2,padding:"1.8rem 0",textAlign:"center"}}>Unit-by-unit progress appears here once you're enrolled in a structured course.</p>}
+              {uf?.units?.map(u=>(
+                <div key={u.u} style={{marginBottom:".82rem"}}>
+                  <div style={{display:"flex",justifyContent:"space-between",marginBottom:".3rem"}}>
+                    <p style={{fontSize:".78rem",color:u.p>0?T.cr:T.ash2}}>{u.u}</p>
+                    <p style={{fontSize:".73rem",color:u.p===100?T.gr:u.p>0?u.c:T.ash2,fontWeight:600}}>{u.p}%</p>
+                  </div>
+                  <PBar p={u.p} col={u.c} h={4}/>
+                </div>
+              ))}
+            </>);
+          })()}
         </div>
       </div>
       {/* Enrolled + Upcoming */}
@@ -1992,8 +2013,9 @@ function PostSession(){
 }
 
 /* ─── ADMIN PANEL ─────────────────────────────────────────────────── */
-function AdminDash({go,bp,onPreview}){
+function AdminDash({go,bp,onPreview,onPreviewParent}){
   const previewables=useTable(async()=>{const{data}=await supabase.from("profiles").select("id,name").eq("role","student").order("name");return data||[];},[]);
+  const previewParents=useTable(async()=>{const{data}=await supabase.from("profiles").select("id,name").eq("role","parent").order("name");return data||[];},[]);
   const live=useTable(async()=>{
     const[t,st,b,i]=await Promise.all([
       supabase.from("profiles").select("id",{count:"exact",head:true}).eq("role","tutor"),
@@ -2020,7 +2042,10 @@ function AdminDash({go,bp,onPreview}){
               <option value="">Preview as student…</option>
               {(previewables||[]).map(s=><option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
-            <Btn ch="Preview Parent" v="navy" sz="xs" onClick={()=>go("parent")}/>
+            <select onChange={e=>{if(e.target.value)onPreviewParent&&onPreviewParent(e.target.value);}} defaultValue="" style={{background:T.n2,border:`1px solid ${T.rl}`,color:T.cr,borderRadius:8,padding:".22rem .5rem",fontSize:".7rem",fontFamily:"inherit",cursor:"pointer"}}>
+              <option value="">Preview as parent…</option>
+              {(previewParents||[]).map(p=><option key={p.id} value={p.id}>{p.name}</option>)}
+            </select>
           </div>
         </div>
       </div>
@@ -2460,16 +2485,32 @@ export default function App(){
   },[]);
 
   const[previewStudent,setPreviewStudent]=useState(null);
-  const go=useCallback(p=>{if(p.startsWith("admin"))setPreviewStudent(null);setPg(p);setSideOpen(false);requestAnimationFrame(()=>window.scrollTo({top:0,behavior:"smooth"}));},[]);
-  const logout=useCallback(async()=>{try{await supabase.auth.signOut();}catch{}setUser(null);setPreviewStudent(null);go("home");},[go]);
+  const[previewParent,setPreviewParent]=useState(null);
+  const go=useCallback(p=>{if(p.startsWith("admin")){setPreviewStudent(null);setPreviewParent(null);}setPg(p);setSideOpen(false);requestAnimationFrame(()=>window.scrollTo({top:0,behavior:"smooth"}));},[]);
+  const logout=useCallback(async()=>{try{await supabase.auth.signOut();}catch{}setUser(null);setPreviewStudent(null);setPreviewParent(null);go("home");},[go]);
   const previewAsStudent=useCallback(async(id)=>{
     try{
       const{data:prof}=await supabase.from("profiles").select("id,name").eq("id",id).maybeSingle();
       const enrollments=await fetchStudentData(id);
       const nm=prof?.name||"Student";
+      setPreviewParent(null);
       setPreviewStudent({id,name:nm,role:"student",av:nm.split(" ").map(x=>x[0]).join("").slice(0,2).toUpperCase(),enrollments});
     }catch(e){console.warn("preview load failed",e);}
     go("dashboard");
+  },[go]);
+  const previewAsParent=useCallback(async(id)=>{
+    try{
+      const{data:prof}=await supabase.from("profiles").select("id,name,child_id").eq("id",id).maybeSingle();
+      const nm=prof?.name||"Parent";
+      let child=null;
+      if(prof?.child_id){
+        const{data:cp}=await supabase.from("profiles").select("id,name").eq("id",prof.child_id).maybeSingle();
+        child={id:prof.child_id,name:cp?.name||"Student",enrollments:await fetchStudentData(prof.child_id)};
+      }
+      setPreviewStudent(null);
+      setPreviewParent({id,name:nm,email:prof?.email,role:"parent",av:nm.split(" ").map(x=>x[0]).join("").slice(0,2).toUpperCase(),child});
+    }catch(e){console.warn("preview parent failed",e);}
+    go("parent");
   },[go]);
 
   const studentPgs=["dashboard","my-courses","booking","assessments","progress","account"];
@@ -2493,7 +2534,7 @@ export default function App(){
 
   const inApp=appPgs.includes(pg);
 
-  const su=(user&&user.role==="admin"&&previewStudent)?previewStudent:user;  // preview-as-student
+  const su=(user&&user.role==="admin")?(previewStudent||previewParent||user):user;  // admin preview-as-student / preview-as-parent
   const renderPage=()=>{
     if(courseId)return<CourseDetail courseId={courseId} go={go} cur={cur} user={su} setUser={setUser} bp={bp}/>;
     switch(pg){
@@ -2509,11 +2550,11 @@ export default function App(){
       case"my-courses": return<MyCourses user={su} go={go}/>;
       case"booking":    return<div style={{padding:"2rem"}}><h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1rem"}}>🎥 Book Zoom Lessons</h2><p style={{fontSize:".85rem",color:T.ash}}>Use the "Book Lesson" button on your enrolled course in the Dashboard to open the full booking calendar with credit deduction and Zoom link generation.</p></div>;
       case"assessments":return<><div style={{padding:"2rem 2rem 0"}}><StudentPapers user={su}/></div><Assessments user={su}/></>;
-      case"progress":   return<div style={{padding:"2rem"}}><h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1rem"}}>Progress Tracker</h2><p style={{fontSize:".85rem",color:T.ash,marginBottom:"1.5rem"}}>Score trend and unit progress are displayed on your Dashboard. Full progress view available here in production.</p>{UNITS.map(u=><div key={u.u} style={{marginBottom:"1rem"}}><div style={{display:"flex",justifyContent:"space-between",marginBottom:".4rem"}}><p style={{fontSize:".88rem",color:u.p>0?T.cr:T.ash2}}>{u.u}</p><p style={{fontSize:".82rem",color:u.p===100?T.gr:u.p>0?u.c:T.ash2,fontWeight:600}}>{u.p}%</p></div><PBar p={u.p} col={u.c} h={7}/></div>)}</div>;
+      case"progress":   {const uf=unitsForUser(su);return<div style={{padding:"2rem"}}><h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1rem"}}>Progress Tracker</h2><p style={{fontSize:".85rem",color:T.ash,marginBottom:"1.5rem"}}>Unit progress is calculated from completed lessons{uf?.course?` in ${uf.course.title}`:""}.</p>{!uf&&<EmptyNote text="Enrol in a structured course to see unit-by-unit progress."/>}{uf?.units?.map(u=><div key={u.u} style={{marginBottom:"1rem"}}><div style={{display:"flex",justifyContent:"space-between",marginBottom:".4rem"}}><p style={{fontSize:".88rem",color:u.p>0?T.cr:T.ash2}}>{u.u}</p><p style={{fontSize:".82rem",color:u.p===100?T.gr:u.p>0?u.c:T.ash2,fontWeight:600}}>{u.p}%</p></div><PBar p={u.p} col={u.c} h={7}/></div>)}</div>;}
       case"account":    return<div style={{padding:"2rem",maxWidth:500}}><h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"2rem"}}>Account</h2>{[["Name",user.name],["Email",user.email],["Role",user.role],["Timezone","Europe/London"],["Currency",cur]].map(([k,v])=><div key={k} style={{display:"flex",justifyContent:"space-between",padding:".8rem 0",borderBottom:`1px solid ${T.r2}`}}><span style={{fontSize:".72rem",color:T.ash2,letterSpacing:".08em",textTransform:"uppercase"}}>{k}</span><span style={{fontSize:".85rem",color:T.ash}}>{v}</span></div>)}</div>;
-      case"parent":     return<ParentPortal user={user} go={go} bp={bp}/>;
-      case"par-assess": return<><div style={{padding:"2rem 2rem 0"}}><StudentPapers user={user}/></div><Assessments user={user.child||{name:user.name,enrollments:[]}}/></>;
-      case"par-sessions":return<div style={{padding:"2rem"}}><h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1rem"}}>Session History</h2>{((user.child?.enrollments||[]).flatMap(e=>e.bookings||[])).length===0&&<EmptyNote text="No sessions yet."/>}{(user.child?.enrollments||[]).flatMap(e=>e.bookings||[]).map(b=><div key={b.id} style={{marginBottom:".65rem"}}><ZoomCard link={b.zoom} meetingId={b.meetingId} date={b.date} time={b.time} course="Session" tutor={b.tutor} status={b.status}/></div>)}</div>;
+      case"parent":     return<ParentPortal user={su} go={go} bp={bp}/>;
+      case"par-assess": return<><div style={{padding:"2rem 2rem 0"}}><StudentPapers user={su}/></div><Assessments user={su.child||{name:su.name,enrollments:[]}}/></>;
+      case"par-sessions":return<div style={{padding:"2rem"}}><h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1rem"}}>Session History</h2>{((su.child?.enrollments||[]).flatMap(e=>e.bookings||[])).length===0&&<EmptyNote text="No sessions yet."/>}{(su.child?.enrollments||[]).flatMap(e=>e.bookings||[]).map(b=><div key={b.id} style={{marginBottom:".65rem"}}><ZoomCard link={b.zoom} meetingId={b.meetingId} date={b.date} time={b.time} course="Session" tutor={b.tutor} status={b.status}/></div>)}</div>;
       case"par-billing":return<div style={{padding:"2rem"}}><h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1rem"}}>Billing</h2><EmptyNote text="Billing history appears once your child is enrolled in a course."/></div>;
       case"tutor-dash": return<TutorDash user={user} go={go} bp={bp}/>;
       case"tutor-calendar":return<TutorCalendar user={user} go={go}/>;
@@ -2522,7 +2563,7 @@ export default function App(){
       case"tutor-hours":return<TutorHours go={go} user={user}/>;
       case"tutor-invoices":return<TutorInvoices user={user}/>;
       case"tutor-post": return<PostSession/>;
-      case"admin":      return<AdminDash go={go} bp={bp} onPreview={previewAsStudent}/>;
+      case"admin":      return<AdminDash go={go} bp={bp} onPreview={previewAsStudent} onPreviewParent={previewAsParent}/>;
       case"admin-tutors":return<AdminTutors/>;
       case"admin-students":return<AdminStudents/>;
       case"admin-courses":return<AdminCourses/>;
