@@ -395,7 +395,7 @@ function Sidebar({pg,go,user,bp,open,onClose}){
         {!bp.mobile&&!bp.tablet&&<Logo size={28} onDark/>}
         <div style={{display:"flex",alignItems:"center",gap:".7rem",marginTop:bp.mobile||bp.tablet?0:"1rem",paddingTop:bp.mobile||bp.tablet?0:"1rem",borderTop:bp.mobile||bp.tablet?"none":`1px solid ${T.r2}`}}>
           <div style={{width:32,height:32,borderRadius:"50%",background:rc,display:"flex",alignItems:"center",justifyContent:"center",fontSize:".75rem",fontWeight:700,color:T.n,flexShrink:0}}>{user?.av||"?"}</div>
-          <div style={{minWidth:0}}><p style={{fontSize:".82rem",fontWeight:600,color:T.cr,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{user?.name}</p><p style={{fontSize:".62rem",color:T.ash,marginTop:1}}>{rl}</p></div>
+          <div style={{minWidth:0}}><p style={{fontSize:".82rem",fontWeight:600,color:"#FFFFFF",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{user?.name}</p><p style={{fontSize:".62rem",color:"#A99CFF",marginTop:1}}>{rl}</p></div>
         </div>
       </div>
       <nav style={{flex:1,padding:".5rem 0"}}>
