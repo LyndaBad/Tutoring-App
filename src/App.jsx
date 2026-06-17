@@ -1589,10 +1589,36 @@ function ReleasePanel({student,courseId,user}){
   );
 }
 
+function PaperPreview({paper}){
+  const[scheme,setScheme]=useState(null);
+  const[showScheme,setShowScheme]=useState(false);
+  useEffect(()=>{let dead=false;(async()=>{const{data}=await supabase.from("paper_markschemes").select("scheme").eq("paper_id",paper.id).maybeSingle();if(!dead)setScheme(data?.scheme||[]);})();return()=>{dead=true;};},[paper.id]);
+  const qs=Array.isArray(paper.questions)?paper.questions:[];
+  let lastSec=null;
+  return(
+    <div style={{marginTop:"1rem",borderTop:`1px solid ${T.r2}`,paddingTop:"1rem"}}>
+      <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".1em",textTransform:"uppercase",color:T.ash,marginBottom:".6rem"}}>Test preview — {paper.time_min?`${paper.time_min} min · `:""}{paper.total_marks} marks</p>
+      {qs.length===0&&<p style={{fontSize:".78rem",color:T.ash}}>No questions stored for this paper.</p>}
+      {qs.map(q=>{const sec=(q.section&&q.section!==lastSec)?(lastSec=q.section):null;return(
+        <div key={q.n}>
+          {sec&&<p style={{fontSize:".66rem",fontWeight:600,color:T.vi,margin:".65rem 0 .35rem",textTransform:"uppercase",letterSpacing:".06em"}}>{sec}</p>}
+          <p style={{fontSize:".8rem",color:T.cr,marginBottom:".5rem",whiteSpace:"pre-wrap",lineHeight:1.5}}><strong>{q.n}.</strong> {q.prompt} <span style={{color:T.ash}}>[{q.marks}]</span></p>
+        </div>
+      );})}
+      <button onClick={()=>setShowScheme(s=>!s)} style={{background:showScheme?T.ama:"none",border:`1px solid ${T.am}55`,color:T.am,borderRadius:6,padding:".32rem .7rem",fontSize:".7rem",cursor:"pointer",fontFamily:"inherit",marginTop:".4rem"}}>{showScheme?"Hide mark scheme":"Show mark scheme (tutor only)"}</button>
+      {showScheme&&<div style={{marginTop:".6rem"}}>
+        {scheme===null?<p style={{fontSize:".76rem",color:T.ash}}>Loading…</p>:scheme.length===0?<p style={{fontSize:".76rem",color:T.ash}}>No mark scheme stored.</p>:scheme.map((m,i)=>(
+          <p key={i} style={{fontSize:".75rem",color:T.c2,background:T.ama,borderRadius:6,padding:".4rem .55rem",marginBottom:".35rem"}} dangerouslySetInnerHTML={{__html:typeof m==="string"?m:(m.text||"")}}/>
+        ))}
+      </div>}
+    </div>
+  );
+}
 function PaperRow({paper,student,user}){
   const[released,setReleased]=useState(null);
   const[sub,setSub]=useState(undefined); // undefined=loading, null=none
   const[open,setOpen]=useState(false);
+  const[preview,setPreview]=useState(false);
   useEffect(()=>{let dead=false;(async()=>{
     const[{data:rel},{data:subs}]=await Promise.all([
       supabase.from("paper_releases").select("id").eq("student_id",student.id).eq("paper_id",paper.id).maybeSingle(),
@@ -1613,9 +1639,11 @@ function PaperRow({paper,student,user}){
           <p style={{fontSize:".88rem",fontWeight:500,color:T.cr}}>{paper.title}</p>
           <p style={{fontSize:".72rem",color:stCol,marginTop:".2rem"}}>{paper.time_min?`${paper.time_min} min · `:""}{paper.total_marks?`${paper.total_marks} marks · `:""}{status}</p>
         </div>
+        <button onClick={()=>setPreview(p=>!p)} style={{background:preview?T.bla:"none",border:`1px solid ${preview?T.bl+"55":T.rl}`,color:T.bl,borderRadius:6,padding:".35rem .7rem",fontSize:".72rem",cursor:"pointer",fontFamily:"inherit"}}>{preview?"Hide test":"View test"}</button>
         {sub&&<button onClick={()=>setOpen(o=>!o)} style={{background:"none",border:`1px solid ${T.rl}`,color:T.bl,borderRadius:6,padding:".35rem .7rem",fontSize:".72rem",cursor:"pointer",fontFamily:"inherit"}}>{open?"Close":"Mark / view"}</button>}
         <button onClick={toggle} style={{background:released?T.via:"transparent",border:`1px solid ${released?T.vi+"55":T.rl}`,color:released?T.vi:T.ash,borderRadius:6,padding:".35rem .8rem",fontSize:".74rem",cursor:"pointer",fontFamily:"inherit"}}>{released?"Set ✓":"Set for student"}</button>
       </div>
+      {preview&&<PaperPreview paper={paper}/>}
       {open&&sub&&<MarkPanel paper={paper} sub={sub} user={user} onMarked={s=>setSub(s)}/>}
     </div>
   );
