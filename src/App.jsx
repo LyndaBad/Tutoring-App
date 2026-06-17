@@ -1488,6 +1488,19 @@ function TutorContent({user}){
   );
 }
 
+// Lesson resource links (deck PDF / editable PPTX / worksheet PDF). Files live in /public/lessons/<course>.
+const COURSES_WITH_FILES=["ib-aa-sl"];
+function LessonFiles({courseId,num,worksheet=true}){
+  if(!COURSES_WITH_FILES.includes(courseId)) return null;
+  const base=`/lessons/${courseId}`;
+  const a=(href,label,bg,col)=>(<a href={href} target="_blank" rel="noreferrer" style={{display:"inline-flex",alignItems:"center",gap:".3rem",background:bg,color:col,border:`1px solid ${col}40`,borderRadius:6,padding:".28rem .6rem",fontSize:".72rem",fontWeight:500,textDecoration:"none"}}>{label}</a>);
+  return(<div style={{display:"flex",gap:".5rem",flexWrap:"wrap",marginTop:".5rem"}}>
+    {a(`${base}/deck_L${num}.pdf`,"📊 View slide deck",T.bla,T.bl)}
+    {a(`${base}/deck_L${num}.pptx`,"⬇ Editable deck (PPTX)",T.n3,T.ash)}
+    {worksheet&&a(`${base}/worksheet_L${num}.pdf`,"📝 View worksheet",T.gra,T.gr)}
+  </div>);
+}
+
 function ReleasePanel({student,courseId,user}){
   const course=COURSES.find(c=>c.id===courseId);
   const lessons=useTable(async()=>{const{data}=await supabase.from("lessons").select("num,title,objectives").eq("course_id",courseId).order("num");return data||[];},[courseId]);
@@ -1531,8 +1544,9 @@ function ReleasePanel({student,courseId,user}){
             {open&&<div style={{borderTop:`1px solid ${T.rl}`,padding:".7rem .95rem",background:T.n3,borderRadius:"0 0 8px 8px"}}>
               <p style={{fontSize:".62rem",fontWeight:600,letterSpacing:".1em",textTransform:"uppercase",color:T.gd,marginBottom:".35rem"}}>Lesson content / objectives</p>
               <p style={{fontSize:".8rem",color:T.c2,lineHeight:1.6}}>{l.objectives||"No description recorded for this lesson."}</p>
+              {!isAssess&&<LessonFiles courseId={courseId} num={l.num}/>}
               {!isAssess&&<p style={{fontSize:".74rem",color:T.bl,marginTop:".5rem"}}>📚 Homework set on <strong>{hwPlatform}</strong> (auto-marked).</p>}
-              <p style={{fontSize:".7rem",color:T.ash2,marginTop:".5rem",fontStyle:"italic"}}>Slide deck &amp; worksheet PDFs are in your Course content folder. {on?"This lesson is released to the student.":"Not yet released — the student can't see it."}</p>
+              <p style={{fontSize:".7rem",color:T.ash2,marginTop:".5rem",fontStyle:"italic"}}>{on?"This lesson is released to the student.":"Not yet released — the student can't see it."}</p>
             </div>}
           </div>
         );})}
@@ -2212,6 +2226,7 @@ function LessonList({courseId,subject,viewer}){
               <p style={{fontWeight:500,fontSize:".88rem",marginBottom:".2rem"}}>{l.title}</p>
               <p style={{fontSize:".76rem",color:T.ash,lineHeight:1.6}}>{l.objectives}</p>
               {!isAssess&&<p style={{fontSize:".72rem",color:T.bl,marginTop:".4rem"}}>📚 Homework: practice set on <strong>{hwPlatform}</strong> (auto-marked)</p>}
+              {!isAssess&&<LessonFiles courseId={courseId} num={l.num}/>}
             </div>
           </div>
         </div>
