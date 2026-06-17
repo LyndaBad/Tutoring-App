@@ -1,0 +1,951 @@
+[
+ {
+  "course_id": "ib-aa-sl",
+  "code": "WS-L02",
+  "title": "Worksheet — Lesson 2: Arithmetic Sequences & Series",
+  "time_min": 30,
+  "total_marks": 15,
+  "questions": [
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 1,
+    "prompt": "Write down the first four terms of the arithmetic sequence with first term 4 and common difference 5.",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 2,
+    "prompt": "Find the common difference of  11, 8, 5, 2, …",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 3,
+    "prompt": "An arithmetic sequence has u₁ = 6 and d = 4. Find u₇.",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 4,
+    "prompt": "Find the 12th term of  3, 10, 17, …",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 5,
+    "prompt": "An AP has u₁ = 50 and d = -4. Find u₁₅.",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 6,
+    "prompt": "Find u₂₀ for the AP with u₁ = 8, d = 6.",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 7,
+    "prompt": "Find the sum of the first 10 terms of the AP with u₁ = 5, d = 4.",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 8,
+    "prompt": "Find S₁₅ for the AP  2, 5, 8, …",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 9,
+    "prompt": "An AP has u₁ = 100, d = -5. Find the sum of the first 12 terms.",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 10,
+    "prompt": "In an AP the 3rd term is 17 and the 7th term is 33. Find d and u₁.",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 11,
+    "prompt": "An AP has u₂ = 9 and u₆ = 29. Find u₁ and d.",
+    "marks": 1
+   },
+   {
+    "section": "Section 3 — Challenge & exam-style",
+    "n": 12,
+    "prompt": "Which term of the AP  7, 12, 17, …  is equal to 82?",
+    "marks": 1
+   },
+   {
+    "section": "Section 3 — Challenge & exam-style",
+    "n": 13,
+    "prompt": "A graduate's salary starts at £12000 and rises by £1500 each year. What is the salary in year 6?",
+    "marks": 1
+   },
+   {
+    "section": "Section 3 — Challenge & exam-style",
+    "n": 14,
+    "prompt": "A theatre has 30 seats in row 1 and 4 more in each successive row. How many seats are in the first 18 rows in total?",
+    "marks": 1
+   },
+   {
+    "section": "Section 3 — Challenge & exam-style",
+    "n": 15,
+    "prompt": "For the AP with u₁ = 5, d = 3, the sum of the first n terms is 124. Find n.",
+    "marks": 1
+   }
+  ],
+  "scheme": [
+   "1.  4, 9, 14, 19",
+   "2.  d = -3",
+   "3.  6 + 6×4 = 30",
+   "4.  3 + 11×7 = 80",
+   "5.  -6",
+   "6.  122",
+   "7.  S = 10/2(2×5+9×4) = 230",
+   "8.  15/2(2×2+14×3) = 345",
+   "9.  12/2(2×100+11×-5) = 870",
+   "10.  d = (33−17)/(7−3) = 4;  u₁ = 9",
+   "11.  d = 5, u₁ = 4",
+   "12.  7+(n−1)×5=82 → n = 16",
+   "13.  £19500",
+   "14.  18/2(2×30+17×4) = 1152 seats",
+   "15.  n/2(2×5+7d)… → n = 8"
+  ]
+ },
+ {
+  "course_id": "ib-aa-sl",
+  "code": "WS-L03",
+  "title": "Worksheet — Lesson 3: Geometric Sequences & Series",
+  "time_min": 30,
+  "total_marks": 15,
+  "questions": [
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 1,
+    "prompt": "Write the first four terms of the geometric sequence with u₁ = 3, r = 2.",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 2,
+    "prompt": "A GP has u₁ = 2, r = 3. Find u₆.",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 3,
+    "prompt": "Find the common ratio of  5, 15, 45, 135, …",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 4,
+    "prompt": "Find the 5th term of  4, 8, 16, …",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 5,
+    "prompt": "Find r for the sequence  80, 40, 20, 10, …",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 6,
+    "prompt": "A GP has u₁ = 1, r = -2. Find u₆ (watch the sign).",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 7,
+    "prompt": "Find the sum of the first 7 terms of  2, 6, 18, …",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 8,
+    "prompt": "Find S₈ for the GP with u₁ = 5, r = 2.",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 9,
+    "prompt": "Find the sum of the first 5 terms of  3, 12, 48, …",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 10,
+    "prompt": "A GP has u₂ = 6 and u₅ = 162. Find r and u₁.",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 11,
+    "prompt": "Find the sum of the first 5 terms of  64, 32, 16, …",
+    "marks": 1
+   },
+   {
+    "section": "Section 3 — Challenge & exam-style",
+    "n": 12,
+    "prompt": "£1500 is invested at 4% per year, compounded annually. Find its value after 8 years (2 d.p.).",
+    "marks": 1
+   },
+   {
+    "section": "Section 3 — Challenge & exam-style",
+    "n": 13,
+    "prompt": "A car worth £20000 loses 15% of its value each year. Find its value after 3 years (nearest £).",
+    "marks": 1
+   },
+   {
+    "section": "Section 3 — Challenge & exam-style",
+    "n": 14,
+    "prompt": "The 2nd term of a GP is 18 and the 5th term is 486. Find r and u₁.",
+    "marks": 1
+   },
+   {
+    "section": "Section 3 — Challenge & exam-style",
+    "n": 15,
+    "prompt": "A population of 5000 grows by 8% each year. Write a formula for the population after n years, and find it after 10 years (nearest whole).",
+    "marks": 1
+   }
+  ],
+  "scheme": [
+   "1.  3, 6, 12, 24",
+   "2.  2×3⁵ = 486",
+   "3.  r = 3",
+   "4.  4×2⁴ = 64",
+   "5.  r = ½",
+   "6.  1×(-2)⁵ = -32",
+   "7.  2(3⁷−1)/(3−1) = 2186",
+   "8.  5(2⁸−1)/1 = 1275",
+   "9.  3(4⁵−1)/(4−1) = 1023",
+   "10.  r³ = 162/6 = 27 → r = 3;  u₁ = 2",
+   "11.  64(1−(½)⁵)/(1−½) = 124",
+   "12.  1500(1.04)⁸ ≈ £2052.85",
+   "13.  20000×0.85³ ≈ £12282",
+   "14.  r³ = 486/18 = 27 → r = 3; u₁ = 6",
+   "15.  5000(1.08)ⁿ; ≈ 10795"
+  ]
+ },
+ {
+  "course_id": "ib-aa-sl",
+  "code": "WS-L04",
+  "title": "Worksheet — Lesson 4: Sum to Infinity & Applications",
+  "time_min": 30,
+  "total_marks": 15,
+  "questions": [
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 1,
+    "prompt": "Find the sum to infinity of  12 + 6 + 3 + …",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 2,
+    "prompt": "Find the sum to infinity of  27 + 9 + 3 + …",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 3,
+    "prompt": "Does  3 + 6 + 12 + …  converge? Explain.",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 4,
+    "prompt": "Find S∞ of  100 + 20 + 4 + …",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 5,
+    "prompt": "State the condition on r for a geometric series to have a sum to infinity.",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 6,
+    "prompt": "Find S∞ of  50 + 25 + 12.5 + …",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 7,
+    "prompt": "A geometric series has u₁ = 40 and r = 0.25. Find the sum to infinity.",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 8,
+    "prompt": "Find S∞ of  6 − 3 + 1.5 − …",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 9,
+    "prompt": "A series has u₁ = 60 and S∞ = 80. Find r.",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 10,
+    "prompt": "A series has r = 0.6 and S∞ = 50. Find u₁.",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 11,
+    "prompt": "Find S∞ of  81 + 27 + 9 + …",
+    "marks": 1
+   },
+   {
+    "section": "Section 3 — Challenge & exam-style",
+    "n": 12,
+    "prompt": "Write the recurring decimal 0.7̄ as a geometric series and hence as a fraction.",
+    "marks": 1
+   },
+   {
+    "section": "Section 3 — Challenge & exam-style",
+    "n": 13,
+    "prompt": "Write 0.2̄7̄ (i.e. 0.272727…) as a fraction using S∞.",
+    "marks": 1
+   },
+   {
+    "section": "Section 3 — Challenge & exam-style",
+    "n": 14,
+    "prompt": "A ball is dropped from 10 m and each bounce reaches 0.6 of the previous height. Find the total vertical distance travelled.",
+    "marks": 1
+   },
+   {
+    "section": "Section 3 — Challenge & exam-style",
+    "n": 15,
+    "prompt": "A geometric series has first term 18 and sum to infinity 30. Find r, then the sum of the first 3 terms.",
+    "marks": 1
+   }
+  ],
+  "scheme": [
+   "1.  12/(1−½) = 24",
+   "2.  27/(1−⅓) = 40.5",
+   "3.  No — r = 2, |r| ≥ 1",
+   "4.  100/(1−0.2) = 125",
+   "5.  |r| < 1",
+   "6.  50/(1−½) = 100",
+   "7.  40/(1−0.25) = 53.3 (3 s.f.)",
+   "8.  6/(1+½) = 4",
+   "9.  80 = 60/(1−r) → r = 0.25",
+   "10.  u₁ = 50(1−0.6) = 20",
+   "11.  81/(1−⅓) = 121.5",
+   "12.  (7/10)/(1−1/10) = 7/9",
+   "13.  (27/100)/(1−1/100) = 27/99 = 3/11",
+   "14.  10 + 2×(6/(1−0.6)) = 10 + 30 = 40 m",
+   "15.  30 = 18/(1−r) → r = 0.4; S₃ = 18(1−0.4³)/0.6 = 28.08"
+  ]
+ },
+ {
+  "course_id": "ib-aa-sl",
+  "code": "WS-L05",
+  "title": "Worksheet — Lesson 5: Exponents & Laws of Indices",
+  "time_min": 30,
+  "total_marks": 16,
+  "questions": [
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 1,
+    "prompt": "Simplify  x⁶ × x⁴.",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 2,
+    "prompt": "Simplify  y⁹ ÷ y³.",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 3,
+    "prompt": "Simplify  (a⁴)³.",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 4,
+    "prompt": "Evaluate  7⁰.",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 5,
+    "prompt": "Simplify  3x² × 4x⁵.",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 6,
+    "prompt": "Simplify  (2x³)⁴.",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 7,
+    "prompt": "Evaluate  27^(2/3).",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 8,
+    "prompt": "Evaluate  16^(3/4).",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 9,
+    "prompt": "Write  1/x⁴  using a negative index.",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 10,
+    "prompt": "Evaluate  4^(−1/2).",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 11,
+    "prompt": "Simplify  (8x⁶)^(1/3).",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 12,
+    "prompt": "Simplify  15x⁵y³ ÷ 3x²y.",
+    "marks": 1
+   },
+   {
+    "section": "Section 3 — Challenge & exam-style",
+    "n": 13,
+    "prompt": "Simplify  (2x²y)³ × x⁻⁴, giving your answer in the form ax^n y^m.",
+    "marks": 1
+   },
+   {
+    "section": "Section 3 — Challenge & exam-style",
+    "n": 14,
+    "prompt": "Evaluate  (25/9)^(−1/2).",
+    "marks": 1
+   },
+   {
+    "section": "Section 3 — Challenge & exam-style",
+    "n": 15,
+    "prompt": "Solve  2^x = 32 by writing 32 as a power of 2.",
+    "marks": 1
+   },
+   {
+    "section": "Section 3 — Challenge & exam-style",
+    "n": 16,
+    "prompt": "Simplify  (a³b⁻²)² ÷ (a⁴b).",
+    "marks": 1
+   }
+  ],
+  "scheme": [
+   "1.  x¹⁰",
+   "2.  y⁶",
+   "3.  a¹²",
+   "4.  1",
+   "5.  12x⁷",
+   "6.  16x¹²",
+   "7.  (∛27)² = 9",
+   "8.  (⁴√16)³ = 8",
+   "9.  x⁻⁴",
+   "10.  1/√4 = 1/2",
+   "11.  2x²",
+   "12.  5x³y²",
+   "13.  8x⁶y³ × x⁻⁴ = 8x²y³",
+   "14.  (9/25)^(1/2) = 3/5",
+   "15.  2^x = 2⁵ → x = 5",
+   "16.  a⁶b⁻⁴ ÷ a⁴b = a²b⁻⁵"
+  ]
+ },
+ {
+  "course_id": "ib-aa-sl",
+  "code": "WS-L06",
+  "title": "Worksheet — Lesson 6: Logarithms & Their Laws",
+  "time_min": 30,
+  "total_marks": 16,
+  "questions": [
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 1,
+    "prompt": "Evaluate  log₂ 16.",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 2,
+    "prompt": "Evaluate  log₅ 25.",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 3,
+    "prompt": "Evaluate  log₁₀ 10000.",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 4,
+    "prompt": "Rewrite  2⁶ = 64  as a logarithm.",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 5,
+    "prompt": "Evaluate  log₃ 1.",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 6,
+    "prompt": "Evaluate  log₇ 7.",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 7,
+    "prompt": "Write as a single logarithm:  log 6 + log 4.",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 8,
+    "prompt": "Write as a single logarithm:  log 40 − log 8.",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 9,
+    "prompt": "Write  3 log x  as a single logarithm.",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 10,
+    "prompt": "Simplify  log₂ 8 + log₂ 4.",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 11,
+    "prompt": "Write  2 log a + log b  as a single logarithm.",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 12,
+    "prompt": "Evaluate  log₄ 64.",
+    "marks": 1
+   },
+   {
+    "section": "Section 3 — Challenge & exam-style",
+    "n": 13,
+    "prompt": "Given log₂ 3 = k, write log₂ 24 in terms of k.",
+    "marks": 1
+   },
+   {
+    "section": "Section 3 — Challenge & exam-style",
+    "n": 14,
+    "prompt": "Simplify  log x³ − log x.",
+    "marks": 1
+   },
+   {
+    "section": "Section 3 — Challenge & exam-style",
+    "n": 15,
+    "prompt": "Solve  log₃(x) = 4.",
+    "marks": 1
+   },
+   {
+    "section": "Section 3 — Challenge & exam-style",
+    "n": 16,
+    "prompt": "Given log a = 0.7 and log b = 0.3, find log(a²/b).",
+    "marks": 1
+   }
+  ],
+  "scheme": [
+   "1.  4",
+   "2.  2",
+   "3.  4",
+   "4.  log₂ 64 = 6",
+   "5.  0",
+   "6.  1",
+   "7.  log 24",
+   "8.  log 5",
+   "9.  log x³",
+   "10.  3 + 2 = 5",
+   "11.  log(a²b)",
+   "12.  3",
+   "13.  log₂(8×3) = 3 + k",
+   "14.  log x² (= 2 log x)",
+   "15.  x = 3⁴ = 81",
+   "16.  2(0.7) − 0.3 = 1.1"
+  ]
+ },
+ {
+  "course_id": "ib-aa-sl",
+  "code": "WS-L07",
+  "title": "Worksheet — Lesson 7: Solving Exponential & Log Equations",
+  "time_min": 30,
+  "total_marks": 16,
+  "questions": [
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 1,
+    "prompt": "Solve  2^x = 64.",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 2,
+    "prompt": "Solve  log₃ x = 2.",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 3,
+    "prompt": "Solve  10^x = 1000.",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 4,
+    "prompt": "Solve  5^x = 125.",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 5,
+    "prompt": "Solve  log₂ x = 4.",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 6,
+    "prompt": "Solve  4^x = 16.",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 7,
+    "prompt": "Solve  log₁₀ x = 2.",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 8,
+    "prompt": "Solve  2^x = 20, giving your answer to 3 s.f.",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 9,
+    "prompt": "Solve  5^x = 90, giving your answer to 3 s.f.",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 10,
+    "prompt": "Solve  3^x = 40, giving your answer to 3 s.f.",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 11,
+    "prompt": "Solve  log₄ x = 3.",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 12,
+    "prompt": "Solve  7^x = 200 (3 s.f.).",
+    "marks": 1
+   },
+   {
+    "section": "Section 3 — Challenge & exam-style",
+    "n": 13,
+    "prompt": "Solve  3^(x+1) = 90, giving your answer to 3 s.f.",
+    "marks": 1
+   },
+   {
+    "section": "Section 3 — Challenge & exam-style",
+    "n": 14,
+    "prompt": "Solve  log₂(x) + log₂(x − 6) = 4.",
+    "marks": 1
+   },
+   {
+    "section": "Section 3 — Challenge & exam-style",
+    "n": 15,
+    "prompt": "Solve  2^(2x) = 50 (3 s.f.).",
+    "marks": 1
+   },
+   {
+    "section": "Section 3 — Challenge & exam-style",
+    "n": 16,
+    "prompt": "Solve  log(x) + log(x − 3) = 1  (log base 10).",
+    "marks": 1
+   }
+  ],
+  "scheme": [
+   "1.  x = 6",
+   "2.  x = 9",
+   "3.  x = 3",
+   "4.  x = 3",
+   "5.  x = 16",
+   "6.  x = 2",
+   "7.  x = 100",
+   "8.  x = log 20 / log 2 = 4.32",
+   "9.  x = log 90 / log 5 = 2.8",
+   "10.  x = log 40 / log 3 = 3.36",
+   "11.  x = 64",
+   "12.  x = log200/log7 = 2.72",
+   "13.  x+1 = log90/log3 → x = 3.1",
+   "14.  log₂(x(x−6)) = 4 → x²−6x−16=0 → (x−8)(x+2)=0 → x = 8",
+   "15.  2x = log50/log2 → x = 2.82",
+   "16.  x(x−3) = 10 → x²−3x−10=0 → (x−5)(x+2)=0 → x = 5"
+  ]
+ },
+ {
+  "course_id": "ib-aa-sl",
+  "code": "WS-L08",
+  "title": "Worksheet — Lesson 8: The Binomial Theorem",
+  "time_min": 30,
+  "total_marks": 15,
+  "questions": [
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 1,
+    "prompt": "Write down the binomial coefficients (Pascal's triangle) for n = 4.",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 2,
+    "prompt": "Write down the coefficients for n = 5.",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 3,
+    "prompt": "How many terms are there in the expansion of (a + b)⁷?",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 4,
+    "prompt": "Evaluate  C(5, 2).",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 5,
+    "prompt": "Expand  (1 + x)³.",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 6,
+    "prompt": "Expand  (1 + 2x)⁴.",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 7,
+    "prompt": "Expand  (2 + x)³.",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 8,
+    "prompt": "Find the coefficient of x² in  (1 + 3x)⁴.",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 9,
+    "prompt": "Find the coefficient of x³ in  (1 + x)⁶.",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 10,
+    "prompt": "Expand  (1 − x)⁴.",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 11,
+    "prompt": "Find the coefficient of x in  (1 + x)⁵.",
+    "marks": 1
+   },
+   {
+    "section": "Section 3 — Challenge & exam-style",
+    "n": 12,
+    "prompt": "Find the term in x² in the expansion of  (3 + x)⁵.",
+    "marks": 1
+   },
+   {
+    "section": "Section 3 — Challenge & exam-style",
+    "n": 13,
+    "prompt": "Find the coefficient of x⁴ in  (2 + x)⁶.",
+    "marks": 1
+   },
+   {
+    "section": "Section 3 — Challenge & exam-style",
+    "n": 14,
+    "prompt": "Find the constant term (term in x⁰) in  (2 + x)⁵.",
+    "marks": 1
+   },
+   {
+    "section": "Section 3 — Challenge & exam-style",
+    "n": 15,
+    "prompt": "In  (1 + 2x)⁵, find the coefficient of x³.",
+    "marks": 1
+   }
+  ],
+  "scheme": [
+   "1.  1, 4, 6, 4, 1",
+   "2.  1, 5, 10, 10, 5, 1",
+   "3.  8",
+   "4.  10",
+   "5.  1 + 3x + 3x² + x³",
+   "6.  1 + 8x + 24x² + 32x³ + 16x⁴",
+   "7.  8 + 12x + 6x² + x³",
+   "8.  C(4,2)·(3)² = 6×9 = 54",
+   "9.  C(6,3) = 20",
+   "10.  1 − 4x + 6x² − 4x³ + x⁴",
+   "11.  C(5,1) = 5",
+   "12.  C(5,2)·3³·x² = 10×27 x² = 270x²",
+   "13.  C(6,4)·2² = 15×4 = 60",
+   "14.  C(5,0)·2⁵ = 32",
+   "15.  C(5,3)·2³ = 10×8 = 80"
+  ]
+ },
+ {
+  "course_id": "ib-aa-sl",
+  "code": "WS-L09",
+  "title": "Worksheet — Lesson 9: Proof & Deductive Reasoning",
+  "time_min": 30,
+  "total_marks": 15,
+  "questions": [
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 1,
+    "prompt": "Write an expression for (a) an even number and (b) an odd number, using the integer n.",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 2,
+    "prompt": "Write three consecutive integers, the smallest being n.",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 3,
+    "prompt": "Write an expression for a multiple of 5.",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 4,
+    "prompt": "Is the sum of two odd numbers odd or even? State your answer.",
+    "marks": 1
+   },
+   {
+    "section": "Section 1 — Warm-up (foundation)",
+    "n": 5,
+    "prompt": "Give a counterexample to: 'every prime number is odd.'",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 6,
+    "prompt": "Prove that the sum of two even numbers is always even.",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 7,
+    "prompt": "Prove that the sum of three consecutive integers is a multiple of 3.",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 8,
+    "prompt": "Prove that the sum of an even number and an odd number is odd.",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 9,
+    "prompt": "Disprove: 'n² + n + 5 is always prime.'  (try n = 4)",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 10,
+    "prompt": "Prove that the product of two even numbers is a multiple of 4.",
+    "marks": 1
+   },
+   {
+    "section": "Section 2 — Core practice",
+    "n": 11,
+    "prompt": "Prove that 2n − 1 is always odd for any integer n.",
+    "marks": 1
+   },
+   {
+    "section": "Section 3 — Challenge & exam-style",
+    "n": 12,
+    "prompt": "Prove that the product of two odd numbers is odd.",
+    "marks": 1
+   },
+   {
+    "section": "Section 3 — Challenge & exam-style",
+    "n": 13,
+    "prompt": "Prove that the sum of the first n odd numbers, 1+3+5+…+(2n−1), equals n².",
+    "marks": 1
+   },
+   {
+    "section": "Section 3 — Challenge & exam-style",
+    "n": 14,
+    "prompt": "Prove that the difference between the squares of two consecutive integers is always odd.",
+    "marks": 1
+   },
+   {
+    "section": "Section 3 — Challenge & exam-style",
+    "n": 15,
+    "prompt": "Disprove: 'if n is an integer then n² > n.'  (consider n = 0 or 1)",
+    "marks": 1
+   }
+  ],
+  "scheme": [
+   "1.  (a) 2n  (b) 2n + 1",
+   "2.  n, n+1, n+2",
+   "3.  5n",
+   "4.  even",
+   "5.  2 is prime and even",
+   "6.  2a + 2b = 2(a+b), a multiple of 2 → even ∎",
+   "7.  n+(n+1)+(n+2) = 3n+3 = 3(n+1) ∎",
+   "8.  2a + (2b+1) = 2(a+b)+1 → odd ∎",
+   "9.  4²+4+5 = 25 = 5×5, not prime — disproved",
+   "10.  2a × 2b = 4ab, a multiple of 4 ∎",
+   "11.  2n is even, so 2n − 1 is one less → odd ∎",
+   "12.  (2a+1)(2b+1) = 4ab+2a+2b+1 = 2(2ab+a+b)+1 → odd ∎",
+   "13.  AP sum: n/2(1 + (2n−1)) = n/2(2n) = n² ∎",
+   "14.  (n+1)² − n² = 2n+1 → odd ∎",
+   "15.  n = 1: 1² = 1, not > 1 — disproved"
+  ]
+ }
+]
