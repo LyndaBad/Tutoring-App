@@ -1490,7 +1490,9 @@ function TutorContent({user}){
 
 function ReleasePanel({student,courseId,user}){
   const course=COURSES.find(c=>c.id===courseId);
-  const lessons=useTable(async()=>{const{data}=await supabase.from("lessons").select("num,title").eq("course_id",courseId).order("num");return data||[];},[courseId]);
+  const lessons=useTable(async()=>{const{data}=await supabase.from("lessons").select("num,title,objectives").eq("course_id",courseId).order("num");return data||[];},[courseId]);
+  const[openLesson,setOpenLesson]=useState(null);
+  const hwPlatform=(course?.sub==="chem"||course?.sub==="sci")?"Seneca Learning":"Dr Frost Maths";
   const[relSet,setRelSet]=useState(null);
   useEffect(()=>{let dead=false;(async()=>{const{data}=await supabase.from("lesson_releases").select("lesson_num").eq("student_id",student.id).eq("course_id",courseId);if(!dead)setRelSet(new Set((data||[]).map(r=>r.lesson_num)));})();return()=>{dead=true;};},[student.id,courseId]);
   const papers=useTable(async()=>{const{data}=await supabase.from("assessment_papers").select("*").eq("course_id",courseId).order("code");return data||[];},[courseId]);
@@ -1513,13 +1515,25 @@ function ReleasePanel({student,courseId,user}){
         <p style={{fontSize:".72rem",color:T.ash}}>{relSet?`${relSet.size}/${(lessons||[]).length} released`:""}</p>
       </div>
       {lessons===null&&<p style={{fontSize:".82rem",color:T.ash}}>Loading…</p>}
+      <p style={{fontSize:".72rem",color:T.ash,marginTop:"-.4rem",marginBottom:".6rem"}}>Tip: click <strong style={{color:T.bl}}>View</strong> to preview a lesson's content before you release it to the student.</p>
       <div style={{display:"flex",flexDirection:"column",gap:".4rem",marginBottom:"2rem"}}>
-        {(lessons||[]).map(l=>{const on=relSet?.has(l.num);return(
-          <div key={l.num} style={{display:"flex",alignItems:"center",gap:".75rem",background:T.n2,border:`1px solid ${on?T.gr+"40":T.rl}`,borderRadius:8,padding:".55rem .85rem"}}>
-            <span style={{fontFamily:"'Sora',sans-serif",fontSize:".9rem",color:T.gd,width:24,flexShrink:0}}>{l.num}</span>
-            <p style={{flex:1,fontSize:".82rem",color:T.cr}}>{l.title}</p>
-            <button onClick={()=>releaseUpTo(l.num)} title="Release this and all earlier lessons" style={{background:"none",border:`1px solid ${T.rl}`,color:T.ash,borderRadius:6,padding:".25rem .5rem",fontSize:".66rem",cursor:"pointer",fontFamily:"inherit"}}>↥ up to here</button>
-            <button onClick={()=>toggleLesson(l.num)} style={{background:on?T.gra:"transparent",border:`1px solid ${on?T.gr+"55":T.rl}`,color:on?T.gr:T.ash,borderRadius:6,padding:".3rem .7rem",fontSize:".72rem",cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:".35rem",flexShrink:0}}><CheckCircle size={12}/>{on?"Released":"Release"}</button>
+        {(lessons||[]).map(l=>{const on=relSet?.has(l.num);const open=openLesson===l.num;
+          const isAssess=/\b(Test|Assessment|Baseline|Mid-?course|End-?of-?course|Mock|Diagnostic|Unit Check)\b/i.test(l.title);
+          return(
+          <div key={l.num} style={{background:T.n2,border:`1px solid ${on?T.gr+"40":T.rl}`,borderRadius:8}}>
+            <div style={{display:"flex",alignItems:"center",gap:".75rem",padding:".55rem .85rem"}}>
+              <span style={{fontFamily:"'Sora',sans-serif",fontSize:".9rem",color:T.gd,width:24,flexShrink:0}}>{l.num}</span>
+              <p style={{flex:1,fontSize:".82rem",color:T.cr}}>{l.title}</p>
+              <button onClick={()=>setOpenLesson(open?null:l.num)} style={{background:open?T.bla:"transparent",border:`1px solid ${open?T.bl+"55":T.rl}`,color:T.bl,borderRadius:6,padding:".25rem .6rem",fontSize:".68rem",cursor:"pointer",fontFamily:"inherit",flexShrink:0}}>{open?"Hide":"View"}</button>
+              <button onClick={()=>releaseUpTo(l.num)} title="Release this and all earlier lessons" style={{background:"none",border:`1px solid ${T.rl}`,color:T.ash,borderRadius:6,padding:".25rem .5rem",fontSize:".66rem",cursor:"pointer",fontFamily:"inherit"}}>↥ up to here</button>
+              <button onClick={()=>toggleLesson(l.num)} style={{background:on?T.gra:"transparent",border:`1px solid ${on?T.gr+"55":T.rl}`,color:on?T.gr:T.ash,borderRadius:6,padding:".3rem .7rem",fontSize:".72rem",cursor:"pointer",fontFamily:"inherit",display:"flex",alignItems:"center",gap:".35rem",flexShrink:0}}><CheckCircle size={12}/>{on?"Released":"Release"}</button>
+            </div>
+            {open&&<div style={{borderTop:`1px solid ${T.rl}`,padding:".7rem .95rem",background:T.n3,borderRadius:"0 0 8px 8px"}}>
+              <p style={{fontSize:".62rem",fontWeight:600,letterSpacing:".1em",textTransform:"uppercase",color:T.gd,marginBottom:".35rem"}}>Lesson content / objectives</p>
+              <p style={{fontSize:".8rem",color:T.c2,lineHeight:1.6}}>{l.objectives||"No description recorded for this lesson."}</p>
+              {!isAssess&&<p style={{fontSize:".74rem",color:T.bl,marginTop:".5rem"}}>📚 Homework set on <strong>{hwPlatform}</strong> (auto-marked).</p>}
+              <p style={{fontSize:".7rem",color:T.ash2,marginTop:".5rem",fontStyle:"italic"}}>Slide deck &amp; worksheet PDFs are in your Course content folder. {on?"This lesson is released to the student.":"Not yet released — the student can't see it."}</p>
+            </div>}
           </div>
         );})}
       </div>
