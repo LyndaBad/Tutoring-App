@@ -1526,10 +1526,16 @@ function ReleasePanel({student,courseId,user}){
 
       <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".14em",textTransform:"uppercase",color:T.vi,marginBottom:".75rem"}}>Assessments to set</p>
       {papers===null&&<p style={{fontSize:".82rem",color:T.ash}}>Loading…</p>}
-      {papers&&papers.length===0&&<EmptyNote text="No assessment papers built for this course yet."/>}
+      {papers&&(papers.filter(p=>p.kind!=="worksheet").length===0)&&<EmptyNote text="No assessment papers built for this course yet."/>}
       <div style={{display:"flex",flexDirection:"column",gap:".6rem"}}>
-        {(papers||[]).map(p=><PaperRow key={p.id} paper={p} student={student} user={user}/>)}
+        {(papers||[]).filter(p=>p.kind!=="worksheet").map(p=><PaperRow key={p.id} paper={p} student={student} user={user}/>)}
       </div>
+      {papers&&papers.some(p=>p.kind==="worksheet")&&<>
+        <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".14em",textTransform:"uppercase",color:T.te,margin:"1.75rem 0 .75rem"}}>Practice worksheets to set</p>
+        <div style={{display:"flex",flexDirection:"column",gap:".6rem"}}>
+          {papers.filter(p=>p.kind==="worksheet").map(p=><PaperRow key={p.id} paper={p} student={student} user={user}/>)}
+        </div>
+      </>}
     </div>
   );
 }
@@ -1623,27 +1629,34 @@ function StudentPapers({user}){
   if(taking)return<PaperTake paper={taking} studentId={studentId} canSubmit={user.role!=="parent"} onDone={()=>setTaking(null)}/>;
   if(data===null)return null;
   if(data.length===0)return null;
+  const row=(p,col)=>{
+    const s=p.sub;const marked=s&&s.score!=null;const submitted=s&&s.score==null;
+    return(
+      <div key={p.id} style={{background:T.n2,border:`1px solid ${col}30`,borderRadius:10,padding:"1.2rem",borderLeftWidth:4,borderLeftColor:col,display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:".75rem"}}>
+        <div>
+          <p style={{fontSize:".9rem",fontWeight:500,color:T.cr}}>{p.title}</p>
+          <p style={{fontSize:".72rem",color:T.ash,marginTop:".2rem"}}>{p.time_min?`${p.time_min} min · `:""}{p.total_marks} marks{marked?` · scored ${s.score}/${s.max_marks||p.total_marks}`:submitted?" · submitted, awaiting marking":""}</p>
+          {marked&&s.feedback&&<p style={{fontSize:".76rem",color:T.c2,marginTop:".35rem",fontStyle:"italic"}}>“{s.feedback}”</p>}
+        </div>
+        {marked?<div style={{textAlign:"right"}}><p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.6rem",fontWeight:300,color:gc(ptc(s.score,s.max_marks||p.total_marks)),lineHeight:1}}>{ptc(s.score,s.max_marks||p.total_marks)}%</p></div>
+          :submitted?<Tag l="Submitted" c={T.am} bg={T.ama}/>
+          :user.role==="parent"?<Tag l="Set" c={col} bg={col+"18"}/>
+          :<Btn ch="Start →" v="gold" sz="sm" onClick={()=>setTaking(p)}/>}
+      </div>
+    );
+  };
+  const tests=data.filter(p=>p.kind!=="worksheet");
+  const sheets=data.filter(p=>p.kind==="worksheet");
   return(
     <div style={{marginBottom:"2rem"}}>
-      <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".14em",textTransform:"uppercase",color:T.vi,marginBottom:"1rem"}}>Assessments set for you</p>
-      <div style={{display:"flex",flexDirection:"column",gap:".7rem"}}>
-        {data.map(p=>{
-          const s=p.sub;const marked=s&&s.score!=null;const submitted=s&&s.score==null;
-          return(
-            <div key={p.id} style={{background:T.n2,border:`1px solid ${T.vi}30`,borderRadius:10,padding:"1.2rem",borderLeftWidth:4,borderLeftColor:T.vi,display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:".75rem"}}>
-              <div>
-                <p style={{fontSize:".9rem",fontWeight:500,color:T.cr}}>{p.title}</p>
-                <p style={{fontSize:".72rem",color:T.ash,marginTop:".2rem"}}>{p.time_min?`${p.time_min} min · `:""}{p.total_marks} marks{marked?` · scored ${s.score}/${s.max_marks||p.total_marks}`:submitted?" · submitted, awaiting marking":""}</p>
-                {marked&&s.feedback&&<p style={{fontSize:".76rem",color:T.c2,marginTop:".35rem",fontStyle:"italic"}}>“{s.feedback}”</p>}
-              </div>
-              {marked?<div style={{textAlign:"right"}}><p style={{fontFamily:"'Sora',sans-serif",fontSize:"1.6rem",fontWeight:300,color:gc(ptc(s.score,s.max_marks||p.total_marks)),lineHeight:1}}>{ptc(s.score,s.max_marks||p.total_marks)}%</p></div>
-                :submitted?<Tag l="Submitted" c={T.am} bg={T.ama}/>
-                :user.role==="parent"?<Tag l="Set" c={T.vi} bg={T.via}/>
-                :<Btn ch="Start →" v="gold" sz="sm" onClick={()=>setTaking(p)}/>}
-            </div>
-          );
-        })}
-      </div>
+      {tests.length>0&&<>
+        <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".14em",textTransform:"uppercase",color:T.vi,marginBottom:"1rem"}}>Assessments set for you</p>
+        <div style={{display:"flex",flexDirection:"column",gap:".7rem"}}>{tests.map(p=>row(p,T.vi))}</div>
+      </>}
+      {sheets.length>0&&<>
+        <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".14em",textTransform:"uppercase",color:T.te,margin:tests.length?"1.5rem 0 1rem":"0 0 1rem"}}>Practice worksheets set for you</p>
+        <div style={{display:"flex",flexDirection:"column",gap:".7rem"}}>{sheets.map(p=>row(p,T.te))}</div>
+      </>}
     </div>
   );
 }
