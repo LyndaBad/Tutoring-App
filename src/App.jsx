@@ -1526,14 +1526,14 @@ function ReleasePanel({student,courseId,user}){
 
       <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".14em",textTransform:"uppercase",color:T.vi,marginBottom:".75rem"}}>Assessments to set</p>
       {papers===null&&<p style={{fontSize:".82rem",color:T.ash}}>Loading…</p>}
-      {papers&&(papers.filter(p=>p.kind!=="worksheet").length===0)&&<EmptyNote text="No assessment papers built for this course yet."/>}
+      {papers&&(papers.filter(p=>!String(p.code||"").startsWith("WS")).length===0)&&<EmptyNote text="No assessment papers built for this course yet."/>}
       <div style={{display:"flex",flexDirection:"column",gap:".6rem"}}>
-        {(papers||[]).filter(p=>p.kind!=="worksheet").map(p=><PaperRow key={p.id} paper={p} student={student} user={user}/>)}
+        {(papers||[]).filter(p=>!String(p.code||"").startsWith("WS")).map(p=><PaperRow key={p.id} paper={p} student={student} user={user}/>)}
       </div>
-      {papers&&papers.some(p=>p.kind==="worksheet")&&<>
+      {papers&&papers.some(p=>String(p.code||"").startsWith("WS"))&&<>
         <p style={{fontSize:".65rem",fontWeight:600,letterSpacing:".14em",textTransform:"uppercase",color:T.te,margin:"1.75rem 0 .75rem"}}>Practice worksheets to set</p>
         <div style={{display:"flex",flexDirection:"column",gap:".6rem"}}>
-          {papers.filter(p=>p.kind==="worksheet").map(p=><PaperRow key={p.id} paper={p} student={student} user={user}/>)}
+          {papers.filter(p=>String(p.code||"").startsWith("WS")).map(p=><PaperRow key={p.id} paper={p} student={student} user={user}/>)}
         </div>
       </>}
     </div>
@@ -1645,8 +1645,8 @@ function StudentPapers({user}){
       </div>
     );
   };
-  const tests=data.filter(p=>p.kind!=="worksheet");
-  const sheets=data.filter(p=>p.kind==="worksheet");
+  const tests=data.filter(p=>!String(p.code||"").startsWith("WS"));
+  const sheets=data.filter(p=>String(p.code||"").startsWith("WS"));
   return(
     <div style={{marginBottom:"2rem"}}>
       {tests.length>0&&<>
