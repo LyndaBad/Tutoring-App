@@ -2226,7 +2226,6 @@ function LessonList({courseId,subject,viewer}){
               <p style={{fontWeight:500,fontSize:".88rem",marginBottom:".2rem"}}>{l.title}</p>
               <p style={{fontSize:".76rem",color:T.ash,lineHeight:1.6}}>{l.objectives}</p>
               {!isAssess&&<p style={{fontSize:".72rem",color:T.bl,marginTop:".4rem"}}>📚 Homework: practice set on <strong>{hwPlatform}</strong> (auto-marked)</p>}
-              {!isAssess&&<LessonFiles courseId={courseId} num={l.num}/>}
             </div>
           </div>
         </div>
@@ -2244,6 +2243,7 @@ function LessonList({courseId,subject,viewer}){
             <p style={{fontWeight:500,fontSize:".88rem",marginBottom:".2rem"}}>{l.title}</p>
             <p style={{fontSize:".76rem",color:T.ash,lineHeight:1.6}}>{l.objectives}</p>
             {!isAssess&&<p style={{fontSize:".72rem",color:T.bl,marginTop:".4rem"}}>📚 Homework: practice set on <strong>{hwPlatform}</strong> (auto-marked)</p>}
+            {!isAssess&&<LessonFiles courseId={courseId} num={l.num}/>}
           </div>
         </div>
       </div>
