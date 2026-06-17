@@ -1992,7 +1992,8 @@ function PostSession(){
 }
 
 /* ─── ADMIN PANEL ─────────────────────────────────────────────────── */
-function AdminDash({go,bp}){
+function AdminDash({go,bp,onPreview}){
+  const previewables=useTable(async()=>{const{data}=await supabase.from("profiles").select("id,name").eq("role","student").order("name");return data||[];},[]);
   const live=useTable(async()=>{
     const[t,st,b,i]=await Promise.all([
       supabase.from("profiles").select("id",{count:"exact",head:true}).eq("role","tutor"),
@@ -2015,7 +2016,10 @@ function AdminDash({go,bp}){
           <p style={{fontSize:".6rem",color:T.ash2,letterSpacing:".1em",textTransform:"uppercase"}}>Switch / preview</p>
           <div style={{display:"flex",gap:".45rem",flexWrap:"wrap"}}>
             <Btn ch="My Tutor Portal" v="gold" sz="xs" onClick={()=>go("tutor-dash")}/>
-            <Btn ch="Preview Student" v="navy" sz="xs" onClick={()=>go("dashboard")}/>
+            <select onChange={e=>{if(e.target.value)onPreview&&onPreview(e.target.value);}} defaultValue="" style={{background:T.n2,border:`1px solid ${T.rl}`,color:T.cr,borderRadius:8,padding:".22rem .5rem",fontSize:".7rem",fontFamily:"inherit",cursor:"pointer"}}>
+              <option value="">Preview as student…</option>
+              {(previewables||[]).map(s=><option key={s.id} value={s.id}>{s.name}</option>)}
+            </select>
             <Btn ch="Preview Parent" v="navy" sz="xs" onClick={()=>go("parent")}/>
           </div>
         </div>
@@ -2455,8 +2459,18 @@ export default function App(){
     return()=>{cancelled=true;sub?.subscription?.unsubscribe?.();};
   },[]);
 
-  const go=useCallback(p=>{setPg(p);setSideOpen(false);requestAnimationFrame(()=>window.scrollTo({top:0,behavior:"smooth"}));},[]);
-  const logout=useCallback(async()=>{try{await supabase.auth.signOut();}catch{}setUser(null);go("home");},[go]);
+  const[previewStudent,setPreviewStudent]=useState(null);
+  const go=useCallback(p=>{if(p.startsWith("admin"))setPreviewStudent(null);setPg(p);setSideOpen(false);requestAnimationFrame(()=>window.scrollTo({top:0,behavior:"smooth"}));},[]);
+  const logout=useCallback(async()=>{try{await supabase.auth.signOut();}catch{}setUser(null);setPreviewStudent(null);go("home");},[go]);
+  const previewAsStudent=useCallback(async(id)=>{
+    try{
+      const{data:prof}=await supabase.from("profiles").select("id,name").eq("id",id).maybeSingle();
+      const enrollments=await fetchStudentData(id);
+      const nm=prof?.name||"Student";
+      setPreviewStudent({id,name:nm,role:"student",av:nm.split(" ").map(x=>x[0]).join("").slice(0,2).toUpperCase(),enrollments});
+    }catch(e){console.warn("preview load failed",e);}
+    go("dashboard");
+  },[go]);
 
   const studentPgs=["dashboard","my-courses","booking","assessments","progress","account"];
   const parentPgs=["parent","par-assess","par-sessions","par-billing"];
@@ -2479,8 +2493,9 @@ export default function App(){
 
   const inApp=appPgs.includes(pg);
 
+  const su=(user&&user.role==="admin"&&previewStudent)?previewStudent:user;  // preview-as-student
   const renderPage=()=>{
-    if(courseId)return<CourseDetail courseId={courseId} go={go} cur={cur} user={user} setUser={setUser} bp={bp}/>;
+    if(courseId)return<CourseDetail courseId={courseId} go={go} cur={cur} user={su} setUser={setUser} bp={bp}/>;
     switch(pg){
       case"home":       return<Home go={go} cur={cur} bp={bp}/>;
       case"about":      return<About go={go} bp={bp}/>;
@@ -2490,10 +2505,10 @@ export default function App(){
       case"contact":    return<Contact go={go} bp={bp}/>;
       case"login":      return<Login go={go} setUser={setUser} bp={bp}/>;
       case"signup":     return<Signup go={go} setUser={setUser}/>;
-      case"dashboard":  return<StudentDash user={user} setUser={setUser} go={go} bp={bp}/>;
-      case"my-courses": return<MyCourses user={user} go={go}/>;
+      case"dashboard":  return<StudentDash user={su} setUser={setUser} go={go} bp={bp}/>;
+      case"my-courses": return<MyCourses user={su} go={go}/>;
       case"booking":    return<div style={{padding:"2rem"}}><h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1rem"}}>🎥 Book Zoom Lessons</h2><p style={{fontSize:".85rem",color:T.ash}}>Use the "Book Lesson" button on your enrolled course in the Dashboard to open the full booking calendar with credit deduction and Zoom link generation.</p></div>;
-      case"assessments":return<><div style={{padding:"2rem 2rem 0"}}><StudentPapers user={user}/></div><Assessments user={user}/></>;
+      case"assessments":return<><div style={{padding:"2rem 2rem 0"}}><StudentPapers user={su}/></div><Assessments user={su}/></>;
       case"progress":   return<div style={{padding:"2rem"}}><h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"1rem"}}>Progress Tracker</h2><p style={{fontSize:".85rem",color:T.ash,marginBottom:"1.5rem"}}>Score trend and unit progress are displayed on your Dashboard. Full progress view available here in production.</p>{UNITS.map(u=><div key={u.u} style={{marginBottom:"1rem"}}><div style={{display:"flex",justifyContent:"space-between",marginBottom:".4rem"}}><p style={{fontSize:".88rem",color:u.p>0?T.cr:T.ash2}}>{u.u}</p><p style={{fontSize:".82rem",color:u.p===100?T.gr:u.p>0?u.c:T.ash2,fontWeight:600}}>{u.p}%</p></div><PBar p={u.p} col={u.c} h={7}/></div>)}</div>;
       case"account":    return<div style={{padding:"2rem",maxWidth:500}}><h2 style={{fontFamily:"'Sora',sans-serif",fontSize:"1.8rem",fontWeight:300,marginBottom:"2rem"}}>Account</h2>{[["Name",user.name],["Email",user.email],["Role",user.role],["Timezone","Europe/London"],["Currency",cur]].map(([k,v])=><div key={k} style={{display:"flex",justifyContent:"space-between",padding:".8rem 0",borderBottom:`1px solid ${T.r2}`}}><span style={{fontSize:".72rem",color:T.ash2,letterSpacing:".08em",textTransform:"uppercase"}}>{k}</span><span style={{fontSize:".85rem",color:T.ash}}>{v}</span></div>)}</div>;
       case"parent":     return<ParentPortal user={user} go={go} bp={bp}/>;
@@ -2507,7 +2522,7 @@ export default function App(){
       case"tutor-hours":return<TutorHours go={go} user={user}/>;
       case"tutor-invoices":return<TutorInvoices user={user}/>;
       case"tutor-post": return<PostSession/>;
-      case"admin":      return<AdminDash go={go} bp={bp}/>;
+      case"admin":      return<AdminDash go={go} bp={bp} onPreview={previewAsStudent}/>;
       case"admin-tutors":return<AdminTutors/>;
       case"admin-students":return<AdminStudents/>;
       case"admin-courses":return<AdminCourses/>;
