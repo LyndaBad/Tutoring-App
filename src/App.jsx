@@ -191,13 +191,13 @@ function useBreakpoint(){
 }
 
 /* ─── LOGO ────────────────────────────────────────────────────────── */
-function Logo({size=32,text=true}){
+function Logo({size=32,text=true,onDark=false}){
   return(
     <div style={{display:"flex",alignItems:"center",gap:".75rem",flexShrink:0}}>
       <img src={logoMark} alt="Lynda Badmus Education" width={size} height={size} style={{display:"block",borderRadius:size*.3,objectFit:"cover",flexShrink:0}}/>
       {text&&<div>
-        <p style={{fontFamily:"'Sora',sans-serif",fontSize:size>28?"1.08rem":".9rem",fontWeight:600,color:T.cr,lineHeight:1.1,letterSpacing:"-.01em"}}>Lynda Badmus</p>
-        <p style={{fontFamily:"'Inter',sans-serif",fontSize:size>28?".6rem":".52rem",color:T.gd,letterSpacing:".2em",textTransform:"uppercase",lineHeight:1,marginTop:".12rem",fontWeight:500}}>Education</p>
+        <p style={{fontFamily:"'Sora',sans-serif",fontSize:size>28?"1.08rem":".9rem",fontWeight:600,color:onDark?"#FFFFFF":T.cr,lineHeight:1.1,letterSpacing:"-.01em"}}>Lynda Badmus</p>
+        <p style={{fontFamily:"'Inter',sans-serif",fontSize:size>28?".6rem":".52rem",color:onDark?"#A99CFF":T.gd,letterSpacing:".2em",textTransform:"uppercase",lineHeight:1,marginTop:".12rem",fontWeight:500}}>Education</p>
       </div>}
     </div>
   );
@@ -391,8 +391,8 @@ function Sidebar({pg,go,user,bp,open,onClose}){
   const inner=(
     <div style={{display:"flex",flexDirection:"column",height:"100%"}}>
       <div style={{padding:"1.2rem 1.2rem .9rem",borderBottom:`1px solid ${T.rl}`}}>
-        {(bp.mobile||bp.tablet)&&<div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"1rem"}}><Logo size={28}/><button onClick={onClose} style={{background:"none",border:"none",color:T.ash,cursor:"pointer"}}><X size={18}/></button></div>}
-        {!bp.mobile&&!bp.tablet&&<Logo size={28}/>}
+        {(bp.mobile||bp.tablet)&&<div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"1rem"}}><Logo size={28} onDark/><button onClick={onClose} style={{background:"none",border:"none",color:T.ash,cursor:"pointer"}}><X size={18}/></button></div>}
+        {!bp.mobile&&!bp.tablet&&<Logo size={28} onDark/>}
         <div style={{display:"flex",alignItems:"center",gap:".7rem",marginTop:bp.mobile||bp.tablet?0:"1rem",paddingTop:bp.mobile||bp.tablet?0:"1rem",borderTop:bp.mobile||bp.tablet?"none":`1px solid ${T.r2}`}}>
           <div style={{width:32,height:32,borderRadius:"50%",background:rc,display:"flex",alignItems:"center",justifyContent:"center",fontSize:".75rem",fontWeight:700,color:T.n,flexShrink:0}}>{user?.av||"?"}</div>
           <div style={{minWidth:0}}><p style={{fontSize:".82rem",fontWeight:600,color:T.cr,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{user?.name}</p><p style={{fontSize:".62rem",color:T.ash,marginTop:1}}>{rl}</p></div>
